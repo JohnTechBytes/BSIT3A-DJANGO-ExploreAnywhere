@@ -18,7 +18,8 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `bsit_crud`
+CREATE Database bsit_crud;
+USE bsit_crud;
 --
 
 -- --------------------------------------------------------

@@ -1,26 +1,749 @@
-{% extends "theme/base.html" %}
-{% block content %}
-<div class="container-xl">
-  <div class="page-header d-print-none" aria-label="Page header">
-    <div class="container-xl">
-      <div class="row align-items-center">
-        <div class="col">
-          <div class="page-pretitle">Overview</div>
-          <div class="d-flex align-items-center gap-3 flex-wrap d-none d-md-flex">
-            <h2 class="page-title mb-0">Dashboard</h2>
-          </div>
-          <h2 class="page-title mb-0 d-md-none">Dashboard</h2>
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExploreAnywhere | Discover Your Next Adventure</title>
+    <meta name="description"
+          content="Discover places that match your hobbies in any city.">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #1769ff;
+            --dark: #101a2e;
+            --muted: #68758a;
+            --light: #f5f8ff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            color: var(--dark);
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            background: #fff;
+        }
+
+        a { text-decoration: none; }
+
+        .navbar {
+            min-height: 76px;
+            background: rgba(255,255,255,.97);
+            border-bottom: 1px solid #e9edf5;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark);
+            font-size: 23px;
+            font-weight: 800;
+            letter-spacing: -.7px;
+        }
+
+        .brand-icon {
+            display: grid;
+            place-items: center;
+            width: 43px;
+            height: 43px;
+            color: white;
+            background: var(--primary);
+            border-radius: 14px;
+        }
+
+        .brand span span { color: var(--primary); }
+
+        .nav-link {
+            color: #46536a;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-primary-custom {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 13px 22px;
+            color: white;
+            background: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            font-weight: 700;
+            transition: .2s;
+        }
+
+        .btn-primary-custom:hover {
+            color: white;
+            background: #0755e7;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-custom {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            color: var(--dark);
+            background: white;
+            border: 1px solid #dce3ef;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 85px 0 76px;
+            background:
+                radial-gradient(ellipse at 90% 10%,
+                    rgba(68,131,255,.16), transparent 38%),
+                radial-gradient(ellipse at 0% 90%,
+                    rgba(48,190,170,.10), transparent 35%),
+                #f7f9ff;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 13px;
+            color: #1558cf;
+            background: #e8f0ff;
+            border: 1px solid #d9e6ff;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .5px;
+        }
+
+        .hero h1 {
+            max-width: 690px;
+            margin: 22px 0;
+            font-size: clamp(42px, 5.5vw, 69px);
+            font-weight: 850;
+            line-height: 1.07;
+            letter-spacing: -3px;
+        }
+
+        .gradient-text {
+            color: var(--primary);
+        }
+
+        .hero-description {
+            max-width: 560px;
+            color: var(--muted);
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        .search-panel {
+            display: flex;
+            gap: 10px;
+            max-width: 650px;
+            margin-top: 28px;
+            padding: 8px;
+            background: white;
+            border: 1px solid #e0e6f0;
+            border-radius: 17px;
+            box-shadow: 0 12px 35px rgba(26,48,90,.08);
+        }
+
+        .search-panel input {
+            flex: 1;
+            width: 0;
+            min-width: 0;
+            padding: 12px;
+            border: 0;
+            outline: none;
+            background: transparent;
+        }
+
+        .search-panel button { white-space: nowrap; }
+
+        .hero-note {
+            margin-top: 15px;
+            color: #778298;
+            font-size: 12px;
+        }
+
+        .preview-card {
+            position: relative;
+            max-width: 470px;
+            margin: 20px auto 0;
+            padding: 19px;
+            background: white;
+            border: 1px solid #e2e8f4;
+            border-radius: 25px;
+            box-shadow: 0 25px 75px rgba(27,49,91,.12);
+            transform: rotate(1deg);
+        }
+
+        .preview-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .preview-title { font-weight: 800; }
+
+        .live-label {
+            padding: 6px 10px;
+            color: #16835b;
+            background: #e6f8ef;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .map-preview {
+            position: relative;
+            height: 205px;
+            overflow: hidden;
+            border-radius: 17px;
+            background-color: #eaf0e8;
+            background-image:
+                linear-gradient(35deg, transparent 46%,
+                    #fff 47%, #fff 50%, transparent 51%),
+                linear-gradient(115deg, transparent 44%,
+                    #fff 45%, #fff 48%, transparent 49%),
+                linear-gradient(0deg, transparent 90%,
+                    #d3dfce 91%, #d3dfce 93%, transparent 94%);
+            background-size: 110px 90px, 140px 115px, 100% 55px;
+        }
+
+        .map-label {
+            position: absolute;
+            color: #64715e;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .map-pin {
+            position: absolute;
+            display: grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            color: white;
+            background: var(--primary);
+            border: 3px solid white;
+            border-radius: 50% 50% 50% 8px;
+            box-shadow: 0 4px 10px #23324b33;
+            transform: rotate(-45deg);
+        }
+
+        .map-pin span { transform: rotate(45deg); }
+
+        .place-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+            padding: 12px;
+            border: 1px solid #edf0f6;
+            border-radius: 14px;
+        }
+
+        .place-icon {
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            background: #edf3ff;
+            border-radius: 12px;
+            font-size: 22px;
+        }
+
+        .place-name { font-size: 13px; font-weight: 800; }
+        .place-subtitle { margin-top: 3px; color: var(--muted); font-size: 11px; }
+        .place-distance { margin-left: auto; color: #52627b; font-size: 11px; }
+
+        .floating-badge {
+            position: absolute;
+            right: -22px;
+            bottom: 80px;
+            padding: 13px 17px;
+            background: white;
+            border: 1px solid #e5eaf4;
+            border-radius: 14px;
+            box-shadow: 0 10px 35px #17284a1a;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .floating-badge small {
+            display: block;
+            margin-top: 4px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .section { padding: 78px 0; }
+
+        .section-heading {
+            margin-bottom: 12px;
+            font-size: clamp(28px, 3.5vw, 39px);
+            font-weight: 850;
+            letter-spacing: -1.3px;
+        }
+
+        .section-description {
+            max-width: 600px;
+            margin: 0 auto;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .hobby-card {
+            height: 100%;
+            padding: 23px 18px;
+            background: white;
+            border: 1px solid #e7ebf3;
+            border-radius: 18px;
+            transition: .2s;
+        }
+
+        .hobby-card:hover {
+            border-color: #a9c5ff;
+            box-shadow: 0 12px 28px #1b4a9410;
+            transform: translateY(-4px);
+        }
+
+        .hobby-emoji {
+            display: grid;
+            place-items: center;
+            width: 52px;
+            height: 52px;
+            margin-bottom: 18px;
+            background: #edf3ff;
+            border-radius: 15px;
+            font-size: 25px;
+        }
+
+        .hobby-card h3 {
+            margin-bottom: 8px;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .hobby-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .feature-section { background: var(--light); }
+
+        .feature-card {
+            height: 100%;
+            padding: 25px;
+            background: white;
+            border: 1px solid #e7ecf5;
+            border-radius: 18px;
+        }
+
+        .feature-card h3 {
+            margin: 16px 0 9px;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .feature-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .feature-icon {
+            display: grid;
+            place-items: center;
+            width: 48px;
+            height: 48px;
+            color: var(--primary);
+            background: #eaf1ff;
+            border-radius: 14px;
+            font-size: 22px;
+        }
+
+        .cta {
+            padding: 45px;
+            color: white;
+            background: linear-gradient(120deg, #102344, #1c56b9);
+            border-radius: 25px;
+        }
+
+        .cta p { color: #d7e3fa; }
+
+        footer {
+            padding: 28px 0;
+            color: #778298;
+            border-top: 1px solid #e9edf5;
+            font-size: 13px;
+        }
+
+        @media (max-width: 767px) {
+            .hero { padding: 55px 0; }
+            .hero h1 { letter-spacing: -2px; }
+            .preview-card { margin: 35px 5px 10px; }
+            .floating-badge { right: -4px; bottom: 45px; }
+            .section { padding: 55px 0; }
+            .cta { padding: 28px 22px; }
+            .search-panel { flex-wrap: wrap; }
+            .search-panel input { flex-basis: 100%; }
+            .search-panel button { width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <a class="brand" href="{% url 'home' %}">
+            <div class="brand-icon">⌖</div>
+            <span>Explore<span>Anywhere</span></span>
+        </a>
+
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+            <div class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+                <a class="nav-link" href="{% url 'home' %}">Home</a>
+                <a class="nav-link" href="#hobbies">Explore Hobbies</a>
+                <a class="nav-link" href="#features">Features</a>
+                <a class="nav-link" href="#how-it-works">How It Works</a>
+
+                {% if user.is_authenticated %}
+                    <a class="btn-outline-custom ms-lg-2"
+                       href="/admin/">Dashboard</a>
+                {% else %}
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    <a class="btn-primary-custom ms-lg-2"
+                       href="{% url 'register' %}">Get Started →</a>
+                {% endif %}
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-  <br>
+</nav>
 
-  <div class="card">
-    <div class="card-body text-muted">
-      Dashboard
+<main>
+    <section class="hero">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-7">
+                    <span class="eyebrow">
+                        ✦ YOUR HOBBIES. YOUR CITY. YOUR ADVENTURE.
+                    </span>
+
+                    <h1>
+                        Discover places<br>
+                        that match your<br>
+                        <span class="gradient-text">hobbies.</span>
+                    </h1>
+
+                    <p class="hero-description">
+                        From your hometown to a city you've never visited,
+                        discover places you'll love. Find hobby-friendly
+                        venues, explore local attractions, and plan your
+                        next adventure in one place.
+                    </p>
+
+                    <form class="search-panel" action="#hobbies" method="get">
+                        <input type="search" name="q"
+                               placeholder="Try “Where can I play billiards tonight?”"
+                               aria-label="Describe what you want to find">
+                        <button class="btn-primary-custom" type="submit">
+                            Explore Places →
+                        </button>
+                    </form>
+
+                    <p class="hero-note">
+                        ✓ Multiple cities &nbsp; ✓ Hobby-based matching
+                        &nbsp; ✓ Map-guided discovery
+                    </p>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="preview-card">
+                        <div class="preview-top">
+                            <div>
+                                <div class="preview-title">Explore nearby</div>
+                                <small class="text-secondary">
+                                    Discover places around your city
+                                </small>
+                            </div>
+                            <span class="live-label">● CITY EXPLORER</span>
+                        </div>
+
+                        <div class="map-preview">
+                            <span class="map-label" style="top:20px;left:20px;">
+                                Main Road
+                            </span>
+                            <span class="map-label" style="top:100px;right:20px;">
+                                City Center
+                            </span>
+                            <span class="map-label" style="bottom:18px;left:90px;">
+                                Local Avenue
+                            </span>
+
+                            <div class="map-pin" style="top:48px;left:26%;">
+                                <span>⚑</span>
+                            </div>
+                            <div class="map-pin" style="top:100px;left:53%;background:#19a779;">
+                                <span>★</span>
+                            </div>
+                            <div class="map-pin" style="top:35px;right:19%;background:#f59b32;">
+                                <span>●</span>
+                            </div>
+                            <div class="map-pin" style="bottom:25px;right:28%;">
+                                <span>♥</span>
+                            </div>
+                        </div>
+
+                        <div class="place-row">
+                            <div class="place-icon">🎱</div>
+                            <div>
+                                <div class="place-name">Billiards & Recreation</div>
+                                <div class="place-subtitle">
+                                    Example hobby recommendation
+                                </div>
+                            </div>
+                            <span class="place-distance">View →</span>
+                        </div>
+
+                        <div class="place-row">
+                            <div class="place-icon">☕</div>
+                            <div>
+                                <div class="place-name">Cafés & Hangout Spots</div>
+                                <div class="place-subtitle">
+                                    Find your next favorite spot
+                                </div>
+                            </div>
+                            <span class="place-distance">View →</span>
+                        </div>
+
+                        <div class="floating-badge">
+                            ✨ Made for your interests
+                            <small>Discover places in any city</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="hobbies">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="eyebrow">FIND YOUR KIND OF FUN</span>
+                <h2 class="section-heading mt-3">What do you love doing?</h2>
+                <p class="section-description">
+                    Choose your interests and discover places that fit
+                    your lifestyle, wherever your journey takes you.
+                </p>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a href="#features" class="text-reset">
+                        <div class="hobby-card">
+                            <div class="hobby-emoji">🎱</div>
+                            <h3>Billiards</h3>
+                            <p>Find billiard halls and recreation spots.</p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a href="#features" class="text-reset">
+                        <div class="hobby-card">
+                            <div class="hobby-emoji">🏀</div>
+                            <h3>Basketball</h3>
+                            <p>Discover courts and sports facilities.</p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a href="#features" class="text-reset">
+                        <div class="hobby-emoji">☕</div>
+                        <h3>Café Hopping</h3>
+                        <p>Explore cafés and relaxing hangout spots.</p>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="hobby-card">
+                        <div class="hobby-emoji">🥾</div>
+                        <h3>Hiking</h3>
+                        <p>Find trails, nature spots, and outdoor escapes.</p>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="hobby-card">
+                        <div class="hobby-emoji">🎮</div>
+                        <h3>Gaming</h3>
+                        <p>Discover gaming cafés and entertainment venues.</p>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="hobby-card">
+                        <div class="hobby-emoji">📸</div>
+                        <h3>Photography</h3>
+                        <p>Explore scenic spots and photo-worthy places.</p>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="hobby-card">
+                        <div class="hobby-emoji">🍜</div>
+                        <h3>Food Trips</h3>
+                        <p>Discover restaurants and local food favorites.</p>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="hobby-card">
+                        <div class="hobby-emoji">🌿</div>
+                        <h3>Nature & Outdoors</h3>
+                        <p>Find parks, gardens, and natural attractions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section feature-section" id="features">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="eyebrow">EXPLORE SMARTER</span>
+                <h2 class="section-heading mt-3">
+                    More than just a place finder
+                </h2>
+                <p class="section-description">
+                    Your interests guide your discoveries.
+                    Explore cities, compare nearby venues, and make
+                    the most of your free time.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">✦</div>
+                        <h3>Hobby-Based Matching</h3>
+                        <p>
+                            Find venues that fit your interests instead
+                            of scrolling through unrelated places.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">⌖</div>
+                        <h3>Live Map Discovery</h3>
+                        <p>
+                            View place locations, compare distances,
+                            and explore venues on an interactive map.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">✧</div>
+                        <h3>AI-Powered Search</h3>
+                        <p>
+                            Describe what you want in everyday language
+                            and find matching places from available data.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">🌎</div>
+                        <h3>Explore Any City</h3>
+                        <p>
+                            Start with Kabankalan and expand to more
+                            cities without rebuilding the application.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">🗓️</div>
+                        <h3>Plan Your Itinerary</h3>
+                        <p>
+                            Organize places into a multi-stop trip
+                            based on your interests and available time.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">✓</div>
+                        <h3>Trusted Place Details</h3>
+                        <p>
+                            View available contact details, opening hours,
+                            photos, reviews, and verification status.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="how-it-works">
+        <div class="container">
+            <div class="cta">
+                <div class="row align-items-center g-4">
+                    <div class="col-lg-8">
+                        <h2 class="fw-bold mb-3">
+                            Your next favorite place is waiting.
+                        </h2>
+                        <p class="mb-lg-0">
+                            Explore your hobbies, discover new cities,
+                            and make every trip more meaningful.
+                        </p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end">
+                        <a href="#hobbies" class="btn btn-light fw-bold px-4 py-3">
+                            Start Exploring →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="container d-flex flex-wrap justify-content-between gap-3">
+        <span>© {% now "Y" %} ExploreAnywhere</span>
+        <span>Find places. Live the vibe.</span>
     </div>
-  </div>
+</footer>
 
-</div>
-{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
