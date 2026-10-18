@@ -1,0 +1,4 @@
+[console_scripts]
+pyosmium-get-changes = osmium.tools.pyosmium_get_changes:main
+pyosmium-up-to-date = osmium.tools.pyosmium_up_to_date:main
+

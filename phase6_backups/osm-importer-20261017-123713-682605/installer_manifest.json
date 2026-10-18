@@ -1,0 +1,6 @@
+{
+  "format": "phase6b-osm-installer-v1",
+  "created": {
+    "apps/places/management/commands/discover_kabankalan_businesses.py": "ee46ec362a1a1bf1c36db8b29125a5004765b75e7ec04a8edbd1e6fa853ae1f5"
+  }
+}

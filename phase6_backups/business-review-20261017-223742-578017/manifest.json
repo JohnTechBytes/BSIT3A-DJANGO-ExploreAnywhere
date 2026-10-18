@@ -1,0 +1,35 @@
+{
+  "format": "exploreanywhere-phase6d-restore-v1",
+  "files": [
+    {
+      "path": "apps/places/admin.py",
+      "original_existed": true,
+      "new_hash": "7a6e6adc93a83aa6d2beaf554e80e39896d88b934ffa02d59ab519cf0f69f0cd"
+    },
+    {
+      "path": "apps/places/forms.py",
+      "original_existed": true,
+      "new_hash": "ccb2fb391066a9b909cf509bf0bd31368d74584221ecac612a94306df63e3b7b"
+    },
+    {
+      "path": "templates/admin/base_site.html",
+      "original_existed": true,
+      "new_hash": "e09afa3cdde0de268d995363239a3101a5ee281324f9ce0fdafa202cfeda0759"
+    },
+    {
+      "path": "templates/admin/index.html",
+      "original_existed": true,
+      "new_hash": "2afe68a53acdc62466579612ecf1ea67315fbf4f1b7230ea10740ef3a7b22605"
+    },
+    {
+      "path": "templates/admin/places/place/change_list.html",
+      "original_existed": true,
+      "new_hash": "03559376233b76cddbe52bebc85e10966089c0b938be601933fe64a3a8398f49"
+    },
+    {
+      "path": "templates/admin/places/place/osm_review.html",
+      "original_existed": false,
+      "new_hash": "771ed4a91e26a216e371bdb72c10e6cbcea00310698eccfb4ea7a1400bdf53ed"
+    }
+  ]
+}

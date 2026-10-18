@@ -1,0 +1,22 @@
+{
+  "templates/places/journey_dashboard.html": {
+    "source_sha256": "b41fc4b7b7ab24b787cd5ccced73b170e2117d5b1f155853fa6df185c93a9078",
+    "target_sha256": "7e3acc55a2a6895c05a9479b58135ca430e438deb1058f26b2b61d6409fd9426",
+    "patch_file": "journey_dashboard.html"
+  },
+  "templates/places/saved_places.html": {
+    "source_sha256": "22f00bd9c1ce67b8ac72ced1c0653e986d9f8cfe584bd6c95e8be3564f337070",
+    "target_sha256": "97625aefa6c11222de103ee07188b07eb5e72b7472a5bd7f3e0a78c9a5178a41",
+    "patch_file": "saved_places.html"
+  },
+  "templates/itineraries/my_itineraries.html": {
+    "source_sha256": "8ca6bedcc432cbc630de1d24768122039c6a519e71c77c96a364b2c379f9e7d2",
+    "target_sha256": "d334ca14be30065672ebe6af3be64825c2144d0416046c4eb8919a2b273e6d1d",
+    "patch_file": "my_itineraries.html"
+  },
+  "templates/visits/my_visits.html": {
+    "source_sha256": "cd6b317abf712183abaa4146f16695bff8447a5b62d43c75072a651a714318cf",
+    "target_sha256": "7abf38f46c8e3c0e17cdaf5fd4178f38448e9e4f67ee843c8e71a56f5c5de485",
+    "patch_file": "my_visits.html"
+  }
+}

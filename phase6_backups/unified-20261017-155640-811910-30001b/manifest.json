@@ -1,0 +1,30 @@
+{
+  "phase": "6F",
+  "files": [
+    {
+      "path": "apps/places/views.py",
+      "existed": true,
+      "installed_sha256": "8295c1df819f5b8947fdd555577137eeeaf5e17b2a9549907da7d5a3ba2715d1"
+    },
+    {
+      "path": "apps/places/nearby.py",
+      "existed": true,
+      "installed_sha256": "e3d5ce3797ee71374648b2c8c8f9eadf7f75d320e1644b96ebfc0105b5406eb9"
+    },
+    {
+      "path": "templates/places/attraction_carousel.html",
+      "existed": true,
+      "installed_sha256": "e9981dde28b3a2150068b739f042084756f4fc08b9c79941fc031670de8265c8"
+    },
+    {
+      "path": "templates/places/nearby_places.html",
+      "existed": true,
+      "installed_sha256": "e5a034109cf2b7f96088f89af39e7462fd0b918dadc241a3e3054ccc666aae00"
+    },
+    {
+      "path": "templates/places/_discovery_modes.html",
+      "existed": false,
+      "installed_sha256": "a06d80033442760aa8eabb11839d960c7538852a3380b7fe1403444c9a5c517f"
+    }
+  ]
+}

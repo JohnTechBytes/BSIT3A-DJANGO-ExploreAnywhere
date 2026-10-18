@@ -1,0 +1,25 @@
+{
+  "version": "5D.1",
+  "files": [
+    {
+      "path": "templates/admin/base_site.html",
+      "existed": false,
+      "installed_hash": "42843691139953bd53ab30843ec1d142a7d3af2845bf86cabe46098bdf2561b0"
+    },
+    {
+      "path": "templates/admin/index.html",
+      "existed": false,
+      "installed_hash": "a56a1373675c0a1b2510f694a6cb27300194fd22b5124789295fd1e98d21fbf9"
+    },
+    {
+      "path": "apps/places/templatetags/ea_admin_summary.py",
+      "existed": false,
+      "installed_hash": "e7caaeed02339fd88ac93d319e4c167f2f998178721464f1547f6216de46a422"
+    },
+    {
+      "path": "apps/places/templatetags/__init__.py",
+      "existed": true,
+      "installed_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

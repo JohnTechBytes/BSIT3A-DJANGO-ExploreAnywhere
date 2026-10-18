@@ -1,0 +1,283 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Wikimedia Photo Preview | ExploreAnywhere</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        header {
+            background: #0b1b3a;
+            color: white;
+            padding: 22px 5%;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 23px;
+        }
+
+        header p {
+            margin: 8px 0 0;
+            color: #cbd5e1;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: auto;
+            padding: 30px 20px;
+        }
+
+        .summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .summary h2 { margin: 0; }
+
+        .count {
+            background: #dbeafe;
+            color: #1d4ed8;
+            border-radius: 30px;
+            padding: 8px 14px;
+            font-weight: 700;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fill, minmax(260px, 1fr));
+            gap: 22px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .photo {
+            width: 100%;
+            height: 205px;
+            object-fit: cover;
+            background: #e2e8f0;
+        }
+
+        .body { padding: 18px; }
+
+        .title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0 0 7px;
+        }
+
+        .muted {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .status {
+            display: inline-block;
+            border-radius: 20px;
+            padding: 6px 11px;
+            font-size: 12px;
+            font-weight: 700;
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status.approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .credits {
+            margin-top: 14px;
+            font-size: 12px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .links {
+            margin-top: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .button {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            border-radius: 8px;
+            padding: 9px 13px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 32px 0;
+        }
+
+        .pagination a {
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 10px 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>ExploreAnywhere — Photo Review</h1>
+    <p>
+        Staff-only Wikimedia gallery.
+        Preview photos before approving attractions.
+    </p>
+</header>
+
+<main class="container">
+
+    <div class="summary">
+        <h2>Imported Attraction Photos</h2>
+        <span class="count">
+            {{ photo_count }} Photos
+        </span>
+    </div>
+
+    <div class="grid">
+
+        {% for place in page_obj %}
+
+        <article class="card">
+
+            <img
+                class="photo"
+                src="{{ place.cover_image_url }}"
+                alt="Photo of {{ place.title }}"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+            >
+
+            <div class="body">
+
+                <h3 class="title">{{ place.title }}</h3>
+
+                <div class="muted">
+                    {{ place.city.name }}
+                </div>
+
+                {% if place.is_active and place.is_verified %}
+                    <span class="status approved">
+                        Published
+                    </span>
+                {% else %}
+                    <span class="status">
+                        Not Published
+                    </span>
+                {% endif %}
+
+                <div class="credits">
+                    <strong>Photographer:</strong>
+                    {{ place.photo_credit|default:"Not provided" }}
+
+                    <div>
+                        <strong>License:</strong>
+
+                        {% if place.photo_license_url %}
+                            <a href="{{ place.photo_license_url }}"
+                               target="_blank"
+                               rel="noopener noreferrer">
+                                {{ place.photo_license }}
+                            </a>
+                        {% else %}
+                            {{ place.photo_license }}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="links">
+
+                    {% if place.photo_source_url %}
+                        <a class="button"
+                           href="{{ place.photo_source_url }}"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            View Original
+                        </a>
+                    {% endif %}
+
+                    <a class="button"
+                       href="{% url 'admin:places_place_change' place.pk %}">
+                        Review in Admin
+                    </a>
+
+                </div>
+
+            </div>
+
+        </article>
+
+        {% empty %}
+
+        <p>No Wikimedia photos have been imported yet.</p>
+
+        {% endfor %}
+
+    </div>
+
+    {% if page_obj.has_other_pages %}
+        <nav class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">
+                    Previous
+                </a>
+            {% endif %}
+
+            <span>
+                Page {{ page_obj.number }}
+                of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">
+                    Next
+                </a>
+            {% endif %}
+        </nav>
+    {% endif %}
+
+</main>
+
+</body>
+</html>

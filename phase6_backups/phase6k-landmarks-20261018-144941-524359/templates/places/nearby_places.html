@@ -1,0 +1,645 @@
+{% extends "theme/public_base.html" %}
+{% block title %}Discover Kabankalan · Nearby Places · ExploreAnywhere{% endblock %}
+{% block extra_css %}
+<style>
+.ea6-main{max-width:1160px;margin:0 auto;padding:36px 18px 90px;color:#193353}
+.ea6-top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+.ea6-eyebrow{font-size:12px;font-weight:800;color:#0757d8;text-transform:uppercase;letter-spacing:.11em}
+.ea6-main h1{font-size:clamp(27px,4vw,42px);line-height:1.18;margin:6px 0 10px;color:#102b53}
+.ea6-muted{color:#5f738f;font-size:14px;line-height:1.65;margin:0}
+.ea6-back{display:inline-flex;padding:11px 15px;border:1px solid #cfdef2;border-radius:12px;text-decoration:none;color:#1954a5;font-weight:750}
+.ea6-box{background:#fff;border:1px solid #dce5f3;box-shadow:0 10px 28px rgba(15,42,83,.055);border-radius:20px;padding:22px;margin-bottom:22px}
+.ea6-search{display:grid;grid-template-columns:minmax(230px,2fr) minmax(160px,1fr) auto;gap:12px;align-items:end}
+.ea6-field{display:flex;flex-direction:column;gap:7px;min-width:0}
+.ea6-field label{font-size:12px;font-weight:800;color:#274466}
+.ea6-field input,.ea6-field select{background:#fff;width:100%;min-height:46px;padding:10px 12px;border:1px solid #bfcee2;border-radius:11px;font:inherit;color:#18324c}
+.ea6-btn{min-height:45px;padding:11px 17px;border:0;border-radius:11px;background:#0757d8;color:#fff;font:inherit;font-weight:750;cursor:pointer}
+.ea6-btn:hover{background:#064ab3}
+.ea6-btn:disabled{opacity:.65;cursor:wait}
+.ea6-location-bar{display:grid;grid-template-columns:auto minmax(190px,1fr) auto;gap:12px;align-items:end}
+.ea6-plain{background:#eef5ff;color:#1554a8;border:1px solid #bcd4f6;text-decoration:none;text-align:center}
+.ea6-plain:hover{background:#dbeaff}
+.ea6-status{font-size:13px;color:#3e5e82;line-height:1.55;min-height:20px;margin:12px 0 0}
+.ea6-warning{font-size:12px;line-height:1.5;color:#765623;margin:11px 0 0}
+.ea6-heading{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;margin:28px 0 14px}
+.ea6-heading h2{font-size:21px;color:#17345c;margin:0}
+.ea6-pill{background:#edf4ff;color:#19539c;border-radius:999px;padding:6px 12px;font-weight:750;font-size:12px}
+.ea6-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,335px),1fr));gap:17px}
+.ea6-card{display:flex;flex-direction:column;min-width:0;border:1px solid #dfe9f4;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 8px 24px rgba(15,42,83,.06)}
+.ea6-cover{height:174px;background:linear-gradient(120deg,#e5f2ff,#e9f7ed);display:flex;align-items:center;justify-content:center;color:#345a83;font-weight:700;text-align:center}
+.ea6-cover img{width:100%;height:100%;object-fit:cover}
+.ea6-card-body{padding:19px;display:flex;flex:1;flex-direction:column;gap:9px}
+.ea6-category{font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:800;color:#1762b8}
+.ea6-card h3{font-size:19px;line-height:1.3;margin:0;color:#132c51;overflow-wrap:anywhere}
+.ea6-description{font-size:13px;line-height:1.6;color:#526985;margin:0}
+.ea6-distance{font-size:13px;font-weight:800;color:#11704d;margin:1px 0}
+.ea6-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:auto;padding-top:12px}
+.ea6-actions a{flex:1;min-width:115px;display:inline-flex;justify-content:center;align-items:center;border-radius:11px;padding:11px 14px;font-size:13px;text-align:center;text-decoration:none;font-weight:750;color:#0757d8;border:1px solid #bcd4f6}
+.ea6-actions a:first-child{background:#0757d8;color:#fff;border-color:#0757d8}
+.ea6-empty{border:1px dashed #bacfeb;border-radius:18px;padding:32px 18px;background:#f6faff;text-align:center}
+.ea6-empty h2{margin:0 0 10px;color:#15345d}
+.ea6-empty p{max-width:630px;margin:0 auto 15px;line-height:1.65;color:#56708d}
+.ea6-main button:focus-visible,.ea6-main a:focus-visible,.ea6-main input:focus-visible,.ea6-main select:focus-visible{outline:3px solid #8ab8ff;outline-offset:3px}
+@media(max-width:760px){.ea6-main{padding:23px 15px 65px}.ea6-search,.ea6-location-bar{grid-template-columns:minmax(0,1fr)}.ea6-box{padding:17px}.ea6-btn{width:100%}.ea6-cover{height:165px}.ea6-list{grid-template-columns:minmax(0,1fr)}}
+
+/* Phase 6E: public-only autocomplete and business information. */
+.ea6-search-field{position:relative}
+.ea6-autocomplete{position:absolute;z-index:30;top:100%;left:0;right:0;margin-top:5px;background:#fff;border:1px solid #b8cbe5;box-shadow:0 12px 32px rgba(15,42,83,.16);border-radius:12px;max-height:260px;overflow:auto}
+.ea6-autocomplete[hidden]{display:none!important}
+.ea6-suggestion{display:block;width:100%;text-align:left;padding:11px 13px;border:0;border-bottom:1px solid #edf2f8;background:#fff;color:#1e3f64;font:inherit;cursor:pointer}
+.ea6-suggestion:last-child{border-bottom:0}
+.ea6-suggestion:hover,.ea6-suggestion[aria-selected="true"]{background:#edf5ff}
+.ea6-suggestion strong{display:block;font-size:13px}
+.ea6-suggestion small{display:block;color:#607b98;font-size:11px;margin-top:3px}
+.ea6-quick{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:15px}
+.ea6-quick span{font-size:12px;font-weight:800;color:#466583;margin-right:2px}
+.ea6-quick a{display:inline-flex;align-items:center;padding:8px 11px;background:#f1f6ff;border:1px solid #cadaf0;border-radius:999px;font-weight:750;color:#1c579e;font-size:12px;text-decoration:none}
+.ea6-quick a:hover,.ea6-quick a:focus-visible{background:#dfeaff}
+.ea6-quick a[aria-current="true"]{background:#0757d8;border-color:#0757d8;color:#fff}
+.ea6-public-badge{align-self:flex-start;border-radius:999px;padding:5px 9px;background:#e8f7ee;color:#1c6c45;font-size:11px;font-weight:800}
+.ea6-meta{display:flex;align-items:center;flex-wrap:wrap;gap:7px;color:#476581;font-size:12px}
+.ea6-meta a{color:#165aac;overflow-wrap:anywhere}
+.ea6-photo-credit{font-size:11px;color:#63768c;background:#f3f7fb;padding:5px 11px}
+.ea6-notice{margin-top:16px;font-size:12px;color:#59718c;line-height:1.6}
+@media(max-width:760px){.ea6-autocomplete{max-height:210px}.ea6-quick a{min-height:39px}}
+
+/* Phase 6G: on-demand Nearby Results Map. Existing Explore Places map is untouched. */
+.ea6g-controls{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:-1px 0 17px}
+.ea6g-map-button{background:#eff6ff;color:#0757d8;border:1px solid #b9d4fa;border-radius:11px;padding:11px 17px;min-height:44px;font-weight:800;cursor:pointer;font:inherit}
+.ea6g-map-button:hover,.ea6g-map-button[aria-expanded="true"]{background:#0757d8;color:#fff}
+.ea6g-map-button:disabled{opacity:.6;cursor:not-allowed}
+.ea6g-small{font-size:12px;line-height:1.5;color:#526c8c}
+.ea6g-layout{min-width:0}
+.ea6g-layout.map-open{display:grid;grid-template-columns:minmax(0,1fr) minmax(330px,.9fr);gap:16px;align-items:start}
+.ea6g-layout.map-open .ea6-list{grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr))}
+.ea6g-map-shell{position:sticky;top:16px;min-width:0;border:1px solid #d0dff2;background:#fff;border-radius:18px;padding:13px;box-shadow:0 8px 24px rgba(15,42,83,.055)}
+.ea6g-map-shell[hidden]{display:none!important}
+.ea6g-map-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.ea6g-map-head h3{margin:0;font-size:16px;color:#12345a}
+.ea6g-fit{background:#eef5ff;border:1px solid #c9dafa;color:#1451a2;border-radius:9px;padding:8px 11px;min-height:38px;font-weight:750;cursor:pointer}
+.ea6g-map{width:100%;height:445px;max-height:65vh;border-radius:12px;background:#edf5fc;overflow:hidden}
+.ea6g-map-status{font-size:12px;color:#405f80;line-height:1.6;margin:10px 2px 0}
+.ea6g-card-map{flex:1;min-width:105px;background:#f3f8ff!important;color:#0757d8!important;border:1px solid #bfd6f5!important;cursor:pointer;font:inherit;font-weight:750;border-radius:11px;padding:11px 10px;font-size:13px}
+.ea6g-card-map:hover{background:#e0efff!important}
+.ea6g-card-map:focus-visible,.ea6g-map-button:focus-visible,.ea6g-fit:focus-visible{outline:3px solid #8ab8ff;outline-offset:3px}
+.ea6-card.ea6g-selected{outline:2px solid #1469d8;outline-offset:2px}
+.ea6g-popup{min-width:175px;max-width:245px;font-size:13px;line-height:1.5;color:#24415e}
+.ea6g-popup strong{display:block;font-size:15px;color:#122e4d;margin-bottom:3px;overflow-wrap:anywhere}
+.ea6g-popup small{display:block;color:#607895;margin-bottom:6px}
+.ea6g-popup-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.ea6g-popup-links a{color:#0757d8;font-size:12px;font-weight:800}
+@media(max-width:980px){.ea6g-layout.map-open{display:flex;flex-direction:column}.ea6g-map-shell{position:static;order:-1;width:100%}.ea6g-layout.map-open .ea6-list{width:100%}}
+@media(max-width:760px){.ea6g-map{height:320px;max-height:none}.ea6g-map-shell{padding:9px}.ea6g-card-map{min-height:44px}}
+
+/* Phase 6H: location-aware radius filter; existing map tiles and search stay intact. */
+.ea6h-radius{display:flex;align-items:end;flex-wrap:wrap;gap:12px;margin:13px 0 0;padding:15px;border:1px solid #d5e5f5;border-radius:13px;background:#f7fbff}
+.ea6h-radius .ea6-field{flex:0 1 235px;min-width:min(220px,100%)}
+.ea6h-reset{min-height:44px;padding:10px 13px;border:1px solid #bcd4f6;border-radius:10px;background:#fff;color:#1554a8;font:inherit;font-size:13px;font-weight:750;cursor:pointer}
+.ea6h-reset:disabled{opacity:.55;cursor:not-allowed}
+.ea6h-help{flex:1 1 235px;max-width:100%;font-size:12px;line-height:1.55;color:#426080;padding-bottom:3px}
+.ea6h-none{margin:0 0 16px;padding:18px;border:1px dashed #a9c7e9;border-radius:12px;background:#f8fbff;color:#25476d;font-size:13px;line-height:1.6}
+.ea6-card[hidden],.ea6h-none[hidden]{display:none!important}
+.ea6h-radius select:disabled{background:#eaf0f8;color:#65798e}
+.ea6h-reset:focus-visible{outline:3px solid #8ab8ff;outline-offset:3px}
+@media(max-width:760px){.ea6h-radius{align-items:stretch}.ea6h-radius .ea6-field,.ea6h-help{flex-basis:100%}.ea6h-reset{width:100%}}
+</style>
+{% endblock %}
+{% block content %}
+<main class="ea6-main">
+  <header class="ea6-top">
+    <div>
+      <span class="ea6-eyebrow">ExploreAnywhere · Kabankalan Only</span>
+      <h1>Discover Kabankalan</h1>
+      <p class="ea6-muted">Find verified destinations and businesses in Kabankalan City. Explore by hobbies, search for local services, or check nearby places.</p>
+    </div>
+    <a class="ea6-back" href="{% url 'places:attraction_carousel' %}?browse=all">← All Places</a>
+  </header>
+  {% include "places/_discovery_modes.html" %}
+  <section class="ea6-box" aria-label="Search places">
+    <form method="get" action="{% url 'places:attraction_carousel' %}" class="ea6-search" id="ea6-search-form" autocomplete="off">
+      <input type="hidden" name="mode" value="nearby">
+      <div class="ea6-field ea6-search-field">
+        <label for="ea6-query">What are you looking for?</label>
+        <input id="ea6-query" name="q" value="{{ query }}" maxlength="160" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ea6-suggestions" placeholder="e.g. Coffee &amp; Talk or coffee shop near me">
+        <input type="hidden" name="place" id="ea6-place-id" value="">
+        <div id="ea6-suggestions" class="ea6-autocomplete" role="listbox" aria-label="Suggested verified Kabankalan places" hidden></div>
+      </div>
+      <div class="ea6-field">
+        <label for="ea6-service">Place type</label>
+        <select id="ea6-service" name="service">
+          <option value="">Auto-detect / all types</option>
+          {% for key, label in service_categories %}<option value="{{ key }}" {% if selected_service == key %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <button class="ea6-btn" type="submit">Find Places →</button>
+    </form>
+    <div class="ea6-quick" aria-label="Quick searches for published Kabankalan listings">
+      <span>Quick searches:</span>
+      <a href="{% url 'places:attraction_carousel' %}?mode=nearby&amp;service=coffee">☕ Coffee</a>
+      <a href="{% url 'places:attraction_carousel' %}?mode=nearby&amp;service=restaurant">🍴 Restaurants</a>
+      <a href="{% url 'places:attraction_carousel' %}?mode=nearby&amp;service=barber">✂ Barbers</a>
+      <a href="{% url 'places:attraction_carousel' %}?mode=nearby&amp;service=mall">🛍 Malls</a>
+      <a href="{% url 'places:attraction_carousel' %}?mode=nearby&amp;service=billiards">🎱 Billiards</a>
+      <a href="{% url 'places:attraction_carousel' %}?mode=nearby">Clear search</a>
+    </div>
+  </section>
+  <section class="ea6-box" aria-label="Nearby sorting">
+    <div class="ea6-location-bar">
+      <button id="ea6-use-gps" class="ea6-btn" type="button">Use my location</button>
+      <form method="get" action="{% url 'places:attraction_carousel' %}" id="ea6-landmark-form" class="ea6-field">
+        <input type="hidden" name="mode" value="nearby">
+        <input type="hidden" name="q" value="{{ query }}">
+        <input type="hidden" name="service" value="{{ selected_service }}">
+        <label for="ea6-origin">Or choose a verified Kabankalan landmark</label>
+        <select id="ea6-origin" name="origin">
+          <option value="">Choose a landmark</option>
+          {% for landmark in landmarks %}<option value="{{ landmark.pk }}" {% if selected_origin.pk == landmark.pk %}selected{% endif %}>{{ landmark.title }}</option>{% endfor %}
+        </select>
+      </form>
+      <button type="submit" form="ea6-landmark-form" class="ea6-btn ea6-plain">Sort near landmark</button>
+    </div>
+    <div class="ea6h-radius" aria-label="Filter results by distance">
+      <div class="ea6-field">
+        <label for="ea6h-distance">Show places within</label>
+        <select id="ea6h-distance" disabled aria-describedby="ea6h-distance-help">
+          <option value="all">Any distance</option>
+          <option value="1">1 km straight-line</option>
+          <option value="3">3 km straight-line</option>
+          <option value="5">5 km straight-line</option>
+          <option value="10">10 km straight-line</option>
+          <option value="25">25 km straight-line</option>
+        </select>
+      </div>
+      <button type="button" class="ea6h-reset" id="ea6h-reset" disabled>Clear distance filter</button>
+      <span id="ea6h-distance-help" class="ea6h-help" role="status" aria-live="polite">Choose a landmark or enable location permission to filter by distance. This does not use driving routes.</span>
+    </div>
+    <p id="ea6-location-status" class="ea6-status" role="status" aria-live="polite">{% if selected_origin %}Distances are estimated from {{ selected_origin.title }}. This is a landmark reference, not your live GPS position.{% else %}Choose “Use my location” or a landmark to see nearby distances. Without a reference, results are alphabetical.{% endif %}</p>
+    <p class="ea6-warning">Your precise GPS coordinates are used only inside this browser page; they are not sent to ExploreAnywhere. GPS generally needs HTTPS on Android (localhost is an exception). Distances are straight-line estimates, not driving times. Places shown are Kabankalan listings; location permission does not independently verify city boundaries.</p>
+  </section>
+  <div class="ea6-heading">
+    <h2>{% if selected_service_label %}{{ selected_service_label }}{% elif query %}Results for “{{ query }}”{% else %}Verified Kabankalan Places{% endif %}</h2>
+    <span class="ea6-pill" id="ea6h-result-count">{{ result_count }} matching listing{{ result_count|pluralize }}</span>
+  </div>
+  {% if results %}
+    <div class="ea6g-controls" aria-label="Nearby results viewing options">
+      <button class="ea6g-map-button" id="ea6g-toggle" type="button" aria-controls="ea6g-map-shell" aria-expanded="false">🗺 View nearby results on map</button>
+      <span id="ea6g-count" class="ea6g-small" role="status" aria-live="polite">The map only includes displayed listings with coordinates.</span>
+    </div>
+  {% endif %}
+  {% if limit_reached %}<p class="ea6-warning">The page displays at most 250 listings. Distance sorting applies to these displayed results, not to any additional entries. Ask an administrator to refine the search if needed.</p>{% endif %}
+  {% if results %}
+    <p id="ea6h-no-results" class="ea6h-none" role="status" hidden>No displayed listings fall within that straight-line distance. Increase the radius or clear the distance filter to see all matches. Listings without recorded coordinates cannot be assessed against a radius.</p>
+    <div class="ea6g-layout" id="ea6g-layout">
+    <div class="ea6-list" id="ea6-results"{% if selected_origin %} data-origin-lat="{{ selected_origin.latitude }}" data-origin-lng="{{ selected_origin.longitude }}" data-origin-name="{{ selected_origin.title }}"{% endif %}>
+      {% for place in results %}
+        <article class="ea6-card" data-place-id="{{ place.pk }}" data-title="{{ place.title }}" data-category="{% if place.category %}{{ place.category.name }}{% else %}Kabankalan place{% endif %}" data-detail-url="{% url 'places:place_detail' place.pk %}" {% if place.latitude != None and place.longitude != None %}data-lat="{{ place.latitude }}" data-lng="{{ place.longitude }}" data-directions-url="https://www.google.com/maps/dir/?api=1&amp;destination={{ place.latitude }},{{ place.longitude }}"{% endif %}>
+          <div class="ea6-cover">
+            {% if place.cover_image %}<img loading="lazy" decoding="async" alt="{{ place.title }}" src="{{ place.cover_image.url }}">
+            {% elif place.cover_image_url %}<img loading="lazy" decoding="async" alt="{{ place.title }}" src="{{ place.cover_image_url }}">
+            {% else %}<span aria-label="No verified destination photograph">📍 Genuine photo not available yet</span>{% endif %}
+          </div>
+          <div class="ea6-card-body">
+            <span class="ea6-category">{% if place.category %}{{ place.category.name }}{% else %}Place in Kabankalan{% endif %}</span>
+            <span class="ea6-public-badge" title="Reviewed and published by ExploreAnywhere staff">✓ Staff verified listing</span>
+            <h3>{{ place.title }}</h3>
+            {% if place.review_count %}<p class="ea6-meta">★ {{ place.avg_rating|floatformat:1 }} / 5 · {{ place.review_count }} visitor review{{ place.review_count|pluralize }}</p>{% endif %}
+            <p class="ea6-description">{% if place.address %}📍 {{ place.address }}{% elif place.barangay %}📍 {{ place.barangay }}, Kabankalan{% else %}Location details need verification{% endif %}</p>
+            <p class="ea6-description">{% if place.description %}{{ place.description|truncatechars:125 }}{% else %}Detailed information is not yet available.{% endif %}</p>
+            {% if place.phone %}<p class="ea6-meta">☎ Contact: {{ place.phone }} (confirm current details with the business)</p>{% endif %}
+            {% if place.cover_image or place.cover_image_url %}{% if place.photo_credit %}<p class="ea6-meta">Photo credit: {{ place.photo_credit }}</p>{% endif %}{% endif %}
+            <p class="ea6-distance" aria-live="polite">{% if place.latitude != None and place.longitude != None %}Choose a location to calculate distance{% else %}Precise map coordinates unavailable{% endif %}</p>
+            <div class="ea6-actions">
+              <a href="{% url 'places:place_detail' place.pk %}">View Details →</a>
+              {% if place.latitude != None and place.longitude != None %}
+                <a target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&amp;destination={{ place.latitude }},{{ place.longitude }}">Directions ↗</a>
+                <button class="ea6g-card-map" type="button" aria-label="Show {{ place.title }} on nearby map">Show on map ↗</button>
+              {% endif %}
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+    <aside id="ea6g-map-shell" class="ea6g-map-shell" aria-label="Map of current nearby search results" hidden>
+      <div class="ea6g-map-head"><h3>Nearby results map</h3><button type="button" class="ea6g-fit" id="ea6g-fit">Fit results</button></div>
+      <div id="ea6g-map" class="ea6g-map" role="region" aria-label="Interactive map of verified nearby result pins"></div>
+      <p id="ea6g-map-status" class="ea6g-map-status" role="status" aria-live="polite">Map loading will begin when you open this panel.</p>
+      <p class="ea6g-map-status">Only this search's published, verified Kabankalan listings with coordinates are pinned. Map marker colors indicate selected or unselected locations—not hobby scores or business quality. Map tiles © <a href="https://www.maptiler.com/copyright/" target="_blank" rel="noopener noreferrer">MapTiler</a>; map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>.</p>
+    </aside>
+    </div>
+  {% else %}
+    <section class="ea6-empty" role="status">
+      <h2>No verified matches yet</h2>
+      <p>{% if selected_service_label %}There are currently no verified {{ selected_service_label|lower }} in ExploreAnywhere's Kabankalan database matching this search.{% else %}No published Kabankalan places matched that search.{% endif %} Nearby business results will become available as administrators add and verify real establishments and coordinates.</p>
+      <a class="ea6-back" href="{% url 'places:attraction_carousel' %}?browse=all">Browse existing destinations →</a>
+    </section>
+  {% endif %}
+  <p class="ea6-notice">Only staff-verified, published Kabankalan listings are shown. Imported OpenStreetMap business candidates are hidden until independently reviewed. Mapping data may include © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a> (ODbL). Business details can change; confirm before visiting.</p>
+</main>
+{% endblock %}
+{% block extra_js %}
+{{ approved_suggestions|json_script:"ea6-approved-data" }}
+<script>
+(function () {
+  "use strict";
+  // Suggestions contain only verified + active Kabankalan records sent by Django.
+  const input = document.getElementById("ea6-query");
+  const listbox = document.getElementById("ea6-suggestions");
+  const selectedId = document.getElementById("ea6-place-id");
+  const searchForm = document.getElementById("ea6-search-form");
+  const serviceSelect = document.getElementById("ea6-service");
+  const suggestionsEl = document.getElementById("ea6-approved-data");
+  let publicPlaces = [];
+  try { publicPlaces = JSON.parse(suggestionsEl?.textContent || "[]"); } catch (_) {}
+  let displayed = [], focused = -1;
+  function normalize(text) { return String(text||"").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase(); }
+  function closeSuggestions() {
+    if (!listbox || !input) return;
+    listbox.hidden = true;
+    input.setAttribute("aria-expanded", "false");
+    input.removeAttribute("aria-activedescendant");
+    focused = -1;
+  }
+  function choosePlace(place) {
+    if (!input || !selectedId || !searchForm) return;
+    input.value = place.title;
+    selectedId.value = place.pk;
+    if (serviceSelect) serviceSelect.value = "";
+    closeSuggestions();
+    searchForm.requestSubmit ? searchForm.requestSubmit() : searchForm.submit();
+  }
+  function updateActive() {
+    if (!listbox || !input) return;
+    Array.from(listbox.children).forEach((el,i) => el.setAttribute("aria-selected",i === focused ? "true" : "false"));
+    if (focused >= 0) {
+      const option = listbox.children[focused];
+      input.setAttribute("aria-activedescendant",option.id);
+      option.scrollIntoView({block:"nearest"});
+    } else input.removeAttribute("aria-activedescendant");
+  }
+  function showSuggestions() {
+    if (!input || !listbox) return;
+    const value = normalize(input.value.trim());
+    listbox.replaceChildren();
+    displayed = [];
+    focused = -1;
+    if (value.length < 2) return closeSuggestions();
+    const matched = publicPlaces.filter(x => normalize(x.title).includes(value)).slice(0,6);
+    if (!matched.length) return closeSuggestions();
+    displayed = matched;
+    matched.forEach((place,i) => {
+      const option = document.createElement("button");
+      option.type = "button";
+      option.id = "ea6-result-" + i;
+      option.className = "ea6-suggestion";
+      option.setAttribute("role","option");
+      option.setAttribute("aria-selected","false");
+      const name = document.createElement("strong");
+      name.textContent = place.title;
+      const subtitle = document.createElement("small");
+      subtitle.textContent = (place.category__name || "Kabankalan place") + " · Staff verified";
+      option.append(name,subtitle);
+      option.addEventListener("click", () => choosePlace(place));
+      listbox.append(option);
+    });
+    listbox.hidden = false;
+    input.setAttribute("aria-expanded","true");
+  }
+  input?.addEventListener("input", () => { if (selectedId) selectedId.value=""; showSuggestions(); });
+  input?.addEventListener("keydown", event => {
+    if (event.key === "Escape") { closeSuggestions(); return; }
+    if (!listbox || listbox.hidden || !displayed.length) return;
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      focused = (focused + displayed.length + (event.key === "ArrowDown" ? 1 : -1)) % displayed.length;
+      updateActive();
+    } else if (event.key === "Enter" && focused >= 0) {
+      event.preventDefault();
+      choosePlace(displayed[focused]);
+    }
+  });
+  document.addEventListener("click", event => {
+    if (input && listbox && !input.contains(event.target) && !listbox.contains(event.target)) closeSuggestions();
+  });
+  const container = document.getElementById("ea6-results");
+  const status = document.getElementById("ea6-location-status");
+  const gps = document.getElementById("ea6-use-gps");
+  const rows = container ? Array.from(container.querySelectorAll(".ea6-card")) : [];
+  const mapToggle = document.getElementById("ea6g-toggle");
+  const mapShell = document.getElementById("ea6g-map-shell");
+  const mapLayout = document.getElementById("ea6g-layout");
+  const mapStatus = document.getElementById("ea6g-map-status");
+  const mapCount = document.getElementById("ea6g-count");
+  const fitButton = document.getElementById("ea6g-fit");
+  const distanceSelect = document.getElementById("ea6h-distance");
+  const radiusReset = document.getElementById("ea6h-reset");
+  const distanceHelp = document.getElementById("ea6h-distance-help");
+  const radiusNoResults = document.getElementById("ea6h-no-results");
+  const countLabel = document.getElementById("ea6h-result-count");
+  const mappedRows = rows.filter(card => {
+    if (!card.hasAttribute("data-lat") || !card.hasAttribute("data-lng")) return false;
+    const lat = Number(card.dataset.lat), lng = Number(card.dataset.lng);
+    return Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
+  });
+  let resultsMap = null;
+  let resultsMapMarkers = new Map();
+  let originPoint = null;
+  let originMarker = null;
+  let assetsPromise = null;
+  function haversine(a, b, c, d) {
+    const r = Math.PI / 180;
+    const h = Math.sin((c-a)*r/2)**2 + Math.cos(a*r)*Math.cos(c*r)*Math.sin((d-b)*r/2)**2;
+    return 6371 * 2 * Math.atan2(Math.sqrt(Math.max(0,Math.min(1,h))), Math.sqrt(Math.max(0,1-h)));
+  }
+  // Phase 6H filters only the already-rendered, staff-verified results.
+  // No GPS data is sent to Django, and missing-coordinate results are not
+  // silently given a zero distance.
+  function visibleMappedRows() { return mappedRows.filter(card => !card.hidden); }
+  function radiusAllows(card) {
+    if (!originPoint || !distanceSelect || distanceSelect.value === "all") return true;
+    if (!mappedRows.includes(card)) return false;
+    const lat = Number(card.dataset.lat), lng = Number(card.dataset.lng);
+    const radius = Number(distanceSelect.value);
+    return haversine(originPoint.lat,originPoint.lng,lat,lng) <= radius + 1e-8;
+  }
+  function refreshRadius() {
+    if (distanceSelect) distanceSelect.disabled = !originPoint;
+    const active = !!originPoint && distanceSelect && distanceSelect.value !== "all";
+    if (radiusReset) radiusReset.disabled = !active;
+    const shown = [];
+    rows.forEach(card => {
+      card.hidden = !radiusAllows(card);
+      if (!card.hidden) shown.push(card);
+    });
+    const pins = visibleMappedRows();
+    if (countLabel) countLabel.textContent = active
+      ? shown.length + " of " + rows.length + " matching listings within " + distanceSelect.value + " km"
+      : rows.length + " matching listing" + (rows.length === 1 ? "" : "s");
+    if (radiusNoResults) radiusNoResults.hidden = shown.length > 0;
+    if (distanceHelp) distanceHelp.textContent = active
+      ? shown.length + " of " + rows.length + " published listings within " + distanceSelect.value + " km straight-line of " + originPoint.label + ". Listings without coordinates are excluded while this filter is on."
+      : originPoint
+        ? "Distances are approximate straight-line from " + originPoint.label + ". Select a radius to narrow the results."
+        : "Choose a verified landmark or allow GPS to enable distance filtering.";
+    if (mapCount) mapCount.textContent = pins.length + " of " + shown.length + " shown listing(s) have recorded map coordinates.";
+    if (mapToggle) {
+      const open = !!mapShell && !mapShell.hidden;
+      mapToggle.disabled = pins.length === 0 && !open;
+      mapToggle.textContent = open ? "Hide nearby map"
+        : pins.length ? "🗺 View nearby results on map"
+        : "Map unavailable for these results";
+    }
+    if (resultsMap) {
+      resultsMapMarkers.forEach((marker,card) => {
+        if (card.hidden && resultsMap.hasLayer(marker)) resultsMap.removeLayer(marker);
+        else if (!card.hidden && !resultsMap.hasLayer(marker)) marker.addTo(resultsMap);
+      });
+      selectCard(null);
+      if (pins.length) fitResultPins();
+      if (mapStatus) mapStatus.textContent = pins.length
+        ? pins.length + " mapped listing(s) currently shown; map pins match the distance filter."
+        : "No mapped listings within the selected radius. Increase or clear the distance filter.";
+    }
+  }
+  distanceSelect?.addEventListener("change", refreshRadius);
+  radiusReset?.addEventListener("click", () => {
+    if (distanceSelect) distanceSelect.value = "all";
+    refreshRadius();
+  });
+  function sortNearby(lat, lng, label) {
+    const scored = rows.map((card, index) => {
+      const clat = Number(card.dataset.lat), clng = Number(card.dataset.lng);
+      const valid = card.hasAttribute("data-lat") && card.hasAttribute("data-lng") && Number.isFinite(clat) && Number.isFinite(clng)
+        && Math.abs(clat) <= 90 && Math.abs(clng) <= 180;
+      const distance = valid ? haversine(lat, lng, clat, clng) : Infinity;
+      const text = card.querySelector(".ea6-distance");
+      if (text) text.textContent = Number.isFinite(distance)
+        ? "Approx. " + distance.toFixed(1) + " km straight-line from " + label
+        : "Distance unavailable — coordinates not verified";
+      return {card,index,distance};
+    });
+    scored.sort((a,b) => a.distance - b.distance || a.index-b.index);
+    if (container) scored.forEach(({card}) => container.appendChild(card));
+    if (status) status.textContent = "Sorted " + scored.filter(item => Number.isFinite(item.distance)).length
+      + " mapped listing(s) by estimated straight-line distance from " + label + ". Listings without coordinates appear last.";
+    originPoint = {lat, lng, label};
+    refreshRadius();
+    if (resultsMap) { placeOriginMarker(); syncPopupDistances(); }
+  }
+  if (container && container.dataset.originLat && container.dataset.originLng) {
+    sortNearby(Number(container.dataset.originLat), Number(container.dataset.originLng), "landmark “" + container.dataset.originName + "”");
+  }
+  refreshRadius();
+  gps?.addEventListener("click", function () {
+    if (!window.isSecureContext) {
+      if (status) status.textContent = "Phone GPS generally requires HTTPS. Use the verified landmark selector above, or test on localhost.";
+      return;
+    }
+    if (!navigator.geolocation) {
+      if (status) status.textContent = "This browser does not support location access. Choose a landmark instead.";
+      return;
+    }
+    gps.disabled = true;
+    if (status) status.textContent = "Requesting location permission…";
+    navigator.geolocation.getCurrentPosition(position => {
+      gps.disabled = false;
+      sortNearby(position.coords.latitude, position.coords.longitude, "your current location");
+    }, error => {
+      gps.disabled = false;
+      if (status) status.textContent = error.code === 1 ? "Location permission denied. Choose a landmark instead."
+        : "Unable to obtain your location. Choose a landmark or try again.";
+    }, {enableHighAccuracy:true,timeout:15000,maximumAge:60000});
+  });
+
+  // Phase 6G: lazy-loaded Leaflet map driven only by these visible, verified cards.
+  if (mapCount) mapCount.textContent = mappedRows.length + " of " + rows.length + " displayed listing(s) have map coordinates.";
+  if (mapToggle && mappedRows.length === 0) {
+    mapToggle.disabled = true;
+    mapToggle.textContent = "Map unavailable for these results";
+    if (mapCount) mapCount.textContent = "No displayed listing has recorded coordinates. Try another verified place.";
+  }
+  function loadNearbyLeaflet() {
+    if (window.L?.map && window.L?.tileLayer) return Promise.resolve();
+    if (assetsPromise) return assetsPromise;
+    const cssUrl = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+    const jsUrl = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    const cssPromise = new Promise((resolve, reject) => {
+      const link = document.createElement("link");
+      link.rel = "stylesheet"; link.href = cssUrl; link.id = "ea6g-leaflet-css";
+      link.onload = resolve;
+      link.onerror = () => { link.remove(); reject(new Error("Leaflet map styles unavailable")); };
+      document.head.appendChild(link);
+    });
+    const jsPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = jsUrl; script.id = "ea6g-leaflet-js";
+      script.onload = resolve;
+      script.onerror = () => { script.remove(); reject(new Error("Leaflet map library unavailable")); };
+      document.head.appendChild(script);
+    });
+    assetsPromise = Promise.all([cssPromise,jsPromise]).then(() => {
+      if (!window.L?.map || !window.L?.tileLayer) throw new Error("Leaflet did not initialize");
+    }).catch(error => {
+      document.getElementById("ea6g-leaflet-css")?.remove();
+      document.getElementById("ea6g-leaflet-js")?.remove();
+      assetsPromise = null;
+      throw error;
+    });
+    return assetsPromise;
+  }
+  function createPopup(card) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "ea6g-popup";
+    const heading = document.createElement("strong");
+    heading.textContent = card.dataset.title || "Kabankalan place";
+    const category = document.createElement("small");
+    category.textContent = card.dataset.category || "Verified place";
+    const info = document.createElement("div");
+    info.textContent = card.querySelector(".ea6-distance")?.textContent || "Distance unavailable";
+    const links = document.createElement("div");
+    links.className = "ea6g-popup-links";
+    const detail = document.createElement("a");
+    detail.href = card.dataset.detailUrl;
+    detail.textContent = "View details ↗";
+    links.appendChild(detail);
+    if (card.dataset.directionsUrl) {
+      const directions = document.createElement("a");
+      directions.href = card.dataset.directionsUrl;
+      directions.textContent = "Directions ↗";
+      directions.target = "_blank";
+      directions.rel = "noopener noreferrer";
+      links.appendChild(directions);
+    }
+    wrapper.append(heading, category, info, links);
+    return wrapper;
+  }
+  function selectCard(card) {
+    rows.forEach(row => row.classList.toggle("ea6g-selected", row === card));
+    resultsMapMarkers.forEach((marker,row) => marker.setStyle({
+      radius: row === card ? 12 : 9,
+      color: row === card ? "#0b3f8f" : "#0757d8",
+      fillColor: row === card ? "#f59e0b" : "#0d9488",
+      weight: row === card ? 3 : 2
+    }));
+  }
+  function syncPopupDistances() {
+    resultsMapMarkers.forEach((marker,card) => marker.setPopupContent(createPopup(card)));
+  }
+  function placeOriginMarker() {
+    if (!resultsMap || !originPoint) return;
+    if (originMarker) resultsMap.removeLayer(originMarker);
+    originMarker = L.circleMarker([originPoint.lat,originPoint.lng], {
+      radius:8,color:"#9a5704",fillColor:"#f59e0b",fillOpacity:.95,weight:3
+    }).addTo(resultsMap);
+    const note=document.createElement("div");
+    note.textContent="Distance reference: " + originPoint.label + " (not a business location)";
+    originMarker.bindPopup(note);
+  }
+  function fitResultPins() {
+    if (!resultsMap || !mappedRows.length) return;
+    const points = visibleMappedRows().map(card => [Number(card.dataset.lat),Number(card.dataset.lng)]);
+    if (!points.length) return;
+    if (points.length === 1) resultsMap.setView(points[0],14);
+    else resultsMap.fitBounds(L.latLngBounds(points).pad(.15),{maxZoom:15});
+  }
+  function createResultsMap() {
+    if (resultsMap) return;
+    resultsMap = L.map("ea6g-map", {scrollWheelZoom:false});
+    // ExploreAnywhere Phase 6G.1: MapTiler nearby tile layer
+    // Same MapTiler key and style URLs as the existing Discover Kabankalan map.
+    const nearbyMapTilerKey = "2G4T5asnBPm0kLPHVQsl";
+    const nearbyAttribution =
+      '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> ' +
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+    const nearbyStreets = L.tileLayer(
+      `https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${nearbyMapTilerKey}`,
+      {maxZoom:19, attribution:nearbyAttribution}
+    );
+    const nearbySatellite = L.tileLayer(
+      `https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=${nearbyMapTilerKey}`,
+      {maxZoom:19, attribution:nearbyAttribution}
+    );
+    // As on Discover Kabankalan, Hybrid is a satellite layer with a
+    // translucent streets overlay (not a dedicated labels-only layer).
+    const nearbyHybridSatellite = L.tileLayer(
+      `https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=${nearbyMapTilerKey}`,
+      {maxZoom:19, attribution:nearbyAttribution}
+    );
+    const nearbyHybridStreets = L.tileLayer(
+      `https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${nearbyMapTilerKey}`,
+      {maxZoom:19, attribution:nearbyAttribution, opacity:.30}
+    );
+    const nearbyHybrid = L.layerGroup([nearbyHybridSatellite,nearbyHybridStreets]);
+    // Tile errors are asynchronous, so the surrounding try/catch alone cannot
+    // report them. Keep the result cards available when provider requests fail.
+    let nearbyTileErrorShown = false;
+    const nearbyTileError = () => {
+      if (!nearbyTileErrorShown && mapStatus) {
+        nearbyTileErrorShown = true;
+        mapStatus.textContent = 'Map tiles are unavailable from MapTiler. Check your key restrictions or network connection; nearby listings and Details still work.';
+      }
+    };
+    [nearbyStreets,nearbySatellite,nearbyHybridSatellite,nearbyHybridStreets]
+      .forEach(layer => layer.on('tileerror', nearbyTileError));
+    nearbyStreets.addTo(resultsMap);
+    L.control.layers({
+      'Detailed Streets':nearbyStreets,
+      'Satellite':nearbySatellite,
+      'Hybrid (Street Overlay)':nearbyHybrid
+    }, null, {position:'topright', collapsed:true}).addTo(resultsMap);
+    visibleMappedRows().forEach(card => {
+      const marker = L.circleMarker([Number(card.dataset.lat),Number(card.dataset.lng)], {
+        radius:9,color:"#0757d8",fillColor:"#0d9488",fillOpacity:.92,weight:2
+      }).addTo(resultsMap);
+      marker.bindPopup(createPopup(card));
+      marker.on("click",() => selectCard(card));
+      resultsMapMarkers.set(card,marker);
+    });
+    placeOriginMarker();
+    fitResultPins();
+  }
+  async function openNearbyMap(cardToFocus=null) {
+    if (!mapShell || !mapLayout || !mapToggle || !visibleMappedRows().length) return;
+    mapShell.hidden = false;
+    mapLayout.classList.add("map-open");
+    mapToggle.setAttribute("aria-expanded","true");
+    mapToggle.textContent = "Hide nearby map";
+    if (mapStatus) mapStatus.textContent = "Loading nearby results map…";
+    try {
+      await loadNearbyLeaflet();
+      if (!resultsMap) createResultsMap();
+      // Leaflet must measure the panel after it becomes visible.
+      resultsMap.invalidateSize();
+      if (cardToFocus) {
+        const marker = resultsMapMarkers.get(cardToFocus);
+        if (marker) {
+          selectCard(cardToFocus);
+          resultsMap.setView(marker.getLatLng(),Math.max(resultsMap.getZoom(),13));
+          marker.openPopup();
+        }
+      } else fitResultPins();
+      if (mapStatus) mapStatus.textContent = visibleMappedRows().length + " verified location pin(s) shown for these search results. Select a pin or use Show on map on a card.";
+      if (cardToFocus && window.matchMedia("(max-width:980px)").matches) mapShell.scrollIntoView({behavior:"smooth",block:"start"});
+    } catch(error) {
+      if (mapStatus) mapStatus.textContent = "Unable to load the map. Check your connection and click the map button again to retry. Your results list still works.";
+      mapToggle.textContent = "Retry nearby map";
+      mapToggle.setAttribute("aria-expanded","false");
+    }
+  }
+  function closeNearbyMap() {
+    if (!mapShell || !mapLayout || !mapToggle) return;
+    mapShell.hidden = true;
+    mapLayout.classList.remove("map-open");
+    mapToggle.textContent = "🗺 View nearby results on map";
+    mapToggle.setAttribute("aria-expanded","false");
+  }
+  mapToggle?.addEventListener("click", () => {
+    if (mapShell?.hidden || mapToggle.getAttribute("aria-expanded") === "false") openNearbyMap();
+    else closeNearbyMap();
+  });
+  fitButton?.addEventListener("click", fitResultPins);
+  mappedRows.forEach(card => {
+    card.querySelector(".ea6g-card-map")?.addEventListener("click", () => openNearbyMap(card));
+  });
+})();
+</script>
+{% endblock %}

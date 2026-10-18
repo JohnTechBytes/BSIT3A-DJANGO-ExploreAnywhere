@@ -1,0 +1,48 @@
+{% extends "theme/public_base.html" %}
+{% block extra_css %}
+<style>
+.ea-saved {max-width:1080px;margin:auto;padding:40px 20px 90px;color:#142e50}
+.ea-saved h1 {font-size:clamp(28px,4vw,40px);font-weight:800;margin:12px 0}
+.ea-muted {color:#61748d;line-height:1.6}
+.ea-actions {display:flex;gap:10px;flex-wrap:wrap;margin:20px 0 28px}
+.ea-action {background:#075ee4;color:white!important;padding:11px 17px;border-radius:11px;text-decoration:none;font-weight:700;display:inline-block}
+.ea-action-secondary {background:white;color:#0757d8!important;border:1px solid #cbdaf0}
+.ea-saved-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:16px}
+.ea-saved-item {background:white;border:1px solid #dfe8f4;border-radius:17px;padding:19px;box-shadow:0 6px 22px rgba(20,53,93,.05);display:flex;flex-direction:column;gap:10px}
+.ea-saved-item h2 {font-size:20px;color:#14345b;margin:0}
+.ea-saved-item p {font-size:13px;margin:0}
+.ea-saved-item form {margin-top:auto}
+.ea-unsave {cursor:pointer;background:#fff;border:1px solid #b7c9e6;border-radius:10px;padding:10px 13px;color:#174c8a;font-weight:700;width:100%}
+.ea-empty {background:white;border:1px dashed #b6c8df;padding:35px;border-radius:16px}
+</style>
+{% endblock %}
+{% block content %}
+<main class="ea-saved">
+  <p class="ea-muted">MY KABANKALAN JOURNEY</p>
+  <h1>Saved Places</h1>
+  <p class="ea-muted">Your personal collection of published Kabankalan destinations.</p>
+  <nav class="ea-actions" aria-label="Saved places navigation">
+    <a class="ea-action" href="{% url 'places:journey_dashboard' %}">My Journey</a>
+    <a class="ea-action ea-action-secondary" href="{% url 'places:attraction_carousel' %}">Explore Recommendations</a>
+  </nav>
+  {% if entries %}
+  <section class="ea-saved-grid" aria-label="Your saved destinations">
+    {% for entry in entries %}
+    <article class="ea-saved-item">
+      <h2>{{ entry.place.title }}</h2>
+      <p class="ea-muted">{% if entry.place.category %}{{ entry.place.category.name }} · {% endif %}Kabankalan, Negros Occidental</p>
+      <p class="ea-muted">{{ entry.place.description|default:"Destination information coming soon."|truncatechars:130 }}</p>
+      <a class="ea-action" href="{% url 'places:place_detail' entry.place.pk %}">View Details</a>
+      <a class="ea-action ea-action-secondary" href="{% url 'itineraries:create' %}?place={{ entry.place.pk }}">Add to Itinerary</a>
+      <form method="post" action="{% url 'places:unsave_place' entry.place.pk %}">
+        {% csrf_token %}
+        <button class="ea-unsave" type="submit">Remove from Saved</button>
+      </form>
+    </article>
+    {% endfor %}
+  </section>
+  {% else %}
+  <div class="ea-empty"><h2>No saved places yet</h2><p class="ea-muted">Discover a destination and select Save Place to add it here.</p></div>
+  {% endif %}
+</main>
+{% endblock %}

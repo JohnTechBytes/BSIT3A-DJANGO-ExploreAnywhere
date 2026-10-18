@@ -1,0 +1,17 @@
+{
+  "phase": "5E.2",
+  "files": {
+    "templates/theme/public_base.html": {
+      "original_sha256": "b8dcbf7f2730f8178d31ab2aad5b89da52131da4c3094ddc655ee110543c5d27",
+      "installed_sha256": "d6568fc0de469aa8f09fcb8f8f20291db58d6d188183972e9c97df348b09ff2e"
+    },
+    "templates/places/saved_places.html": {
+      "original_sha256": "22f00bd9c1ce67b8ac72ced1c0653e986d9f8cfe584bd6c95e8be3564f337070",
+      "installed_sha256": "7a0c13a4f2ba4c301e948f8e601f6923767da29554a72c593910f6bdca93bdce"
+    },
+    "templates/places/place_detail.html": {
+      "original_sha256": "17b86b00ac24a2e8cc05ff640ced89a2d72688c7d7bb953d9fb23ebc21019dd6",
+      "installed_sha256": "cd24222e1ffd6fbf858e33ffeed0b4df89afc1c66a3ad8e96e6dd1f371e954ef"
+    }
+  }
+}

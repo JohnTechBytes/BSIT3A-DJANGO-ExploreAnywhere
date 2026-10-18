@@ -1,0 +1,6 @@
+{
+  "format": "exploreanywhere-phase6b4-bbox-fallback-v1",
+  "target": "apps/places/management/commands/discover_kabankalan_businesses.py",
+  "before_sha256": "550daa0c3aa60c85bd88c6e4ec5b0027af0f3b17409b8b4e766bb737c1bca6c2",
+  "after_sha256": "78ada2a9be9bb51e774c27a8a75e1f7d8c8645a2ce4fe7a99b1f9b9194b39c1d"
+}

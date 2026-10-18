@@ -1,0 +1,38 @@
+{% extends "admin/change_form.html" %}
+{# Phase 6D.1: business-only presentation; original destinations retain native admin UI. #}
+{% block extrastyle %}
+{{ block.super }}
+{% if original and original.slug|slice:":4" == "osm-" %}
+<style>
+/* Styling applies only to imported OSM records. No fields/actions are removed. */
+#content-main fieldset.module {border:1px solid #d5e2f0;border-radius:12px;overflow:hidden;background:#fff;margin-bottom:15px;box-shadow:0 3px 12px rgba(17,57,99,.04)}
+#content-main fieldset.module > h2 {background:#e8f2fe;color:#103a6b;font-size:14px;font-weight:800;padding:13px 16px;margin:0}
+#content-main fieldset.module > .description {font-size:12px;line-height:1.6;color:#506d88;padding:10px 16px;margin:0;background:#f8fbff;border-bottom:1px solid #e4edf7}
+#content-main fieldset.module .form-row {padding:11px 15px;border-color:#edf2f8}
+#content-main fieldset.module .form-row label {font-weight:650;color:#214467}
+#content-main fieldset.module .form-row input[type=text],
+#content-main fieldset.module .form-row input[type=url],
+#content-main fieldset.module .form-row input[type=email],
+#content-main fieldset.module .form-row textarea {max-width: min(100%, 620px)}
+#content-main .selector {width:min(100%,650px);max-width:100%}
+#content-main .selector select {max-height:150px;min-height:110px}
+#content-main .submit-row input[name="_addanother"] {display:none}
+#content-main .submit-row {border-radius:10px;box-shadow:0 2px 10px rgba(5,44,82,.07)}
+#content-main details summary {cursor:pointer}
+@media(max-width:760px){
+ #content-main fieldset.module .form-row {padding:10px 12px}
+ #content-main .selector {display:block;max-width:100%}
+ #content-main .selector .selector-available,
+ #content-main .selector .selector-chosen {float:none;width:100%;max-width:100%;margin:0 0 10px}
+ #content-main .selector .selector-chooser {float:none;display:flex;flex-direction:row;margin:6px auto}
+ #content-main fieldset.module input,#content-main fieldset.module textarea {max-width:100%}
+}
+</style>
+{% endif %}
+{% endblock %}
+{% block object-tools-items %}
+{% if original and original.slug|slice:":4" == "osm-" %}
+<li><a href="{% url 'admin:places_place_osm_review' %}">← Business review queue</a></li>
+{% endif %}
+{{ block.super }}
+{% endblock %}

@@ -33,7 +33,7 @@
           </span>
         </li>
         <li class="nav-item mb-1">
-          <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+          <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'admin:index' %}">
             <span class="nav-link-icon d-md-none d-lg-inline-block">
               <i class="fa fa-dashboard"></i>
             </span>
@@ -42,7 +42,7 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-link {% if request.resolver_match.app_name == 'users' %}active{% endif %}" href="{% url 'users:user_list' %}">
+          <a class="nav-link {% if request.resolver_match.app_name == 'users' %}active{% endif %}" href="{% url 'users:user_list' as users_list_url %}{{ users_list_url|default:'#' }}">
             <span class="nav-link-icon d-md-none d-lg-inline-block">
               <i class="nav-icon fas fa-users"></i>
             </span>
@@ -51,7 +51,7 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-link {% if request.resolver_match.app_name == 'info' %}active{% endif %}" href="{% url 'info:info_list' %}">
+          <a class="nav-link {% if request.resolver_match.app_name == 'info' %}active{% endif %}" href="{% url 'info:info_list' as info_list_url %}{{ info_list_url|default:'#' }}">
             <span class="nav-link-icon d-md-none d-lg-inline-block">
               <i class="nav-icon fas fa-address-card"></i>
             </span>
@@ -72,7 +72,7 @@
 
         <li class="nav-item mt-auto dh-nav-sidebar-footer">
           <div class="dh-user-card">
-            <a href="{% url 'users:user_list' %}" class="d-flex align-items-center gap-2 text-decoration-none text-white min-w-0 w-100">
+            <a href="{% url 'users:user_list' as users_list_url %}{{ users_list_url|default:'#' }}" class="d-flex align-items-center gap-2 text-decoration-none text-white min-w-0 w-100">
               <span class="dh-avatar">{{ user.username|first|upper }}</span>
               <span class="min-w-0 flex-grow-1">
                 <span class="dh-user-name">{{ user.username }}</span>

@@ -1,0 +1,50 @@
+
+{% extends "theme/public_base.html" %}
+
+{% block content %}
+<main style="max-width:780px;margin:60px auto;padding:25px;">
+  <p style="color:#075ee4;font-weight:800;font-size:12px;">
+    EXPLOREANYWHERE · STEP 3 OF 4
+  </p>
+
+  <h1 style="color:#102b53;font-size:36px;">
+    Ask in your language
+  </h1>
+
+  <p style="color:#64748b;line-height:1.7;">
+    What would you like to explore in {{ city.name }}?
+    Continue to see currently approved attractions.
+  </p>
+
+  <form method="post"
+        style="background:white;padding:26px;
+               border:1px solid #dce6f3;
+               border-radius:18px;">
+    {% csrf_token %}
+
+    <label for="query"
+           style="display:block;font-weight:700;margin-bottom:12px;">
+      Describe your ideal destination
+    </label>
+
+    <textarea
+      id="query"
+      name="query"
+      rows="4"
+      maxlength="300"
+      placeholder="Example: I want to explore relaxing nature spots with scenic views."
+      style="width:100%;padding:15px;
+             border:1px solid #cad9eb;
+             border-radius:12px;resize:vertical;"
+    ></textarea>
+
+    <button type="submit"
+            style="margin-top:16px;padding:14px 22px;
+                   background:#075ee4;color:white;
+                   border:0;border-radius:11px;
+                   font-weight:800;cursor:pointer;">
+      Find Places →
+    </button>
+  </form>
+</main>
+{% endblock %}

@@ -1,0 +1,130 @@
+﻿{% extends "theme/public_base.html" %}
+{% load attraction_photos %}
+
+{% block content %}
+<style>
+.discovery{max-width:1300px;margin:auto;padding:36px 20px}
+.discovery-header{padding:30px;border-radius:18px;background:linear-gradient(135deg,#071d46,#1456c0);color:white;margin-bottom:25px}
+.discovery-header h1{margin:0 0 10px}
+.discovery-header p{color:#dbeafe}
+.discovery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px}
+.discovery-card{background:white;border:1px solid #e2e8f0;border-radius:15px;overflow:hidden}
+.discovery-photo{width:100%;height:190px;object-fit:cover}
+.discovery-empty{height:190px;background:#e9eff7;display:grid;place-items:center;color:#64748b}
+.discovery-body{padding:18px}
+.discovery-body h3{margin:0 0 10px;color:#0f172a}
+.discovery-body p{font-size:13px;color:#64748b}
+.discovery-badge{display:inline-block;padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;background:#fef3c7;color:#92400e}
+.discovery-badge.verified{background:#dcfce7;color:#166534}
+.discovery-link{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:8px;background:#0865e8;color:white;text-decoration:none;font-size:13px}
+.discovery-pagination{text-align:center;margin-top:30px}
+.discovery-pagination a{margin:0 10px}
+
+.sample-photo-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.sample-photo-label {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    padding: 7px 9px;
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.85);
+    color: #fff;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+</style>
+
+<main class="discovery">
+    <section class="discovery-header">
+        <h1>Explore {{ city_name }}</h1>
+        <p>{{ total_places }} mapped attractions found for this city.</p>
+        <a class="discovery-link" href="{% url 'hobbies:select' %}">
+            Search by Hobbies
+        </a>
+    </section>
+
+    <section class="discovery-grid">
+        {% for place in page_obj %}
+        <article class="discovery-card">
+            {% if place.cover_image %}
+                <img class="discovery-photo" src="{{ place.cover_image.url }}" alt="{{ place.title }}" loading="lazy">
+            {% elif place.cover_image_url %}
+                <img class="discovery-photo" src="{{ place.cover_image_url }}" alt="{{ place.title }}" loading="lazy">
+          
+{% else %}
+    {% sample_photo place as stock_image %}
+
+    <div class="sample-photo-wrapper">
+        <img
+            class="discovery-photo"
+            src="{{ stock_image }}"
+            alt="Illustrative travel image for {{ place.title }}"
+            loading="lazy"
+        >
+
+        <span class="sample-photo-label">
+            Sample image · Not actual destination
+        </span>
+    </div>
+{% endif %}
+
+            <div class="discovery-body">
+                <h3>{{ place.title }}</h3>
+                <p>{{ place.category.name|default:"Tourist attraction" }}</p>
+
+                {% if place.is_verified and place.is_active %}
+                    <span class="discovery-badge verified">Verified Attraction</span>
+                {% else %}
+                    <span class="discovery-badge">Unverified Map Discovery</span>
+                {% endif %}
+
+                {% if place.is_verified and place.is_active %}
+                    <div>
+                        <a class="discovery-link" href="{% url 'places:place_detail' place.pk %}">
+                            View Details
+                        </a>
+                    </div>
+                {% else %}
+                    <p>Information awaiting verification.</p>
+                    {% if place.latitude is not None and place.longitude is not None %}
+                    <a class="discovery-link"
+                       href="https://www.google.com/maps/search/?api=1&amp;query={{ place.latitude }},{{ place.longitude }}"
+                       target="_blank" rel="noopener noreferrer">
+                        View Map Location
+                    </a>
+                    {% endif %}
+                {% endif %}
+
+                {% if place.photo_source_url %}
+                    <p>
+                        Photo by {{ place.photo_credit }} ·
+                        <a href="{{ place.photo_source_url }}" target="_blank" rel="noopener noreferrer">Source</a>
+                        {% if place.photo_license_url %}
+                            · <a href="{{ place.photo_license_url }}" target="_blank" rel="noopener noreferrer">{{ place.photo_license }}</a>
+                        {% endif %}
+                    </p>
+                {% endif %}
+            </div>
+        </article>
+        {% empty %}
+        <p>No imported attractions found for this city.</p>
+        {% endfor %}
+    </section>
+
+    <nav class="discovery-pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+        {% endif %}
+    </nav>
+</main>
+{% endblock %}

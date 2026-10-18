@@ -1,0 +1,6 @@
+{
+  "target": "templates/places/nearby_places.html",
+  "original_sha256": "1855b4ccde0221af994a0e440626549c6c8a0faf53258c399c2aee88c79399dd",
+  "patched_sha256": "72185ce85c0a8f36e0dd7164d59559489eb35f4e7647e64b2749d79287f92da9",
+  "version": "phase6g1"
+}

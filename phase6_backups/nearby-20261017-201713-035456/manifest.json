@@ -1,0 +1,37 @@
+{
+  "apps/places/views.py": {
+    "existed": true,
+    "original_sha256": "4b7a8f16ee2c19d426e067107a4d39e4199a293428908b867e74e7fd6d2b5551",
+    "installed_sha256": "8d1ed5797ac40fba2d8bf052eb5368d4f18c3b94f2f140364715ec6925c56b1c"
+  },
+  "apps/places/urls.py": {
+    "existed": true,
+    "original_sha256": "51f970fdbc12906e0904df86b814907c2db2bc471d179fa0299a7a37b14d81da",
+    "installed_sha256": "6cf3e86cdc61461fb65db792f32c959436b2745381f00694e1bf8a0a77147bb3"
+  },
+  "templates/home.html": {
+    "existed": true,
+    "original_sha256": "4985558e9478bf5ee2ee6d6e301846388b20eb00ae6c9b39b775272c6c58a908",
+    "installed_sha256": "31cac78b6266bf2eaf16c718d3bb58b65a7b52695a9f67d69271c60580ccbdad"
+  },
+  "templates/places/attraction_carousel.html": {
+    "existed": true,
+    "original_sha256": "c0a319e31ed88b4932e806d218a0cc72205cb49665cc5c2f601af3961b4537ae",
+    "installed_sha256": "bceca3a8d63f18290121a9550800dc8ff1148cf00ec62a035b4459bce4fe6e71"
+  },
+  "apps/places/nearby_intent.py": {
+    "existed": false,
+    "original_sha256": null,
+    "installed_sha256": "4f271ab8c48bd6c65e8aac1c0d499adb86254acfb5d51ffd9504828d2e13cfe7"
+  },
+  "apps/places/nearby.py": {
+    "existed": false,
+    "original_sha256": null,
+    "installed_sha256": "9ee3339020ba361569b8a3c98e92c12cf2dd58e7bdd2447cd11842189be33577"
+  },
+  "templates/places/nearby_places.html": {
+    "existed": false,
+    "original_sha256": null,
+    "installed_sha256": "1a33a7c5b34c8ccb8add8c0ca4f233655be1ffe3cafa64003756085054331b5b"
+  }
+}

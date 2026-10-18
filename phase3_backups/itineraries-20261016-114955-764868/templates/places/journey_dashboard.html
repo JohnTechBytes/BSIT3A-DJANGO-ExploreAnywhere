@@ -1,0 +1,67 @@
+{% extends "theme/public_base.html" %}
+{% block extra_css %}
+<style>
+.ea-journey {max-width:1100px;margin:auto;padding:45px 20px 100px;color:#173454}
+.ea-journey h1 {font-size:clamp(30px,4vw,44px);margin:9px 0;font-weight:850;color:#10315b}
+.ea-journey p {color:#62748b;line-height:1.65}
+.ea-journey-top {background:linear-gradient(125deg,#102f64,#075ee4);border-radius:20px;padding:28px;color:white}
+.ea-journey-top h1,.ea-journey-top p {color:white}
+.ea-journey-top p {opacity:.86}
+.ea-journey-metrics {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:21px 0 30px}
+.ea-journey-metric {background:white;border:1px solid #dce7f3;border-radius:15px;padding:22px}
+.ea-journey-metric strong {display:block;color:#0757d8;font-size:32px}
+.ea-journey-metric span {color:#64748b;font-size:13px}
+.ea-journey-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.ea-journey-panel {background:white;border:1px solid #dce7f3;border-radius:18px;padding:23px}
+.ea-journey-panel h2 {font-size:19px;color:#16375d;margin:0 0 12px}
+.ea-journey-item {display:block;padding:12px 0;border-bottom:1px solid #ebf1f7;color:#13519a;text-decoration:none;font-weight:700}
+.ea-journey-item:last-child {border-bottom:0}
+.ea-journey-link {display:inline-block;background:#075ee4;border-radius:11px;color:white!important;text-decoration:none;padding:11px 16px;font-weight:700;margin-top:14px}
+.ea-journey-note {background:#f1f6fc;border-radius:12px;padding:12px;font-size:13px;color:#4d647e}
+@media(max-width:680px){.ea-journey-metrics,.ea-journey-grid{grid-template-columns:1fr}}
+</style>
+{% endblock %}
+{% block content %}
+<main class="ea-journey">
+  <header class="ea-journey-top">
+    <p>ONE CITY. YOUR HOBBIES. OUR MAP.</p>
+    <h1>My Kabankalan Journey</h1>
+    <p>Welcome back! Organize places you love and return to your Kabankalan plans.</p>
+  </header>
+  <section class="ea-journey-metrics" aria-label="Your journey summary">
+    <div class="ea-journey-metric"><strong>{{ saved_count }}</strong><span>Saved destinations</span></div>
+    <div class="ea-journey-metric"><strong>{{ itinerary_count }}</strong><span>Planned itineraries</span></div>
+    <div class="ea-journey-metric"><strong>{{ review_count }}</strong><span>Reviews submitted</span></div>
+  </section>
+  <div class="ea-journey-grid">
+    <section class="ea-journey-panel">
+      <h2>Saved Places</h2>
+      {% for entry in saved_preview %}
+        <a class="ea-journey-item" href="{% url 'places:place_detail' entry.place.pk %}">{{ entry.place.title }}</a>
+      {% empty %}
+        <p>Nothing saved yet. Browse places to start your collection.</p>
+      {% endfor %}
+      <a class="ea-journey-link" href="{% url 'places:saved_places' %}">View Saved Places</a>
+    </section>
+    <section class="ea-journey-panel">
+      <h2>My Itinerary Plans</h2>
+      {% for trip in itinerary_preview %}
+        <div class="ea-journey-item">{{ trip.title }}{% if trip.day_number %} · Day {{ trip.day_number }}{% endif %}</div>
+      {% empty %}
+        <p>No Kabankalan itineraries created yet.</p>
+      {% endfor %}
+      <p class="ea-journey-note">Plan editing will be connected to the existing itinerary builder in the next step.</p>
+    </section>
+    <section class="ea-journey-panel">
+      <h2>My Visits</h2>
+      <p>Physical visit tracking is coming in a later phase.</p>
+      <p class="ea-journey-note">Viewing a place or requesting directions does not verify a visit.</p>
+    </section>
+    <section class="ea-journey-panel">
+      <h2>Badges and Points</h2>
+      <p>Achievements are not active yet. No points or badges will be invented.</p>
+      <a class="ea-journey-link" href="{% url 'places:attraction_carousel' %}">Continue Exploring</a>
+    </section>
+  </div>
+</main>
+{% endblock %}

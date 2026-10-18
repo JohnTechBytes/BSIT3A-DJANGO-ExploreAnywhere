@@ -1,0 +1,45 @@
+{
+  "phase": "ExploreAnywhere Phase 6I \u2014 One-Step Discovery",
+  "files": [
+    {
+      "path": "apps/hobbies/views.py",
+      "before_sha256": "482013b4df12c9c9b4371f9127b5281883547b7932c1027b3b2c53962c0be18c",
+      "after_sha256": "3287048daf92b0e33a52b8f1ad7d4baa09cca32bfe4287f46ceef0529cbb3c5e"
+    },
+    {
+      "path": "apps/places/views.py",
+      "before_sha256": "8295c1df819f5b8947fdd555577137eeeaf5e17b2a9549907da7d5a3ba2715d1",
+      "after_sha256": "0adfa33e8cc2e3c33e34c11bc60ff2bcac4a71ace0102abaacc14c70437bc8bd"
+    },
+    {
+      "path": "templates/home.html",
+      "before_sha256": "31cac78b6266bf2eaf16c718d3bb58b65a7b52695a9f67d69271c60580ccbdad",
+      "after_sha256": "ad05eb6af107344c7f47d8cef11c77a851b5d5359083ddff58ce9caef3241d89"
+    },
+    {
+      "path": "templates/theme/public_base.html",
+      "before_sha256": "d6568fc0de469aa8f09fcb8f8f20291db58d6d188183972e9c97df348b09ff2e",
+      "after_sha256": "397aacba9feb44bb3413c25dade79dfba154ec60548f03c788792ff769d32237"
+    },
+    {
+      "path": "templates/places/attraction_carousel.html",
+      "before_sha256": "22a916681f214ec4b98549874f1ca9ffa796fb9ae49618e23421d195af479c92",
+      "after_sha256": "d5d2a47b32e953c0214330c0a01a5ba6f721220e7c2565f76b7713e8ecb391ac"
+    },
+    {
+      "path": "templates/places/nearby_places.html",
+      "before_sha256": "18726700b785aba0b5586bea0b87da9e1df58b904dbda3c99e30a8a297c1c011",
+      "after_sha256": "c0e2d4ff0a9741156a20da3507781d69d47dcd131e2e9b6e016629033f1bdc63"
+    },
+    {
+      "path": "templates/places/city_discover.html",
+      "before_sha256": "a0006b1d4338bf0d120bf0625a9f68d95399765a8b171d45c2327ad20e05a1f9",
+      "after_sha256": "0297fc445bf6f656630b36ccf94a2c632db000fa6e14f30ec49ee71072ea3854"
+    },
+    {
+      "path": "templates/places/journey_dashboard.html",
+      "before_sha256": "6dedcf2c22c6e3170a6b949bb3c6200da5a5da960569747c19f9ce5fb4929cc8",
+      "after_sha256": "5db0cb22cb59680b8e827075fbf69f00ad1c76ba6d64c00bbcd87e156d3fc563"
+    }
+  ]
+}

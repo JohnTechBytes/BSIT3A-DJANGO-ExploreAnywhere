@@ -1,0 +1,17 @@
+{
+  "nearby_places.html": {
+    "original_sha256": "8dd27e62f6a3a1451cc66a0d36c4ebe3dbf9c93aa7556c31f70f1a133705a2ce",
+    "patched_sha256": "2fee43cc10f9fa1a05d0340511b485d1ee72331b2bf4ecfc3ab1698e02376d21",
+    "change": "Photo attribution: creator, source hyperlink, and license hyperlink"
+  },
+  "attraction_carousel.html": {
+    "original_sha256": "ebde80952ef2aa76f91883cb8f6dc2f77b1fd1f7275f0a7d65eaa91e96de732f",
+    "patched_sha256": "09c0031b1641826ea0ee602cf674f4c4985c67b72005b250a6cd668819a92836",
+    "change": "Photo attribution: creator, source hyperlink, and license hyperlink"
+  },
+  "saved_places.html": {
+    "original_sha256": "7a0c13a4f2ba4c301e948f8e601f6923767da29554a72c593910f6bdca93bdce",
+    "patched_sha256": "e671646fd2f2e63386d7f7ee5a7583a0e4eb19f43772a1f98951070e68e48129",
+    "change": "Photo attribution: creator, source hyperlink, and license hyperlink"
+  }
+}

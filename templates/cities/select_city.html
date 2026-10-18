@@ -1,0 +1,582 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Select City | ExploreAnywhere</title>
+
+<style>
+:root {
+    --navy: #101a2e;
+    --blue: #1769ff;
+    --muted: #64748b;
+    --border: #e2e8f0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: #f4f7fd;
+    color: var(--navy);
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+nav {
+    min-height: 74px;
+    background: var(--navy);
+    padding: 15px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.brand {
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+    text-decoration: none;
+}
+
+.brand span { color: #60a5fa; }
+
+.nav-actions {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.nav-actions a {
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.logout {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 18px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.container {
+    max-width: 1160px;
+    margin: auto;
+    padding: 65px 22px 90px;
+}
+
+.heading {
+    text-align: center;
+    margin-bottom: 38px;
+}
+
+.step {
+    display: inline-block;
+    background: #e8f0ff;
+    color: var(--blue);
+    padding: 8px 15px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.heading h1 {
+    font-size: clamp(30px, 4vw, 44px);
+    margin: 18px 0 12px;
+    letter-spacing: -1px;
+}
+
+.heading p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: 270px 1fr;
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.filter label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 9px;
+}
+
+.filter select,
+.filter input {
+    width: 100%;
+    padding: 15px 16px;
+    border: 1px solid var(--border);
+    background: white;
+    border-radius: 11px;
+    font-size: 14px;
+    outline-color: var(--blue);
+}
+
+.summary {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 20px 0 30px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.province-group {
+    margin-bottom: 38px;
+}
+
+.province-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.province-header h2 {
+    font-size: 20px;
+    margin: 0;
+}
+
+.province-count {
+    background: #e3efff;
+    color: var(--blue);
+    padding: 5px 12px;
+    border-radius: 25px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.city-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.city-card {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    border: 2px solid var(--border);
+    border-radius: 17px;
+    background: white;
+    color: var(--navy);
+    font: inherit;
+    cursor: pointer;
+    transition: .2s;
+    padding: 0;
+}
+
+.city-card:hover {
+    transform: translateY(-3px);
+    border-color: #93c5fd;
+    box-shadow: 0 12px 25px rgba(23,105,255,.10);
+}
+
+.city-card.selected {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px #dbeafe;
+}
+
+.city-visual {
+    width: 100%;
+    height: 105px;
+    background: linear-gradient(125deg,#dbeafe,#93c5fd);
+    display: grid;
+    place-items: center;
+    font-size: 35px;
+    overflow: hidden;
+}
+
+.city-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.city-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px;
+}
+
+.city-info h3 {
+    margin: 0 0 7px;
+    font-size: 17px;
+}
+
+.city-info p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.checkmark {
+    color: var(--blue);
+    font-size: 24px;
+    opacity: 0;
+}
+
+.city-card.selected .checkmark { opacity: 1; }
+
+.actions {
+    position: sticky;
+    bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin-top: 35px;
+    box-shadow: 0 8px 30px rgba(16,26,46,.09);
+}
+
+.actions strong { font-size: 15px; }
+
+.actions p {
+    color: var(--muted);
+    margin: 6px 0 0;
+    font-size: 12px;
+}
+
+.continue {
+    border: none;
+    border-radius: 11px;
+    background: var(--blue);
+    color: white;
+    padding: 15px 27px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.continue:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.notice {
+    background: #dbeafe;
+    color: #1d4ed8;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.empty {
+    padding: 25px;
+    text-align: center;
+    background: white;
+    color: var(--muted);
+    border: 1px dashed #bfdbfe;
+    border-radius: 13px;
+}
+
+[hidden] { display: none !important; }
+
+@media(max-width:900px) {
+    .city-grid {
+        grid-template-columns: repeat(2,minmax(0,1fr));
+    }
+}
+
+@media(max-width:600px) {
+    nav { padding: 15px; }
+    .brand { font-size: 17px; }
+    .nav-actions { gap: 9px; }
+    .nav-actions a { font-size: 11px; }
+    .logout { padding: 10px; }
+
+    .container { padding: 40px 16px 65px; }
+
+    .filters,
+    .city-grid { grid-template-columns: 1fr; }
+
+    .actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .continue { width: 100%; }
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <a href="/" class="brand">
+        âŒ– Explore<span>Anywhere</span>
+    </a>
+
+    <div class="nav-actions">
+        <a href="/">â† Back to Home</a>
+
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'logout' %}" style="margin:0">
+            {% csrf_token %}
+            <button type="submit" class="logout">Logout</button>
+        </form>
+        {% else %}
+        <a href="/accounts/login/">Login</a>
+        {% endif %}
+    </div>
+</nav>
+
+<main class="container">
+
+    <div class="heading">
+        <span class="step">STEP 1 OF 2 â€” DESTINATION</span>
+
+        <h1>Where would you like to explore?</h1>
+
+        <p>
+            Select a province and city to discover places
+            based on your interests.
+        </p>
+    </div>
+
+    {% for message in messages %}
+        <div class="notice">{{ message }}</div>
+    {% endfor %}
+
+    <div class="filters">
+        <div class="filter">
+            <label for="province-filter">Select Province</label>
+
+            <select id="province-filter">
+                <option value="">All Provinces</option>
+
+                {% for group in province_groups %}
+                <option value="{{ group.province }}">
+                    {{ group.province }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter">
+            <label for="city-search">Search Cities</label>
+
+            <input
+                type="search"
+                id="city-search"
+                placeholder="Search Kabankalan, Bacolod, Cebu..."
+                autocomplete="off"
+            >
+        </div>
+    </div>
+
+    <div class="summary">
+        <span>
+            {{ province_total }} provinces Â· {{ city_total }} cities
+        </span>
+        <span id="visible-count"></span>
+    </div>
+
+    <form method="post" action="{% url 'city_choose' %}">
+        {% csrf_token %}
+
+        <input
+            type="hidden"
+            name="city_id"
+            id="selected-id"
+            value="{{ selected_id|default:'' }}"
+        >
+
+        {% for group in province_groups %}
+
+        <section
+            class="province-group"
+            data-province="{{ group.province }}"
+        >
+
+            <div class="province-header">
+                <h2>ðŸ“ {{ group.province }}</h2>
+
+                <span class="province-count">
+                    {{ group.cities|length }} Cities
+                </span>
+            </div>
+
+            <div class="city-grid">
+
+                {% for city in group.cities %}
+
+                <button
+                    type="button"
+                    class="city-card {% if selected_id == city.pk %}selected{% endif %}"
+                    data-id="{{ city.pk }}"
+                    data-name="{{ city.name }}"
+                    data-province="{{ city.province }}"
+                    aria-pressed="{% if selected_id == city.pk %}true{% else %}false{% endif %}"
+                >
+
+                    <div class="city-visual">
+                        {% if city.banner_image %}
+                        <img
+                            src="{{ city.banner_image.url }}"
+                            alt="{{ city.name }}"
+                        >
+                        {% else %}
+                        ðŸ™ï¸
+                        {% endif %}
+                    </div>
+
+                    <div class="city-info">
+                        <div>
+                            <h3>{{ city.name }}</h3>
+                            <p>{{ city.province }}, Philippines</p>
+                        </div>
+
+                        <span class="checkmark">âœ“</span>
+                    </div>
+
+                </button>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+        {% empty %}
+        <div class="empty">
+            No cities available. Add cities through Django Admin.
+        </div>
+        {% endfor %}
+
+        <div class="empty" id="no-results" hidden>
+            No cities match your search.
+        </div>
+
+        <div class="actions">
+            <div>
+                <strong id="selection-label">
+                    Choose a city to continue
+                </strong>
+                <p>
+                    Your selected city will be saved for recommendations.
+                </p>
+            </div>
+
+            <button
+                type="submit"
+                id="continue-btn"
+                class="continue"
+                disabled
+            >
+                Continue to Hobbies â†’
+            </button>
+        </div>
+    </form>
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const cards = [...document.querySelectorAll(".city-card")];
+    const sections = [...document.querySelectorAll(".province-group")];
+
+    const province = document.getElementById("province-filter");
+    const search = document.getElementById("city-search");
+    const selected = document.getElementById("selected-id");
+    const button = document.getElementById("continue-btn");
+    const label = document.getElementById("selection-label");
+    const count = document.getElementById("visible-count");
+
+    function selectCity(id) {
+        let chosen = null;
+
+        cards.forEach(card => {
+            const active = card.dataset.id === String(id);
+
+            card.classList.toggle("selected", active);
+            card.setAttribute("aria-pressed", String(active));
+
+            if (active) chosen = card;
+        });
+
+        selected.value = chosen ? chosen.dataset.id : "";
+        button.disabled = !chosen;
+
+        label.textContent = chosen
+            ? "Selected: " + chosen.dataset.name +
+              ", " + chosen.dataset.province
+            : "Choose a city to continue";
+    }
+
+    function filterCities() {
+        const selectedProvince = province.value.toLowerCase();
+        const query = search.value.trim().toLowerCase();
+
+        let visible = 0;
+
+        sections.forEach(section => {
+            let matches = 0;
+
+            section.querySelectorAll(".city-card").forEach(card => {
+                const cityName = card.dataset.name.toLowerCase();
+                const cityProvince = card.dataset.province.toLowerCase();
+
+                const provinceMatch =
+                    !selectedProvince ||
+                    selectedProvince === cityProvince;
+
+                const searchMatch =
+                    !query ||
+                    cityName.includes(query) ||
+                    cityProvince.includes(query);
+
+                const show = provinceMatch && searchMatch;
+
+                card.hidden = !show;
+
+                if (show) {
+                    matches++;
+                    visible++;
+                }
+            });
+
+            section.hidden = matches === 0;
+        });
+
+        count.textContent = visible + " shown";
+
+        document.getElementById("no-results").hidden =
+            visible !== 0 || cards.length === 0;
+    }
+
+    cards.forEach(card => {
+        card.addEventListener("click", function() {
+            selectCity(card.dataset.id);
+        });
+    });
+
+    province.addEventListener("change", filterCities);
+    search.addEventListener("input", filterCities);
+
+    selectCity(selected.value);
+    filterCities();
+});
+</script>
+
+</body>
+</html>

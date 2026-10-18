@@ -1,0 +1,160 @@
+
+{% extends "theme/public_base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/explore.css' %}">
+
+<main class="explore-city-page">
+  <div class="explore-city-container">
+
+    <header class="city-page-heading">
+      <span class="step-label">STEP 1 OF 2: DESTINATION</span>
+      <h1>Where would you like to explore?</h1>
+      <p>
+        Select your province and city to discover places
+        based on your interests.
+      </p>
+    </header>
+
+    {% for message in messages %}
+      <div class="alert alert-info" role="status">
+        {{ message }}
+      </div>
+    {% endfor %}
+    
+<div class="detect-action">
+  <button type="button"
+          id="detect-location"
+          class="city-secondary">
+    <svg viewBox="0 0 24 24" width="18" height="18"
+         fill="none" stroke="currentColor"
+         stroke-width="2" aria-hidden="true">
+      <circle cx="12" cy="12" r="8"/>
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+    </svg>
+    Detect my location
+  </button>
+</div>
+
+
+    <section class="detected-location" id="detected-row" hidden>
+      <div class="detected-copy">
+        <span class="detected-icon">
+          <svg viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2"
+               aria-hidden="true">
+            <circle cx="12" cy="12" r="8"/>
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+          </svg>
+        </span>
+        <div>
+          <span class="muted">We detected your location</span>
+          <strong id="detected-name"></strong>
+        </div>
+        <span class="status-badge active">Nearby</span>
+      </div>
+      <button class="city-primary" type="button"
+              id="use-detected-city">
+        Use this city
+      </button>
+    </section>
+
+    <div class="city-filters">
+      <div>
+        <label for="province-select">Select province</label>
+        <select id="province-select">
+          <option value="">Select your province</option>
+        </select>
+      </div>
+      <div>
+        <label for="city-search">Search cities or municipalities</label>
+        <div class="search-holder">
+          <svg viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2"
+               aria-hidden="true">
+            <circle cx="10.5" cy="10.5" r="6.5"/>
+            <path d="m16 16 5 5"/>
+          </svg>
+          <input id="city-search" type="search"
+                 placeholder="Type a city or municipality name"
+                 disabled>
+        </div>
+      </div>
+    </div>
+
+    <div class="city-result-meta">
+      <span id="city-count"></span>
+      <span id="city-status" role="status" aria-live="polite"></span>
+    </div>
+
+    <form id="choose-city-form"
+          method="post"
+          action="{% url 'city_choose' %}">
+      {% csrf_token %}
+      <input type="hidden" name="city_id" id="city-id"
+             value="{% if selected_city %}{{ selected_city.pk }}{% endif %}">
+
+      <div id="city-hint" class="city-hint">
+        Choose your province to see its cities.
+      </div>
+
+      <div id="city-grid" class="city-card-grid" hidden></div>
+
+      <div id="city-empty" class="city-hint" hidden></div>
+
+      <div class="city-load-row">
+        <button type="button" id="load-more"
+                class="city-secondary" hidden>
+          Load more cities
+        </button>
+      </div>
+
+      {% if can_add_city and add_city_url %}
+        <a href="{{ add_city_url }}"
+           class="city-add-link" id="admin-add-city" hidden>
+          <svg viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2"
+               aria-hidden="true">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          Add City
+        </a>
+      {% endif %}
+
+      <div class="city-sticky-bar">
+        <div>
+          <strong id="selected-city-label">
+            Choose a city to continue
+          </strong>
+          <p>Your destination will be saved for recommendations.</p>
+        </div>
+        <button type="submit" class="city-primary"
+                id="continue-to-hobbies" disabled>
+          Continue to Hobbies
+          <svg viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2"
+               aria-hidden="true">
+            <path d="M5 12h14m-7-7 7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+  </div>
+</main>
+
+{{ geo_cities|json_script:"geolocation-cities" }}
+
+<script>
+  window.exploreCityConfig = {
+    provincesUrl: "{% url 'api_provinces' %}",
+    citiesUrl: "{% url 'api_cities' %}",
+    selectedCityId: "{% if selected_city %}{{ selected_city.pk }}{% endif %}",
+    selectedProvince: "{% if selected_city %}{{ selected_city.province_ref.slug|escapejs }}{% endif %}"
+  };
+</script>
+<script defer src="{% static 'js/geolocation.js' %}"></script>
+<script defer src="{% static 'js/city_select.js' %}?v=selectable-v3"></script>
+{% endblock %}

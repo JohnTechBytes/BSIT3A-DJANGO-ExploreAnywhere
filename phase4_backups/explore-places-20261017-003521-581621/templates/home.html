@@ -1,0 +1,1130 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExploreAnywhere | Discover Your Next Adventure</title>
+    <meta name="description"
+          content="Discover Kabankalan destinations that match your hobbies.">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #1769ff;
+            --dark: #101a2e;
+            --muted: #68758a;
+            --light: #f5f8ff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            color: var(--dark);
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            background: #fff;
+        }
+
+        a { text-decoration: none; }
+
+        .navbar {
+            min-height: 76px;
+            background: rgba(255,255,255,.97);
+            border-bottom: 1px solid #e9edf5;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark);
+            font-size: 23px;
+            font-weight: 800;
+            letter-spacing: -.7px;
+        }
+
+        .brand-icon {
+            display: grid;
+            place-items: center;
+            width: 43px;
+            height: 43px;
+            color: white;
+            background: var(--primary);
+            border-radius: 14px;
+        }
+
+        .brand span span { color: var(--primary); }
+
+        .nav-link {
+            color: #46536a;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-primary-custom {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 13px 22px;
+            color: white;
+            background: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            font-weight: 700;
+            transition: .2s;
+        }
+
+        .btn-primary-custom:hover {
+            color: white;
+            background: #0755e7;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-custom {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            color: var(--dark);
+            background: white;
+            border: 1px solid #dce3ef;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 85px 0 76px;
+            background:
+                radial-gradient(ellipse at 90% 10%,
+                    rgba(68,131,255,.16), transparent 38%),
+                radial-gradient(ellipse at 0% 90%,
+                    rgba(48,190,170,.10), transparent 35%),
+                #f7f9ff;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 13px;
+            color: #1558cf;
+            background: #e8f0ff;
+            border: 1px solid #d9e6ff;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .5px;
+        }
+
+        .hero h1 {
+            max-width: 690px;
+            margin: 22px 0;
+            font-size: clamp(42px, 5.5vw, 69px);
+            font-weight: 850;
+            line-height: 1.07;
+            letter-spacing: -3px;
+        }
+
+        .gradient-text {
+            color: var(--primary);
+        }
+
+        .hero-description {
+            max-width: 560px;
+            color: var(--muted);
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        .search-panel {
+            display: flex;
+            gap: 10px;
+            max-width: 650px;
+            margin-top: 28px;
+            padding: 8px;
+            background: white;
+            border: 1px solid #e0e6f0;
+            border-radius: 17px;
+            box-shadow: 0 12px 35px rgba(26,48,90,.08);
+        }
+
+        .search-panel input {
+            flex: 1;
+            width: 0;
+            min-width: 0;
+            padding: 12px;
+            border: 0;
+            outline: none;
+            background: transparent;
+        }
+
+        .search-panel button { white-space: nowrap; }
+
+        .hero-note {
+            margin-top: 15px;
+            color: #778298;
+            font-size: 12px;
+        }
+
+        .preview-card {
+            position: relative;
+            max-width: 470px;
+            margin: 20px auto 0;
+            padding: 19px;
+            background: white;
+            border: 1px solid #e2e8f4;
+            border-radius: 25px;
+            box-shadow: 0 25px 75px rgba(27,49,91,.12);
+            transform: rotate(1deg);
+        }
+
+        .preview-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .preview-title { font-weight: 800; }
+
+        .live-label {
+            padding: 6px 10px;
+            color: #16835b;
+            background: #e6f8ef;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .map-preview {
+            position: relative;
+            height: 205px;
+            overflow: hidden;
+            border-radius: 17px;
+            background-color: #eaf0e8;
+            background-image:
+                linear-gradient(35deg, transparent 46%,
+                    #fff 47%, #fff 50%, transparent 51%),
+                linear-gradient(115deg, transparent 44%,
+                    #fff 45%, #fff 48%, transparent 49%),
+                linear-gradient(0deg, transparent 90%,
+                    #d3dfce 91%, #d3dfce 93%, transparent 94%);
+            background-size: 110px 90px, 140px 115px, 100% 55px;
+        }
+
+        .map-label {
+            position: absolute;
+            color: #64715e;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .map-pin {
+            position: absolute;
+            display: grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            color: white;
+            background: var(--primary);
+            border: 3px solid white;
+            border-radius: 50% 50% 50% 8px;
+            box-shadow: 0 4px 10px #23324b33;
+            transform: rotate(-45deg);
+        }
+
+        .map-pin span { transform: rotate(45deg); }
+
+        .place-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+            padding: 12px;
+            border: 1px solid #edf0f6;
+            border-radius: 14px;
+        }
+
+        .place-icon {
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            background: #edf3ff;
+            border-radius: 12px;
+            font-size: 22px;
+        }
+
+        .place-name { font-size: 13px; font-weight: 800; }
+        .place-subtitle { margin-top: 3px; color: var(--muted); font-size: 11px; }
+        .place-distance { margin-left: auto; color: #52627b; font-size: 11px; }
+
+        .floating-badge {
+            position: absolute;
+            right: -22px;
+            bottom: 80px;
+            padding: 13px 17px;
+            background: white;
+            border: 1px solid #e5eaf4;
+            border-radius: 14px;
+            box-shadow: 0 10px 35px #17284a1a;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .floating-badge small {
+            display: block;
+            margin-top: 4px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .section { padding: 78px 0; }
+
+        .section-heading {
+            margin-bottom: 12px;
+            font-size: clamp(28px, 3.5vw, 39px);
+            font-weight: 850;
+            letter-spacing: -1.3px;
+        }
+
+        .section-description {
+            max-width: 600px;
+            margin: 0 auto;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .hobby-card {
+            height: 100%;
+            padding: 23px 18px;
+            background: white;
+            border: 1px solid #e7ebf3;
+            border-radius: 18px;
+            transition: .2s;
+        }
+
+        .hobby-card:hover {
+            border-color: #a9c5ff;
+            box-shadow: 0 12px 28px #1b4a9410;
+            transform: translateY(-4px);
+        }
+
+        .hobby-emoji {
+            display: grid;
+            place-items: center;
+            width: 52px;
+            height: 52px;
+            margin-bottom: 18px;
+            background: #edf3ff;
+            border-radius: 15px;
+            font-size: 25px;
+        }
+
+        .hobby-card h3 {
+            margin-bottom: 8px;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .hobby-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .feature-section { background: var(--light); }
+
+        .feature-card {
+            height: 100%;
+            padding: 25px;
+            background: white;
+            border: 1px solid #e7ecf5;
+            border-radius: 18px;
+        }
+
+        .feature-card h3 {
+            margin: 16px 0 9px;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .feature-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .feature-icon {
+            display: grid;
+            place-items: center;
+            width: 48px;
+            height: 48px;
+            color: var(--primary);
+            background: #eaf1ff;
+            border-radius: 14px;
+            font-size: 22px;
+        }
+
+        .cta {
+            padding: 45px;
+            color: white;
+            background: linear-gradient(120deg, #102344, #1c56b9);
+            border-radius: 25px;
+        }
+
+        .cta p { color: #d7e3fa; }
+
+        footer {
+            padding: 28px 0;
+            color: #778298;
+            border-top: 1px solid #e9edf5;
+            font-size: 13px;
+        }
+
+        @media (max-width: 767px) {
+            .hero { padding: 55px 0; }
+            .hero h1 { letter-spacing: -2px; }
+            .preview-card { margin: 35px 5px 10px; }
+            .floating-badge { right: -4px; bottom: 45px; }
+            .section { padding: 55px 0; }
+            .cta { padding: 28px 22px; }
+            .search-panel { flex-wrap: wrap; }
+            .search-panel input { flex-basis: 100%; }
+            .search-panel button { width: 100%; }
+        }
+    /* ExploreAnywhere Hobby Grid Fix */
+#hobbies { padding:76px 0 90px; background:#fff; }
+#hobbies .container { max-width:1200px; margin:auto; }
+#hobbies .text-center.mb-5 { margin-bottom:40px!important; }
+#hobbies .row.g-3 {
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:20px;
+    margin:0!important;
+    align-items:stretch;
+}
+#hobbies .row.g-3 > div {
+    width:100%!important;
+    max-width:none!important;
+    padding:0!important;
+    margin:0!important;
+    min-width:0;
+}
+#hobbies .row.g-3 > div > a {
+    display:block;
+    height:100%;
+    color:inherit;
+    text-decoration:none;
+}
+#hobbies .hobby-card {
+    display:flex;
+    flex-direction:column;
+    width:100%;
+    height:100%;
+    min-height:190px;
+    padding:24px;
+    border:1px solid #e2e8f0;
+    border-radius:18px;
+    background:#fff;
+    box-shadow:0 3px 12px rgba(16,26,46,.025);
+    transition:.2s;
+}
+#hobbies .hobby-card:hover {
+    transform:translateY(-4px);
+    border-color:#93b4ff;
+    box-shadow:0 12px 30px rgba(23,105,255,.10);
+}
+#hobbies .hobby-emoji {
+    display:grid;
+    place-items:center;
+    width:52px;
+    height:52px;
+    margin-bottom:17px;
+    background:#edf3ff;
+    border-radius:14px;
+    font-size:25px;
+}
+#hobbies .hobby-card h3 {
+    margin:0 0 8px;
+    font-size:16px;
+    font-weight:800;
+    line-height:1.4;
+}
+#hobbies .hobby-card p {
+    margin:0;
+    font-size:13px;
+    line-height:1.65;
+    color:#68758a;
+}
+@media(max-width:991px) {
+    #hobbies .row.g-3 {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:16px;
+    }
+}
+@media(max-width:575px) {
+    #hobbies { padding:50px 0 60px; }
+    #hobbies .row.g-3 { gap:12px; }
+    #hobbies .hobby-card { min-height:165px; padding:16px; }
+    #hobbies .hobby-card h3 { font-size:14px; }
+    #hobbies .hobby-card p { font-size:12px; }
+}
+@media(max-width:360px) {
+    #hobbies .row.g-3 { grid-template-columns:1fr; }
+}
+/* EXPLOREANYWHERE - REPAIRED HOBBY SECTION */
+
+#hobbies {
+    padding: 76px 0 90px;
+    background: #fff;
+}
+
+#hobbies .explore-hobby-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+    width: 100%;
+    align-items: stretch;
+}
+
+#hobbies .explore-hobby-grid > .hobby-card {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    min-height: 185px;
+    height: auto;
+    padding: 24px;
+    margin: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgba(16,26,46,.03);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+#hobbies .explore-hobby-grid > .hobby-card:hover {
+    transform: translateY(-4px);
+    border-color: #93b4ff;
+    box-shadow: 0 12px 30px rgba(23,105,255,.10);
+}
+
+#hobbies .hobby-emoji {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    margin-bottom: 17px;
+    background: #edf3ff;
+    border-radius: 14px;
+    font-size: 25px;
+}
+
+#hobbies .hobby-card h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.4;
+    overflow-wrap: break-word;
+}
+
+#hobbies .hobby-card p {
+    margin: 0;
+    color: #68758a;
+    font-size: 13px;
+    line-height: 1.65;
+    overflow-wrap: break-word;
+}
+
+@media (max-width: 991px) {
+    #hobbies .explore-hobby-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+}
+
+@media (max-width: 575px) {
+    #hobbies {
+        padding: 50px 0 60px;
+    }
+
+    #hobbies .explore-hobby-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    #hobbies .explore-hobby-grid > .hobby-card {
+        min-height: 165px;
+        padding: 16px;
+    }
+
+    #hobbies .hobby-card h3 {
+        font-size: 14px;
+    }
+
+    #hobbies .hobby-card p {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 360px) {
+    #hobbies .explore-hobby-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* ExploreAnywhere Landing Hero Background */
+.hero {
+    position: relative;
+    isolation: isolate;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(8, 20, 42, 0.88) 0%,
+            rgba(8, 20, 42, 0.70) 45%,
+            rgba(8, 20, 42, 0.30) 100%
+        ),
+        url("{% static 'img/landing-background.png' %}")
+        center center / cover no-repeat !important;
+
+    min-height: 650px;
+    display: flex;
+    align-items: center;
+    padding: 90px 0;
+}
+
+.hero h1 {
+    color: #ffffff;
+    text-shadow: 0 3px 20px rgba(0, 0, 0, .25);
+}
+
+.hero .gradient-text {
+    color: #70acff;
+}
+
+.hero .hero-description {
+    color: #e2e8f0;
+}
+
+.hero .hero-note {
+    color: #dbeafe;
+}
+
+.hero .eyebrow {
+    color: #ffffff;
+    background: rgba(37, 99, 235, .35);
+    border-color: rgba(255, 255, 255, .25);
+    backdrop-filter: blur(8px);
+}
+
+.hero .search-panel {
+    background: rgba(255, 255, 255, .97);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, .20);
+}
+
+@media (max-width: 991px) {
+    .hero {
+        min-height: auto;
+        padding: 75px 0;
+        background-position: center;
+    }
+}
+
+@media (max-width: 575px) {
+    .hero {
+        padding: 65px 0;
+        background-position: 58% center;
+    }
+
+    .hero h1 {
+        font-size: clamp(36px, 9vw, 52px);
+        letter-spacing: -1.5px;
+    }
+}
+/* EXPLOREANYWHERE DARK NAVBAR START */
+
+.navbar {
+    background: #101a2e !important;
+    border-bottom: 1px solid rgba(255,255,255,.10) !important;
+    min-height: 76px;
+    box-shadow: 0 4px 22px rgba(0,0,0,.12);
+}
+
+.navbar .brand {
+    color: #ffffff !important;
+}
+
+.navbar .brand span span {
+    color: #60a5fa !important;
+}
+
+.navbar .brand-icon {
+    color: #ffffff;
+    background: #1769ff;
+}
+
+.navbar .nav-link {
+    color: #cbd5e1 !important;
+    font-weight: 600;
+    transition: color .2s ease;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus,
+.navbar .nav-link.active {
+    color: #ffffff !important;
+}
+
+.navbar .btn-outline-custom {
+    background: transparent !important;
+    color: #ffffff !important;
+    border: 1px solid #64748b !important;
+}
+
+.navbar .btn-outline-custom:hover {
+    background: rgba(255,255,255,.10) !important;
+    border-color: #ffffff !important;
+}
+
+.navbar .btn-primary-custom {
+    color: #ffffff !important;
+    background: #1769ff !important;
+    border-color: #1769ff !important;
+}
+
+.navbar .btn-primary-custom:hover {
+    background: #0755e7 !important;
+    border-color: #0755e7 !important;
+}
+
+.navbar .navbar-toggler {
+    border: 1px solid rgba(255,255,255,.35);
+    box-shadow: none;
+}
+
+.navbar .navbar-toggler-icon {
+    filter: invert(1) grayscale(1) brightness(2);
+}
+
+@media (max-width: 991px) {
+    .navbar .navbar-collapse {
+        padding: 18px 0;
+    }
+
+    .navbar .navbar-nav {
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+
+    .navbar .nav-link {
+        padding: 10px 12px;
+        border-radius: 8px;
+    }
+
+    .navbar .nav-link:hover {
+        background: rgba(255,255,255,.08);
+    }
+
+    .navbar .btn-primary-custom,
+    .navbar .btn-outline-custom {
+        width: 100%;
+        margin: 6px 0 0 !important;
+    }
+}
+
+/* EXPLOREANYWHERE DARK NAVBAR END */
+
+/* ExploreAnywhere Phase 4A: consistent and accessible main navigation */
+.navbar .ea-home-nav-links .dropdown > button.nav-link {
+    color: #e2e8f0 !important; border: 0; background: transparent !important;
+    font-size: 13px; font-weight: 600; box-shadow: none; padding: 9px 8px;
+}
+.navbar .ea-home-nav-links .dropdown-menu {
+    border: 1px solid #dce6f3; border-radius: 12px;
+    box-shadow: 0 14px 32px rgba(0,0,0,.16); padding: 8px;
+}
+.navbar .ea-home-nav-links .dropdown-menu a.dropdown-item {
+    color: #183456 !important; font-size: 13px; border-radius: 6px; padding: 10px 12px;
+}
+.navbar .ea-home-nav-links .dropdown-menu a.dropdown-item:hover { background: #eff6ff; }
+.navbar .ea-home-logout { margin-bottom: 0; }
+.navbar .ea-home-logout button { cursor: pointer; font-size: 13px; padding: 10px 14px; }
+.navbar .ea-home-nav-links > .nav-link { font-size: 13px; }
+.navbar .ea-home-nav-links .btn-outline-custom,
+.navbar .ea-home-nav-links .btn-primary-custom { font-size: 13px; padding: 10px 13px; }
+.navbar :is(a,button):focus-visible { outline: 3px solid #93c5fd !important; outline-offset: 3px; }
+@media (max-width: 1199px) and (min-width: 992px) {
+    .navbar .container { max-width: 98%; }
+    .navbar .brand { font-size: 18px; }
+    .navbar .ea-home-nav-links { gap: 4px !important; }
+    .navbar .ea-home-nav-links > .nav-link { font-size: 12px; padding-inline: 5px; }
+    .navbar .ea-home-logout button { padding: 9px 10px; }
+}
+@media (max-width: 991px) {
+    .navbar .ea-home-logout, .navbar .ea-home-logout button { width: 100%; }
+    .navbar .ea-home-nav-links .dropdown-menu { position: static !important; box-shadow: none; }
+    .navbar .ea-home-nav-links .dropdown > button.nav-link { width: 100%; text-align: left; padding: 10px 12px; }
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top" aria-label="Main navigation">
+    <div class="container">
+        <a class="brand" href="{% url 'home' %}">
+            <div class="brand-icon" aria-hidden="true">&#8982;</div>
+            <span>Explore<span>Anywhere</span></span>
+        </a>
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <div class="navbar-nav ms-auto align-items-lg-center gap-lg-2 ea-home-nav-links">
+                <a class="nav-link" href="{% url 'home' %}">Home</a>
+                <a class="nav-link" href="{% url 'hobbies:select' %}">Explore Places</a>
+                <a class="nav-link" href="{% url 'hobbies:select' %}">Hobbies</a>
+                <a class="nav-link" href="#how-it-works">About</a>
+                {% if user.is_authenticated %}
+                    <a class="nav-link" href="{% url 'places:saved_places' %}">Saved</a>
+                    <a class="nav-link" href="{% url 'places:journey_dashboard' %}">My Journey</a>
+                    <div class="dropdown ea-home-more">
+                        <button class="nav-link dropdown-toggle btn" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">More</button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'itineraries:list' %}">My Itineraries</a></li>
+                            <li><a class="dropdown-item" href="{% url 'places:my_reviews' %}">My Reviews</a></li>
+                            <li><a class="dropdown-item" href="{% url 'visits:list' %}">My Visits</a></li>
+                        </ul>
+                    </div>
+                    {% if user.is_staff %}
+                        <a class="btn-outline-custom ms-lg-1" href="{% url 'admin:index' %}">Staff Dashboard</a>
+                    {% endif %}
+                    <form method="post" action="{% url 'logout' %}" class="ea-home-logout ms-lg-1">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-primary-custom">Logout</button>
+                    </form>
+                {% else %}
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    <a class="btn-primary-custom ms-lg-1" href="{% url 'register' %}">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main>
+    <section class="hero">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-7">
+                    <span class="eyebrow">
+                        ✦ YOUR HOBBIES. YOUR CITY. YOUR ADVENTURE.
+                    </span>
+
+                    <h1>
+                        Discover Kabankalan Places<br>
+                        That match your<br>
+                        <span class="gradient-text">Hobbies.</span>
+                    </h1>
+
+                    <p class="hero-description">
+                        One City. Your Hobbies. Our Map.
+                    </p>
+
+                    {% url 'nl_search' as nl_search_url %}
+
+<form class="search-panel"
+      action="{% url 'hobbies:search' %}"
+      method="get">
+
+    <input type="search"
+           name="q"
+           placeholder="Where can I play billiards tonight?"
+           aria-label="Search places"
+           required>
+    <button class="btn-primary-custom" type="submit">
+        Explore Places →
+    </button>
+</form>
+
+                    <p class="hero-note">
+                        ✓ Kabankalan City Only &nbsp; ✓ Hobby-based matching
+                        &nbsp; ✓ Map-guided discovery
+                    </p>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="preview-card">
+                        <div class="preview-top">
+                            <div>
+                                <div class="preview-title">Explore Kabankalan</div>
+                                <small class="text-secondary">
+                                    Discover places around your city
+                                </small>
+                            </div>
+                            <span class="live-label">● KABANKALAN EXPLORER</span>
+                        </div>
+
+                        <div class="map-preview">
+                            <span class="map-label" style="top:20px;left:20px;">
+                                Main Road
+                            </span>
+                            <span class="map-label" style="top:100px;right:20px;">
+                                City Center
+                            </span>
+                            <span class="map-label" style="bottom:18px;left:90px;">
+                                Local Avenue
+                            </span>
+
+                            <div class="map-pin" style="top:48px;left:26%;">
+                                <span>⚑</span>
+                            </div>
+                            <div class="map-pin" style="top:100px;left:53%;background:#19a779;">
+                                <span>★</span>
+                            </div>
+                            <div class="map-pin" style="top:35px;right:19%;background:#f59b32;">
+                                <span>●</span>
+                            </div>
+                            <div class="map-pin" style="bottom:25px;right:28%;">
+                                <span>♥</span>
+                            </div>
+                        </div>
+
+                        <div class="place-row">
+                            <div class="place-icon">🎱</div>
+                            <div>
+                                <div class="place-name">Billiards & Recreation</div>
+                                <div class="place-subtitle">
+                                    Example hobby recommendation
+                                </div>
+                            </div>
+                            <span class="place-distance">View →</span>
+                        </div>
+
+                        <div class="place-row">
+                            <div class="place-icon">☕</div>
+                            <div>
+                                <div class="place-name">Cafés & Hangout Spots</div>
+                                <div class="place-subtitle">
+                                    Find your next favorite spot
+                                </div>
+                            </div>
+                            <span class="place-distance">View →</span>
+                        </div>
+
+                        <div class="floating-badge">
+                            ✨ Made for your interests
+                            <small>Discover places in Kabankalan City</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="hobbies">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="eyebrow">FIND YOUR KIND OF FUN</span>
+            <h2 class="section-heading mt-3">What do you love doing?</h2>
+            <p class="section-description">
+                Choose your interests and discover places that fit
+                your lifestyle, wherever your journey takes you.
+            </p>
+        </div>
+
+        <div class="explore-hobby-grid">
+
+            <div class="hobby-card">
+                <div class="hobby-emoji">🎱</div>
+                <h3>Billiards</h3>
+                <p>Find billiard halls and recreation spots.</p>
+            </div>
+
+            <div class="hobby-card">
+                <div class="hobby-emoji">🏀</div>
+                <h3>Basketball</h3>
+                <p>Discover courts and sports facilities.</p>
+            </div>
+
+            <div class="hobby-card">
+                <div class="hobby-emoji">☕</div>
+                <h3>Café Hopping</h3>
+                <p>Explore cafés and relaxing hangout spots.</p>
+            </div>
+
+            <div class="hobby-card">
+                <div class="hobby-emoji">🥾</div>
+                <h3>Hiking</h3>
+                <p>Find trails, nature spots, and outdoor escapes.</p>
+            </div>
+
+            <div class="hobby-card">
+                <div class="hobby-emoji">🎮</div>
+                <h3>Gaming</h3>
+                <p>Discover gaming cafés and entertainment venues.</p>
+            </div>
+
+            <div class="hobby-card">
+                <div class="hobby-emoji">📸</div>
+                <h3>Photography</h3>
+                <p>Explore scenic spots and photo-worthy places.</p>
+            </div>
+
+            <div class="hobby-card">
+                <div class="hobby-emoji">🍜</div>
+                <h3>Food Trips</h3>
+                <p>Discover restaurants and local food favorites.</p>
+            </div>
+
+            <div class="hobby-card">
+                <div class="hobby-emoji">🌿</div>
+                <h3>Nature & Outdoors</h3>
+                <p>Find parks, gardens, and natural attractions.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="section feature-section" id="features">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="eyebrow">EXPLORE SMARTER</span>
+                <h2 class="section-heading mt-3">
+                    More than just a place finder
+                </h2>
+                <p class="section-description">
+                    Your interests guide your discoveries.
+                    Discover Kabankalan destinations, compare local venues, and make
+                    the most of your free time.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">✦</div>
+                        <h3>Hobby-Based Matching</h3>
+                        <p>
+                            Find venues that fit your interests instead
+                            of scrolling through unrelated places.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">⌖</div>
+                        <h3>Live Map Discovery</h3>
+                        <p>
+                            View place locations, compare distances,
+                            and explore venues on an interactive map.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">✧</div>
+                        <h3>AI-Powered Search</h3>
+                        <p>
+                            Describe what you want in everyday language
+                            and find matching places from available data.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">🌎</div>
+                        <h3>Explore Kabankalan</h3>
+                        <p>
+                            Discover verified destinations around Kabankalan
+                            through hobbies, maps, and local experiences.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">🗓️</div>
+                        <h3>Plan Your Itinerary</h3>
+                        <p>
+                            Organize places into a multi-stop trip
+                            based on your interests and available time.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">✓</div>
+                        <h3>Trusted Place Details</h3>
+                        <p>
+                            View available contact details, opening hours,
+                            photos, reviews, and verification status.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="how-it-works">
+        <div class="container">
+            <div class="cta">
+                <div class="row align-items-center g-4">
+                    <div class="col-lg-8">
+                        <h2 class="fw-bold mb-3">
+                            Your next favorite place is waiting.
+                        </h2>
+                        <p class="mb-lg-0">
+                            Explore your hobbies, discover Kabankalan,
+                            and make every trip more meaningful.
+                        </p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end">
+                        <a href="{% url 'hobbies:select' %}" class="btn btn-light fw-bold px-4 py-3">
+                            Start Exploring →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="container d-flex flex-wrap justify-content-between gap-3">
+        <span>© {% now "Y" %} ExploreAnywhere</span>
+        <span>Find places. Live the vibe.</span>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+

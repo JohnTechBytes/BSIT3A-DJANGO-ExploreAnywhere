@@ -1,0 +1,327 @@
+#!/usr/bin/env python3
+r"""Phase 4B: polish the EXISTING ExploreAnywhere Kabankalan Journey dashboard.
+
+Run from the Django project root:
+  python "$env:USERPROFILE\Downloads\exploreanywhere_phase4b_journey_dashboard.py"
+
+Template-only, no database or migration changes. Existing real model counts and
+previews stay connected. The installer refuses to overwrite unexpected layouts.
+"""
+from __future__ import annotations
+
+from datetime import datetime
+from pathlib import Path
+import re
+import shutil
+import sys
+
+TARGET = Path("templates/places/journey_dashboard.html")
+MARKER = "ExploreAnywhere Phase 4B Journey UI v1"
+
+DASHBOARD = r'''{% extends "theme/public_base.html" %}
+{% block extra_css %}
+<style>
+/* ExploreAnywhere Phase 4B Journey UI v1 */
+.ea4b-page {--ea4b-navy:#0c284a;--ea4b-blue:#075ee4;--ea4b-line:#dbe6f3;max-width:1220px;margin:0 auto;padding:36px 22px 92px;color:#173454}
+.ea4b-page * {box-sizing:border-box}
+.ea4b-page a {text-decoration:none}
+.ea4b-page a:focus-visible {outline:3px solid #f59e0b;outline-offset:4px;border-radius:8px}
+.ea4b-hero {display:flex;align-items:center;justify-content:space-between;gap:28px;padding:35px 37px;border-radius:24px;background:linear-gradient(112deg,#0c2b56 0%,#0750b9 67%,#086ceb 100%);color:#fff;position:relative;overflow:hidden}
+.ea4b-hero::after {content:"";position:absolute;right:-70px;top:-118px;width:340px;height:340px;border:1px solid rgba(255,255,255,.2);border-radius:50%;pointer-events:none;box-shadow:0 0 0 45px rgba(255,255,255,.025),0 0 0 100px rgba(255,255,255,.025)}
+.ea4b-hero-content,.ea4b-hero-actions {position:relative;z-index:1}
+.ea4b-kicker {font-size:11px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#bed9fd;margin:0 0 12px}
+.ea4b-hero h1 {font-size:clamp(29px,3.5vw,43px);font-weight:850;line-height:1.15;letter-spacing:-1.1px;color:#fff;margin:0 0 13px}
+.ea4b-hero p:not(.ea4b-kicker) {color:#e0edff;font-size:14px;line-height:1.7;max-width:570px;margin:0}
+.ea4b-hero-actions {display:flex;flex-wrap:wrap;gap:10px;flex-shrink:0}
+.ea4b-btn {display:inline-flex;align-items:center;justify-content:center;min-height:41px;padding:10px 15px;border-radius:11px;font-weight:750;font-size:13px;line-height:1.4;transition:transform .16s,background .16s}
+.ea4b-btn:hover {transform:translateY(-1px)}
+.ea4b-btn-light {background:#fff;color:#064ea8!important}
+.ea4b-btn-outline {border:1px solid rgba(255,255,255,.65);color:#fff!important;background:rgba(255,255,255,.07)}
+.ea4b-btn-blue {background:#075ee4;color:#fff!important}
+.ea4b-btn-soft {background:#eff6ff;border:1px solid #cde0fc;color:#1253aa!important}
+.ea4b-eyebrow {display:flex;align-items:center;justify-content:space-between;gap:12px;margin:28px 0 13px}
+.ea4b-eyebrow h2 {margin:0;color:#153658;font-size:19px;font-weight:800}
+.ea4b-caption {color:#64758c;font-size:12px;margin:0}
+.ea4b-metrics {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.ea4b-metric {position:relative;display:flex;flex-direction:column;gap:11px;background:#fff;border:1px solid var(--ea4b-line);border-radius:17px;padding:18px 15px;min-width:0;box-shadow:0 6px 24px rgba(9,43,84,.035)}
+.ea4b-metric:hover {border-color:#a7c9f7}
+.ea4b-metric-symbol {width:35px;height:35px;border-radius:10px;background:#eaf3ff;color:#0c5ccb;display:grid;place-items:center;font-size:17px;font-weight:800}
+.ea4b-metric strong {display:block;font-size:29px;font-weight:850;color:#075ee4;line-height:1.1;font-variant-numeric:tabular-nums}
+.ea4b-metric span:last-child {color:#5d7088;font-size:12px;line-height:1.4}
+.ea4b-metric-pending .ea4b-metric-symbol {background:#fff4df;color:#a05b00}
+.ea4b-metric-pending strong {color:#ad6700}
+.ea4b-section-intro {display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:32px 0 14px}
+.ea4b-section-intro h2 {font-weight:850;color:#153658;font-size:23px;margin:0 0 5px}
+.ea4b-section-intro p {font-size:13px;color:#64758c;margin:0}
+.ea4b-layout {display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:16px}
+.ea4b-panel {min-width:0;background:#fff;border:1px solid var(--ea4b-line);border-radius:20px;padding:22px;box-shadow:0 8px 28px rgba(8,40,80,.035)}
+.ea4b-panel-head {display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.ea4b-panel-head h3 {color:#16375d;font-size:18px;font-weight:800;margin:0}
+.ea4b-panel-head a {font-size:12px;color:#075ee4;font-weight:800;white-space:nowrap}
+.ea4b-panel-head a:hover,.ea4b-row a:hover {text-decoration:underline}
+.ea4b-panel-sub {color:#6b7e93;font-size:12px;line-height:1.5;margin:0 0 17px}
+.ea4b-rows {display:flex;flex-direction:column}
+.ea4b-row {display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid #eef2f7;padding:14px 0}
+.ea4b-row:first-child {border-top:0;padding-top:2px}
+.ea4b-row-main {display:flex;flex-direction:column;min-width:0;gap:3px}
+.ea4b-row-main a {color:#174b87;font-size:14px;font-weight:760;overflow-wrap:anywhere}
+.ea4b-row-main span {color:#708298;font-size:11px}
+.ea4b-row-meta {flex-shrink:0;border-radius:9px;background:#eff6ff;color:#0759ba;padding:6px 9px;font-size:11px;font-weight:750}
+.ea4b-empty {display:flex;flex-direction:column;gap:7px;align-items:flex-start;border:1px dashed #cddff3;border-radius:13px;background:#f9fbfe;padding:21px}
+.ea4b-empty strong {color:#173a61;font-size:14px}
+.ea4b-empty p {color:#65768d;font-size:12px;line-height:1.6;margin:0}
+.ea4b-bottom {margin-top:15px;display:flex;gap:9px;flex-wrap:wrap}
+.ea4b-visit-approved {color:#087849;background:#e5f8ee}
+.ea4b-visit-pending {color:#9b6000;background:#fff3d9}
+.ea4b-visit-rejected {color:#a23d3d;background:#feeeee}
+.ea4b-badges {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ea4b-badge {padding:14px 12px;border:1px solid #dde8f5;border-radius:13px;background:#f8fafd;min-width:0}
+.ea4b-badge.earned {background:#edfaf3;border-color:#a7e7c5}
+.ea4b-badge-label {display:block;font-size:10px;color:#708198;font-weight:800;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.ea4b-badge.earned .ea4b-badge-label {color:#137647}
+.ea4b-badge strong {font-size:12px;color:#173958;display:block;line-height:1.45}
+.ea4b-badge p {font-size:11px;color:#687d90;line-height:1.55;margin:5px 0 0}
+.ea4b-rewards {margin-bottom:15px;background:#f0f7ff;padding:14px;border-radius:13px}
+.ea4b-rewards strong {color:#065cc5;font-size:20px;font-weight:850;font-variant-numeric:tabular-nums}
+.ea4b-rewards p {color:#506d8a;font-size:12px;margin:4px 0 0}
+.ea4b-privacy {margin-top:12px;color:#64758b;font-size:11px;line-height:1.6}
+.ea4b-quick {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+.ea4b-quick a {display:flex;justify-content:space-between;align-items:center;gap:8px;border-radius:14px;padding:16px;background:#e9f2ff;border:1px solid #cce0fa;color:#134e97;font-size:13px;font-weight:800}
+.ea4b-quick a:hover {background:#dcecff}
+@media(max-width:1100px){.ea4b-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.ea4b-hero{align-items:flex-start;flex-direction:column}}
+@media(max-width:760px){.ea4b-page{padding:22px 15px 65px}.ea4b-hero{padding:26px 22px;border-radius:18px}.ea4b-layout{grid-template-columns:1fr}.ea4b-section-intro{align-items:flex-start;flex-direction:column}.ea4b-badges{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:520px){.ea4b-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.ea4b-metric{padding:14px 12px}.ea4b-metric strong{font-size:25px}.ea4b-metric-symbol{width:31px;height:31px}.ea4b-panel{padding:17px}.ea4b-badges{grid-template-columns:1fr}.ea4b-quick{grid-template-columns:1fr}.ea4b-hero-actions{width:100%}.ea4b-hero-actions .ea4b-btn{flex:1}}
+@media(prefers-reduced-motion:reduce){.ea4b-btn{transition:none}}
+</style>
+{% endblock %}
+{% block content %}
+<main class="ea4b-page">
+  <header class="ea4b-hero">
+    <div class="ea4b-hero-content">
+      <p class="ea4b-kicker">One City. Your Hobbies. Our Map.</p>
+      <h1>My Kabankalan Journey</h1>
+      <p>Welcome back{% if request.user.first_name %}, {{ request.user.first_name }}{% endif %}! Keep your saved places, plans, reviews, and staff-reviewed visits together.</p>
+    </div>
+    <nav class="ea4b-hero-actions" aria-label="Journey quick navigation">
+      <a class="ea4b-btn ea4b-btn-light" href="{% url 'hobbies:select' %}">Explore Places &#8599;</a>
+      <a class="ea4b-btn ea4b-btn-outline" href="{% url 'itineraries:create' %}">Plan a Trip +</a>
+    </nav>
+  </header>
+
+  <div class="ea4b-eyebrow">
+    <h2 id="journey-overview-heading">Your journey at a glance</h2>
+    <p class="ea4b-caption">Only your own Kabankalan records are displayed.</p>
+  </div>
+  <section class="ea4b-metrics" aria-labelledby="journey-overview-heading">
+    <a class="ea4b-metric" href="{% url 'places:saved_places' %}">
+      <span class="ea4b-metric-symbol" aria-hidden="true">&#9825;</span><strong>{{ saved_count }}</strong><span>Saved places</span>
+    </a>
+    <a class="ea4b-metric" href="{% url 'itineraries:list' %}">
+      <span class="ea4b-metric-symbol" aria-hidden="true">&#9776;</span><strong>{{ itinerary_count }}</strong><span>Trip plans</span>
+    </a>
+    <a class="ea4b-metric" href="{% url 'places:my_reviews' %}">
+      <span class="ea4b-metric-symbol" aria-hidden="true">&#9733;</span><strong>{{ review_count }}</strong><span>My reviews</span>
+    </a>
+    <a class="ea4b-metric" href="{% url 'visits:list' %}">
+      <span class="ea4b-metric-symbol" aria-hidden="true">&#10003;</span><strong>{{ approved_visit_count }}</strong><span>Staff-approved visits</span>
+    </a>
+    <a class="ea4b-metric ea4b-metric-pending" href="{% url 'visits:list' %}">
+      <span class="ea4b-metric-symbol" aria-hidden="true">&#8987;</span><strong>{{ pending_visit_count }}</strong><span>Pending check-ins</span>
+    </a>
+    <a class="ea4b-metric" href="{% url 'visits:list' %}">
+      <span class="ea4b-metric-symbol" aria-hidden="true">&#9670;</span><strong>{{ visit_points }}</strong><span>Earned points</span>
+    </a>
+  </section>
+
+  <div class="ea4b-section-intro">
+    <div><h2>Keep your adventure organized</h2><p>Everything in one place, with direct links to the features you already use.</p></div>
+  </div>
+  <div class="ea4b-layout">
+    <section class="ea4b-panel" aria-labelledby="ea4b-saved-heading">
+      <div class="ea4b-panel-head"><h3 id="ea4b-saved-heading">Saved Places</h3><a href="{% url 'places:saved_places' %}">View all &#8594;</a></div>
+      <p class="ea4b-panel-sub">Places you want to explore or revisit.</p>
+      {% if saved_preview %}
+        <div class="ea4b-rows">
+          {% for entry in saved_preview %}
+            <div class="ea4b-row"><div class="ea4b-row-main"><a href="{% url 'places:place_detail' entry.place.pk %}">{{ entry.place.title }}</a><span>Kabankalan, Negros Occidental</span></div><span class="ea4b-row-meta">Saved</span></div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="ea4b-empty"><strong>No saved places yet</strong><p>Discover Kabankalan destinations and select Save Place to keep them here.</p><a class="ea4b-btn ea4b-btn-soft" href="{% url 'hobbies:select' %}">Find a place &#8594;</a></div>
+      {% endif %}
+      <div class="ea4b-bottom"><a class="ea4b-btn ea4b-btn-blue" href="{% url 'places:saved_places' %}">My Saved Places</a></div>
+    </section>
+
+    <section class="ea4b-panel" aria-labelledby="ea4b-trips-heading">
+      <div class="ea4b-panel-head"><h3 id="ea4b-trips-heading">My Itinerary Plans</h3><a href="{% url 'itineraries:list' %}">View all &#8594;</a></div>
+      <p class="ea4b-panel-sub">Your Kabankalan trips and planned stops.</p>
+      {% if itinerary_preview %}
+        <div class="ea4b-rows">
+          {% for trip in itinerary_preview %}
+            <div class="ea4b-row"><div class="ea4b-row-main"><a href="{% url 'itineraries:builder' trip.pk %}">{{ trip.title }}</a><span>{% if trip.day_number %}Day {{ trip.day_number }}{% else %}Kabankalan itinerary{% endif %}</span></div><span class="ea4b-row-meta">Plan</span></div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="ea4b-empty"><strong>No itineraries yet</strong><p>Create a trip and add your favorite Kabankalan places.</p><a class="ea4b-btn ea4b-btn-soft" href="{% url 'itineraries:create' %}">Create an itinerary &#8594;</a></div>
+      {% endif %}
+      <div class="ea4b-bottom"><a class="ea4b-btn ea4b-btn-blue" href="{% url 'itineraries:create' %}">+ New Itinerary</a></div>
+    </section>
+
+    <section class="ea4b-panel" aria-labelledby="ea4b-reviews-heading">
+      <div class="ea4b-panel-head"><h3 id="ea4b-reviews-heading">My Reviews</h3><a href="{% url 'places:my_reviews' %}">View all &#8594;</a></div>
+      <p class="ea4b-panel-sub">Ratings and feedback you have shared.</p>
+      {% if my_reviews_preview %}
+        <div class="ea4b-rows">
+          {% for review in my_reviews_preview %}
+            <div class="ea4b-row"><div class="ea4b-row-main">
+              {% if review.place.is_active and review.place.is_verified %}
+                <a href="{% url 'places:place_detail' review.place.pk %}#place-reviews">{{ review.place.title }}</a>
+              {% else %}<span>{{ review.place.title }} (no longer published)</span>{% endif %}
+              <span>{{ review.rating }} / 5 stars</span>
+            </div><span class="ea4b-row-meta">Review</span></div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="ea4b-empty"><strong>No reviews yet</strong><p>Share thoughtful feedback on the destinations you know.</p><a class="ea4b-btn ea4b-btn-soft" href="{% url 'hobbies:select' %}">Explore destinations &#8594;</a></div>
+      {% endif %}
+      <div class="ea4b-bottom"><a class="ea4b-btn ea4b-btn-blue" href="{% url 'places:my_reviews' %}">My Reviews</a></div>
+    </section>
+
+    <section class="ea4b-panel" aria-labelledby="ea4b-visits-heading">
+      <div class="ea4b-panel-head"><h3 id="ea4b-visits-heading">My Visits</h3><a href="{% url 'visits:list' %}">View all &#8594;</a></div>
+      <p class="ea4b-panel-sub">Check-in reports and their real staff-review status.</p>
+      {% if visits_preview %}
+        <div class="ea4b-rows">
+          {% for visit in visits_preview %}
+            <div class="ea4b-row"><div class="ea4b-row-main"><span>{{ visit.place.title }}</span><span>Visit date: {{ visit.visited_on|date:"M j, Y" }}</span></div>
+              {% if visit.status == 'approved' %}<span class="ea4b-row-meta ea4b-visit-approved">Approved</span>
+              {% elif visit.status == 'pending' %}<span class="ea4b-row-meta ea4b-visit-pending">Pending</span>
+              {% else %}<span class="ea4b-row-meta ea4b-visit-rejected">{{ visit.get_status_display }}</span>{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="ea4b-empty"><strong>No visits reported yet</strong><p>Only staff-approved check-ins count toward points and badges.</p><a class="ea4b-btn ea4b-btn-soft" href="{% url 'hobbies:select' %}">Explore places &#8594;</a></div>
+      {% endif %}
+      <p class="ea4b-privacy">Viewing a place, following directions, or writing a review does not verify a physical visit. Staff approval requires independently corroborated evidence.</p>
+      <div class="ea4b-bottom"><a class="ea4b-btn ea4b-btn-blue" href="{% url 'visits:list' %}">My Visit History</a></div>
+    </section>
+
+    <section class="ea4b-panel" aria-labelledby="ea4b-badges-heading">
+      <div class="ea4b-panel-head"><h3 id="ea4b-badges-heading">Badges &amp; Rewards</h3><a href="{% url 'visits:list' %}">View achievements &#8594;</a></div>
+      <div class="ea4b-rewards"><strong>{{ visit_points }} points</strong><p>Calculated from your staff-approved Kabankalan destinations.</p></div>
+      <div class="ea4b-badges">
+        {% for badge in visit_badges %}
+          <div class="ea4b-badge{% if badge.earned %} earned{% endif %}"><span class="ea4b-badge-label">{% if badge.earned %}Earned{% else %}Locked{% endif %}</span><strong>{{ badge.name }}</strong><p>{{ badge.description }}</p></div>
+        {% empty %}
+          <p class="ea4b-panel-sub">No achievement definitions available yet.</p>
+        {% endfor %}
+      </div>
+      <p class="ea4b-privacy">Rewards are calculated from approved records, not from opening a destination page.</p>
+    </section>
+
+    <section class="ea4b-panel" aria-labelledby="ea4b-next-heading">
+      <div class="ea4b-panel-head"><h3 id="ea4b-next-heading">Your Next Adventure</h3></div>
+      <p class="ea4b-panel-sub">Pick up where you left off or discover something new around Kabankalan.</p>
+      <div class="ea4b-bottom">
+        <a class="ea4b-btn ea4b-btn-blue" href="{% url 'hobbies:select' %}">Find recommendations</a>
+        <a class="ea4b-btn ea4b-btn-soft" href="{% url 'places:saved_places' %}">Saved places</a>
+        <a class="ea4b-btn ea4b-btn-soft" href="{% url 'itineraries:list' %}">Your plans</a>
+      </div>
+      <p class="ea4b-privacy">ExploreAnywhere is focused exclusively on Kabankalan City, Negros Occidental.</p>
+    </section>
+  </div>
+  <nav class="ea4b-quick" aria-label="Journey quick actions">
+    <a href="{% url 'hobbies:select' %}">Discover destinations <span aria-hidden="true">&#8599;</span></a>
+    <a href="{% url 'itineraries:create' %}">Build an itinerary <span aria-hidden="true">&#8599;</span></a>
+    <a href="{% url 'visits:list' %}">Check visit status <span aria-hidden="true">&#8599;</span></a>
+  </nav>
+</main>
+{% endblock %}
+'''
+
+EXPECTED_SNIPPETS = (
+    '{% extends "theme/public_base.html" %}',
+    '<main class="ea-journey">',
+    '<h1>My Kabankalan Journey</h1>',
+    'saved_preview',
+    'itinerary_preview',
+    'my_reviews_preview',
+    'visits_preview',
+    'visit_badges',
+    'approved_visit_count',
+    'pending_visit_count',
+    'visit_points',
+    "{% url 'itineraries:create' %}",
+    "{% url 'places:my_reviews' %}",
+    "{% url 'visits:list' %}",
+)
+
+
+def check_block_syntax(source: str) -> None:
+    """Quick structural check (Django itself verifies template compilation later)."""
+    stack = []
+    for block in re.findall(r'{%\s*(.*?)\s*%}', source, flags=re.S):
+        token = block.split()[0]
+        if token in {'block', 'if', 'for', 'with'}:
+            stack.append(token)
+        elif token in {'endblock', 'endif', 'endfor', 'endwith'}:
+            expected = {'endblock': 'block', 'endif': 'if', 'endfor': 'for', 'endwith': 'with'}[token]
+            if not stack or stack.pop() != expected:
+                raise RuntimeError('New template has an unmatched ' + token)
+    if stack:
+        raise RuntimeError('New template contains unclosed Django template blocks: ' + repr(stack))
+
+
+def main() -> int:
+    root = Path.cwd()
+    path = root / TARGET
+    if not (root / 'manage.py').is_file():
+        print('ERROR: Run this from the ExploreAnywhere project folder containing manage.py.')
+        return 1
+    if not path.is_file():
+        print('ERROR: Dashboard template not found: ' + str(TARGET))
+        return 1
+    current = path.read_text(encoding='utf-8-sig')
+    if MARKER in current:
+        print('ALREADY INSTALLED: Phase 4B dashboard is already present. No files changed.')
+        return 0
+    missing = [piece for piece in EXPECTED_SNIPPETS if piece not in current]
+    if missing:
+        print('SAFE STOP: Dashboard differs from the audited Phase 3F version. No files changed.')
+        print('Missing expected source features: ' + ', '.join(missing))
+        print('Upload your latest templates/places/journey_dashboard.html for a tailored update.')
+        return 2
+    if current.count('{% block extra_css %}') != 1 or current.count('{% block content %}') != 1:
+        print('SAFE STOP: Unrecognized dashboard template blocks. No files changed.')
+        return 2
+    if DASHBOARD.count('{% block extra_css %}') != 1 or DASHBOARD.count('{% block content %}') != 1:
+        print('ERROR: Invalid installer template.')
+        return 3
+    check_block_syntax(DASHBOARD)
+    backup_dir = root / 'phase4_backups' / ('journey-' + datetime.now().strftime('%Y%m%d-%H%M%S-%f'))
+    backup_dir.mkdir(parents=True, exist_ok=False)
+    backup_file = backup_dir / 'journey_dashboard.html'
+    shutil.copy2(path, backup_file)
+    # Atomic replacement: either the new complete template exists, or the old one does.
+    temporary = path.with_name(path.name + '.phase4b.tmp')
+    try:
+        temporary.write_text(DASHBOARD, encoding='utf-8')
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
+    print('SUCCESS: Phase 4B My Kabankalan Journey dashboard redesigned.')
+    print('Template: ' + str(TARGET))
+    print('Backup: ' + str(backup_file.relative_to(root)))
+    print('Changed: dashboard HTML and CSS only. No models, views, URLs, migrations, or database records changed.')
+    print('Next: python manage.py check')
+    print('Next: python manage.py shell -c "from django.template.loader import get_template; get_template(\'places/journey_dashboard.html\'); print(\'Dashboard Template OK\')"')
+    return 0
+
+
+if __name__ == '__main__':
+    try:
+        sys.exit(main())
+    except Exception as error:
+        print('ERROR: ' + str(error))
+        sys.exit(1)

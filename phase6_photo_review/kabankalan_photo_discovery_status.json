@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "places": {
+    "1": {
+      "slug": "osm-way-247293144",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T13:31:31.913180+00:00"
+    },
+    "1699": {
+      "slug": "osm-node-332018969",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T13:31:56.701434+00:00"
+    },
+    "1700": {
+      "slug": "osm-node-332020015",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T13:32:28.462708+00:00"
+    },
+    "1701": {
+      "slug": "osm-node-332020287",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T13:37:50.917422+00:00"
+    },
+    "1702": {
+      "slug": "osm-node-332021054",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T13:38:11.288249+00:00"
+    },
+    "7623": {
+      "slug": "osm-node-12290919180",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T13:38:37.094693+00:00"
+    },
+    "7704": {
+      "slug": "osm-node-4567944590",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T13:38:54.298150+00:00"
+    }
+  }
+}

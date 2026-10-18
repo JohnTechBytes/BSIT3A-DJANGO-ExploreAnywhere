@@ -1,0 +1,6 @@
+{
+  "format": "phase6b-overpass-endpoint-fix-v1",
+  "target": "apps/places/management/commands/discover_kabankalan_businesses.py",
+  "original_sha256": "ee46ec362a1a1bf1c36db8b29125a5004765b75e7ec04a8edbd1e6fa853ae1f5",
+  "installed_sha256": "dd67949273f82099598c312d8f3140716f07418198630b87c1ab068c4714c42d"
+}

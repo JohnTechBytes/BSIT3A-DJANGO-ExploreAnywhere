@@ -1,0 +1,6 @@
+{
+  "format": "exploreanywhere-phase6b3-business-importer-v1",
+  "target": "apps/places/management/commands/discover_kabankalan_businesses.py",
+  "before_sha256": "4342dbc3649a93f84109fabddc6d2babc5f500f55be79373394491bf6c938591",
+  "after_sha256": "550daa0c3aa60c85bd88c6e4ec5b0027af0f3b17409b8b4e766bb737c1bca6c2"
+}

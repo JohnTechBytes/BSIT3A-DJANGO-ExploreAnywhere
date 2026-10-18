@@ -1,0 +1,23 @@
+{# ExploreAnywhere Phase 6F: shared Discover Kabankalan navigation. #}
+<style>
+.ea6f-nav{margin:0 0 20px;background:#fff;border:1px solid #dce6f3;border-radius:17px;padding:14px 16px;box-shadow:0 8px 25px rgba(15,42,83,.045)}
+.ea6f-tabs{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ea6f-tab{display:inline-flex;justify-content:center;align-items:center;gap:7px;padding:11px 17px;min-height:44px;border:1px solid #c9d9ed;border-radius:12px;font-size:14px;font-weight:750;color:#164983;background:#f5f9ff;text-decoration:none;line-height:1.3}
+.ea6f-tab:hover{background:#e6f1ff;color:#064fbd}
+.ea6f-tab[aria-current="page"]{background:#0757d8;color:#fff;border-color:#0757d8}
+.ea6f-tab:focus-visible,.ea6f-categories a:focus-visible{outline:3px solid #77aef7;outline-offset:3px}
+.ea6f-explain{font-size:12px;color:#5c708a;line-height:1.5;margin:10px 0 0}
+.ea6f-categories{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:12px}
+.ea6f-categories span{font-size:12px;font-weight:800;color:#435c7c;margin-right:3px}
+.ea6f-categories a{font-size:12px;text-decoration:none;font-weight:750;color:#19549c;background:#edf5ff;border:1px solid #d3e2f5;border-radius:999px;padding:9px 12px;display:inline-flex;align-items:center;min-height:38px}
+.ea6f-categories a:hover{background:#ddebff}
+.ea6f-categories a[aria-current="true"]{background:#0757d8;color:#fff;border-color:#0757d8}
+@media(max-width:620px){.ea6f-nav{padding:12px}.ea6f-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.ea6f-tab{padding:10px 6px;text-align:center;font-size:12px}.ea6f-categories a{min-height:44px}}
+</style>
+<nav class="ea6f-nav" aria-label="Discover Kabankalan views">
+  <div class="ea6f-tabs">
+    <a class="ea6f-tab" href="{% url 'places:attraction_carousel' %}?browse=all" {% if active_discovery_mode == 'browse' %}aria-current="page"{% endif %}>All Places</a>
+    <a class="ea6f-tab" href="{% url 'places:attraction_carousel' %}?mode=nearby" {% if active_discovery_mode == 'nearby' %}aria-current="page"{% endif %}>Near Me</a>
+    <a class="ea6f-tab" href="{% url 'places:attraction_carousel' %}?browse=all&amp;display=map" {% if active_discovery_mode == 'map' %}aria-current="page"{% endif %}>Map View</a>
+  </div>
+</nav>

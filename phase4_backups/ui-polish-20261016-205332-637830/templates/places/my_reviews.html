@@ -1,0 +1,34 @@
+{% extends "theme/public_base.html" %}
+{% block extra_css %}
+<style>
+.ea-myreviews{max-width:960px;padding:44px 20px 90px;margin:0 auto;color:#173454}
+.ea-myreviews h1{font-size:clamp(29px,4vw,40px);margin:10px 0 8px;color:#102f56;font-weight:850}
+.ea-myreviews p{color:#60718b;line-height:1.6}
+.ea-myr-card{background:#fff;border:1px solid #dfe8f4;border-radius:16px;padding:22px;margin:14px 0}
+.ea-myr-card h2{font-size:20px;margin:0 0 5px;color:#153d69}
+.ea-myr-stars{color:#0757d8;font-weight:800}
+.ea-myr-actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.ea-myr-btn{padding:11px 17px;border-radius:11px;text-decoration:none;background:#075ee4;color:#fff!important;font-weight:750;display:inline-block}
+.ea-myr-btn.secondary{background:white;color:#075ee4!important;border:1px solid #c7d9f0}
+.ea-myr-empty{border:1px dashed #cbd8e9;background:#fff;border-radius:15px;padding:30px}
+</style>
+{% endblock %}
+{% block content %}
+<main class="ea-myreviews">
+  <p>MY KABANKALAN JOURNEY</p><h1>My Reviews</h1>
+  <p>Your ratings and experiences with Kabankalan destinations.</p>
+  <nav class="ea-myr-actions"><a class="ea-myr-btn" href="{% url 'places:journey_dashboard' %}">My Journey</a><a class="ea-myr-btn secondary" href="{% url 'places:attraction_carousel' %}">Explore Places</a></nav>
+  {% for review in reviews %}
+    <article class="ea-myr-card"><h2>{{ review.place.title }}</h2>
+      <span class="ea-myr-stars">{{ review.rating }} / 5 stars</span>
+      <small> · {{ review.created_at|date:"M j, Y" }}</small>
+      {% if review.comment %}<p>{{ review.comment|linebreaksbr }}</p>{% endif %}
+      {% if review.place.is_active and review.place.is_verified %}
+      <a class="ea-myr-btn secondary" href="{% url 'places:place_detail' review.place.pk %}#place-reviews">View / Edit Review</a>
+      {% else %}<p>This destination is no longer publicly listed. Your review is retained.</p>{% endif %}
+    </article>
+  {% empty %}
+    <section class="ea-myr-empty"><h2>No reviews submitted yet</h2><p>Explore Kabankalan places and add your first rating.</p></section>
+  {% endfor %}
+</main>
+{% endblock %}

@@ -1,0 +1,83 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login | ExploreAnywhere</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+<div class="auth-page">
+
+    <header class="auth-header">
+        <a href="{% url 'home' %}" class="auth-brand">
+            ⌖ Explore<span>Anywhere</span>
+        </a>
+    </header>
+
+    <main class="auth-main">
+        <div style="width:100%;max-width:460px">
+            <div class="auth-card">
+                <div class="auth-icon">⌖</div>
+
+                <h1>Welcome Back</h1>
+                <p class="auth-description">
+                    Sign in to continue exploring places
+                    that match your hobbies.
+                </p>
+
+                {% if form.non_field_errors %}
+                <div class="auth-error">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                    {% endif %}
+
+                    <div class="auth-field">
+                        <label for="username">Username</label>
+                        <input id="username"
+                               type="text"
+                               name="username"
+                               autocomplete="username"
+                               value="{{ form.username.value|default_if_none:'' }}"
+                               required autofocus>
+                    </div>
+
+                    <div class="auth-field">
+                        <label for="password">Password</label>
+                        <input id="password"
+                               type="password"
+                               name="password"
+                               autocomplete="current-password"
+                               required>
+                    </div>
+
+                    <button class="auth-button" type="submit">
+                        Sign In →
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    Don't have an account?
+                    <a href="{% url 'register' %}">Sign Up</a>
+                </div>
+            </div>
+
+            <div style="text-align:center">
+                <a class="auth-back" href="{% url 'home' %}">
+                    ← Back to ExploreAnywhere
+                </a>
+            </div>
+        </div>
+    </main>
+
+</div>
+</body>
+</html>

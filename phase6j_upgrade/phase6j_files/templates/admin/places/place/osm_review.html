@@ -1,0 +1,105 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% block title %}Business verification queue | ExploreAnywhere Admin{% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs"><a href="{% url 'admin:index' %}">Home</a> › <a href="{% url 'admin:places_place_changelist' %}">Destinations</a> › Business review</div>
+{% endblock %}
+{% block content_title %}{% endblock %}
+{% block extrastyle %}
+{{ block.super }}
+<style>
+.ea-review-wrap {max-width:1280px;display:grid;gap:18px;color:#153656;}
+.ea-review-hero {border-radius:15px;padding:23px;background:linear-gradient(105deg,#0a326c,#0860cd);color:#fff;}
+.ea-review-hero h1 {color:#fff !important;font-size:25px !important;margin:0 0 7px !important;}
+.ea-review-hero p {color:#e4efff;margin:0;line-height:1.6;max-width:850px;}
+.ea-review-stats {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+.ea-review-stat {background:#fff;border:1px solid #d8e5f2;border-radius:12px;padding:15px;}
+.ea-review-stat strong {display:block;color:#0f4d9e;font-size:23px;}
+.ea-review-stat span {font-size:12px;color:#516e8d;}
+.ea-review-panel {background:#fff;border:1px solid #d8e5f2;border-radius:13px;padding:16px;}
+.ea-review-filter {display:grid;grid-template-columns:minmax(180px,2fr) repeat(3,minmax(125px,1fr)) auto;gap:10px;align-items:end;}
+.ea-review-filter label {display:block;margin-bottom:5px;font-weight:750;font-size:12px;color:#2a4c70;}
+.ea-review-filter input,.ea-review-filter select {box-sizing:border-box;min-width:0;width:100%;min-height:39px;border-radius:8px;border:1px solid #c5d6e7;padding:6px 9px;}
+.ea-review-filter button {min-height:39px;border:0;border-radius:8px;background:#125ed3;color:#fff;padding:7px 15px;font-weight:750;cursor:pointer;}
+.ea-review-filter-tools {display:flex;align-items:center;flex-wrap:wrap;gap:14px;margin-top:13px;font-size:13px;}
+.ea-review-filter-tools strong {color:#184b80;}
+.ea-review-reset {color:#125db5;font-weight:700;text-decoration:underline;}
+.ea-review-check {background:#fff8e8;border:1px solid #f0d99b;border-radius:8px;margin-top:8px;padding:6px 8px;font-size:11px;color:#754b0c;max-width:210px;}
+.ea-review-check summary {cursor:pointer;font-weight:750;}
+.ea-review-check ul {padding-left:17px;margin:7px 0 0;}
+.ea-review-check li {margin-bottom:5px;overflow-wrap:anywhere;}
+.ea-review-empty {padding:24px !important;line-height:1.7;color:#46617d;}
+.ea-review-guide {margin-top:10px;padding:10px 13px;border:1px solid #d6e5f5;border-radius:10px;background:#f7fbff;color:#24486b;font-size:12px;line-height:1.6;}
+.ea-review-guide summary {cursor:pointer;font-weight:750;}
+.ea-review-guide ol {margin:10px 0 3px;padding-left:22px;}
+.ea-review-table td,.ea-review-table th {overflow-wrap:anywhere;}
+.ea-review-actions a {font-weight:750;white-space:nowrap;}
+.ea-review-table-scroll {overflow-x:auto;}
+.ea-review-table {width:100%;min-width:850px;border-collapse:collapse;font-size:13px;}
+.ea-review-table th {padding:12px 13px;text-align:left;background:#ebf3ff;color:#25486d;font-weight:750;}
+.ea-review-table td {padding:13px;border-top:1px solid #e1e9f3;vertical-align:top;}
+.ea-review-table td strong {display:block;margin-bottom:4px;}
+.ea-review-table td small {color:#6884a0;}
+.ea-review-table a {color:#115db8;}
+.ea-review-badge {display:inline-block;padding:4px 9px;border-radius:20px;background:#fff0dd;color:#875013;font-size:11px;font-weight:750;white-space:nowrap;}
+.ea-review-note {color:#546e89;font-size:12px;line-height:1.7;}
+.ea-review-pager {display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:14px;}
+.ea-review-pager a {padding:8px 12px;border:1px solid #bfcfe4;border-radius:8px;text-decoration:none;}
+@media(max-width:1150px){.ea-review-stats {grid-template-columns:repeat(2,minmax(0,1fr));}.ea-review-filter {grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:580px){.ea-review-stats,.ea-review-filter {grid-template-columns:1fr;}.ea-review-panel {padding:12px;}}
+</style>
+{% endblock %}
+{% block content %}
+<div class="ea-review-wrap">
+  <header class="ea-review-hero">
+    <h1>Business verification queue</h1>
+    <p>Review OpenStreetMap-imported Kabankalan establishments individually. These are <strong>mapped candidates, not independently verified operating businesses</strong>. Importing does not make them visible to visitors.</p>
+  </header>
+  <section class="ea-review-stats" aria-label="Imported business counts">
+    <div class="ea-review-stat"><strong>{{ status_counts.total }}</strong><span>All OSM-linked places (including original destinations)</span></div>
+    <div class="ea-review-stat"><strong>{{ status_counts.pending }}</strong><span>Unverified and inactive</span></div>
+    <div class="ea-review-stat"><strong>{{ status_counts.ready }}</strong><span>Verified, not published</span></div>
+    <div class="ea-review-stat"><strong>{{ status_counts.published }}</strong><span>Verified and published</span></div>
+  </section>
+  <section class="ea-review-panel" aria-label="Search imported businesses">
+    <form class="ea-review-filter" method="get">
+      <div><label for="ea-osm-q">Search name, address or source ID</label><input id="ea-osm-q" type="search" name="q" maxlength="120" value="{{ query }}" placeholder="Coffee shop, barbershop, mall..."></div>
+      <div><label for="ea-osm-cat">Category</label><select id="ea-osm-cat" name="category"><option value="">All categories</option>{% for item in categories %}<option value="{{ item.category_id }}"{% if item.selected %} selected{% endif %}>{{ item.category__name }}</option>{% endfor %}</select></div>
+      <div><label for="ea-osm-status">Review status</label><select id="ea-osm-status" name="status"><option value="pending"{% if status == 'pending' %} selected{% endif %}>Needs verification</option><option value="ready"{% if status == 'ready' %} selected{% endif %}>Verified, unpublished</option><option value="published"{% if status == 'published' %} selected{% endif %}>Published</option><option value="all"{% if status == 'all' %} selected{% endif %}>All OSM-linked places</option></select></div>
+      <div><label for="ea-osm-map">Map coordinates</label><select id="ea-osm-map" name="map"><option value="all"{% if map_status == 'all' %} selected{% endif %}>Any</option><option value="mapped"{% if map_status == 'mapped' %} selected{% endif %}>Has coordinates</option><option value="missing"{% if map_status == 'missing' %} selected{% endif %}>Missing coordinates</option></select></div>
+      <button type="submit">Filter</button>
+    </form>
+    <div class="ea-review-filter-tools"><strong>{{ page_obj.paginator.count }} matching record{{ page_obj.paginator.count|pluralize }}</strong><a class="ea-review-reset" href="{% url 'admin:places_place_osm_review' %}">Clear filters</a><span>Statistics above are unfiltered; the table follows your selected filters.</span></div>
+    <p class="ea-review-note">For each business, independently confirm its identity, current operation, category and actual map location. Record evidence and date in the editing form. OpenStreetMap alone is not sufficient verification. Photo rights require separate proof. © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a> (ODbL).</p>
+    <details class="ea-review-guide"><summary>Reviewer checklist · before verifying or publishing</summary><ol><li>Confirm the business identity and that it is currently operating through independent evidence.</li><li>Check the Kabankalan address and exact map coordinates independently, not just the OSM pin.</li><li>Confirm the business category and check any possible duplicate warnings against the existing listings.</li><li>Open Review / edit, record the evidence source and date, then select the verification and coordinate confirmations. Publish only when verified.</li></ol>Review notes are tracked in Django Admin History when review status changes. Genuine photo rights require separate confirmation.</details>
+  </section>
+  <section class="ea-review-panel" aria-label="Business candidates">
+    <div class="ea-review-table-scroll">
+      <table class="ea-review-table">
+        <thead><tr><th>Candidate</th><th>Category</th><th>OSM source</th><th>Address / coordinates</th><th>Status</th><th>Review</th></tr></thead>
+        <tbody>
+        {% for place in page_obj %}
+        <tr>
+          <td><strong>{{ place.title }}</strong><small>{{ place.slug }}</small>{% if place.osm_possible_matches %}<details class="ea-review-check"><summary>Possible duplicate · review</summary><ul>{% for match in place.osm_possible_matches %}<li><b>{{ match.name }}</b> — {{ match.reason }}</li>{% endfor %}</ul><small>These are warnings only. Check identities independently; no records are merged.</small></details>{% endif %}</td>
+          <td>{{ place.category.name|default:"Not categorized" }}</td>
+          <td>{% if place.osm_review_url %}<a href="{{ place.osm_review_url }}" target="_blank" rel="noopener noreferrer">View OSM record ↗</a>{% else %}Source unavailable{% endif %}</td>
+          <td>{{ place.address|default:"Address unavailable" }}<br><small>{% if place.latitude is not None and place.longitude is not None %}{{ place.latitude }}, {{ place.longitude }} (not independently verified){% else %}No coordinates{% endif %}</small></td>
+          <td><span class="ea-review-badge">{{ place.osm_admin_status }}</span></td>
+          <td class="ea-review-actions"><a href="{{ place.osm_review_change_url }}">{% if can_change %}Review / edit ↗{% else %}View ↗{% endif %}</a></td>
+        </tr>
+        {% empty %}
+        <tr><td class="ea-review-empty" colspan="6">No OSM-linked records match these filters. Try <a href="{% url 'admin:places_place_osm_review' %}">clearing filters</a> or changing the review status. The queue does not delete or publish candidates when filtering.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="ea-review-pager" aria-label="Review queue pages">
+      {% if page_obj.has_previous %}<a href="?q={{ query|urlencode }}&amp;category={{ category|urlencode }}&amp;status={{ status|urlencode }}&amp;map={{ map_status|urlencode }}&amp;page={{ page_obj.previous_page_number }}">← Previous</a>{% endif %}
+      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} · {{ page_obj.paginator.count }} matching candidates</span>
+      {% if page_obj.has_next %}<a href="?q={{ query|urlencode }}&amp;category={{ category|urlencode }}&amp;status={{ status|urlencode }}&amp;map={{ map_status|urlencode }}&amp;page={{ page_obj.next_page_number }}">Next →</a>{% endif %}
+    </nav>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

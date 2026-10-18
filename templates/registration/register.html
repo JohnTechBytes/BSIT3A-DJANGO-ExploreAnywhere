@@ -1,0 +1,82 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create Account | ExploreAnywhere</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+<div class="auth-page">
+
+    <header class="auth-header">
+        <a href="{% url 'home' %}" class="auth-brand">
+            ⌖ Explore<span>Anywhere</span>
+        </a>
+    </header>
+
+    <main class="auth-main">
+        <div style="width:100%;max-width:460px">
+            <div class="auth-card">
+                <div class="auth-icon">✦</div>
+
+                <h1>Join ExploreAnywhere</h1>
+                <p class="auth-description">
+                    Create your free account and start discovering
+                    cities, hobbies, and amazing places.
+                </p>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="auth-field">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.help_text %}
+                        <div class="auth-help">
+                            {{ field.help_text }}
+                        </div>
+                        {% endif %}
+
+                        {% if field.errors %}
+                        <div class="auth-error">
+                            {{ field.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    {% if form.non_field_errors %}
+                    <div class="auth-error">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    <button type="submit" class="auth-button">
+                        Create Account →
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    Already have an account?
+                    <a href="{% url 'login' %}">Login</a>
+                </div>
+            </div>
+
+            <div style="text-align:center">
+                <a class="auth-back" href="{% url 'home' %}">
+                    ← Back to ExploreAnywhere
+                </a>
+            </div>
+        </div>
+    </main>
+
+</div>
+</body>
+</html>

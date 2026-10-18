@@ -1,0 +1,13 @@
+{
+  "phase": "6K",
+  "files": {
+    "apps\\places\\nearby.py": {
+      "old_sha256": "e3d5ce3797ee71374648b2c8c8f9eadf7f75d320e1644b96ebfc0105b5406eb9",
+      "new_sha256": "0e1a7665676f1716c271c081a679c6c5e0ef0b4f38d2a27bbaddf56f0dee6dfb"
+    },
+    "templates\\places\\nearby_places.html": {
+      "old_sha256": "c0e2d4ff0a9741156a20da3507781d69d47dcd131e2e9b6e016629033f1bdc63",
+      "new_sha256": "2ee7cea1a171a00bc456bbf3aaa30d56e74295b3ff0ca5372db7bf3bc103177a"
+    }
+  }
+}

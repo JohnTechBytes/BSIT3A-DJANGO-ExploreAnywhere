@@ -1,0 +1,1260 @@
+
+{% extends "theme/public_base.html" %}
+{% load attraction_photos %}
+
+{% block extra_css %}
+
+<link rel="stylesheet"
+ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+  
+.ea-match-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #eaf3ff;
+    color: #155bc7;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+  
+/* ExploreAnywhere enhanced map */
+.ea-map-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 310px;
+    gap: 16px;
+    align-items: start;
+}
+
+.ea-map-details {
+    background: #ffffff;
+    border: 1px solid #dce6f3;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 10px 28px rgba(16, 43, 83, .07);
+}
+
+.ea-map-details h3 {
+    color: #102b53;
+    font-size: 20px;
+    margin: 10px 0;
+}
+
+.ea-map-details p {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.ea-map-details .ea-detail-type {
+    color: #0757d8;
+    background: #eaf3ff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.ea-detail-button {
+    display: block;
+    text-align: center;
+    padding: 12px;
+    background: #075ee4;
+    color: #ffffff !important;
+    text-decoration: none;
+    border-radius: 11px;
+    font-weight: 700;
+    margin-top: 16px;
+}
+
+.ea-detail-button:hover {
+    background: #054bb8;
+}
+
+.ea-card[data-lat][data-lng] {
+    cursor: pointer;
+}
+
+.ea-card[data-lat][data-lng]:focus-visible {
+    outline: 3px solid #075ee4;
+    outline-offset: 3px;
+}
+
+@media (max-width: 850px) {
+    .ea-map-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+  .ea-attractions {
+    --ea-blue: #0757d8;
+    --ea-navy: #102b53;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 42px 22px 90px;
+    color: #172b4d;
+  }
+
+  .ea-attractions * {
+    box-sizing: border-box;
+  }
+
+  .ea-attractions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .ea-eyebrow {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: #0757d8;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+  }
+
+  .ea-attractions h1 {
+    font-size: clamp(26px, 4vw, 42px);
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--ea-navy);
+    margin: 0 0 12px;
+  }
+
+  .ea-subtitle {
+    color: #60718d;
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .ea-change-city {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    background: #fff;
+    color: var(--ea-navy);
+    border: 1px solid #d8e3f2;
+    border-radius: 12px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .ea-change-city:hover {
+    border-color: #0757d8;
+    color: #0757d8;
+  }
+
+  .ea-summary {
+    background: linear-gradient(120deg, #102f64, #075ee4);
+    color: white;
+    padding: 22px 26px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+  }
+
+  .ea-summary strong {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 5px;
+  }
+
+  .ea-summary p {
+    color: #dce9ff;
+    margin: 0;
+    font-size: 13px;
+  }
+
+  .ea-section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 18px;
+  }
+
+  .ea-section-heading h2 {
+    margin: 0;
+    font-size: 21px;
+    color: var(--ea-navy);
+    font-weight: 800;
+  }
+
+  .ea-carousel-controls {
+    display: flex;
+    gap: 8px;
+  }
+
+  .ea-carousel-controls button {
+    width: 42px;
+    height: 42px;
+    border: 1px solid #d7e3f4;
+    border-radius: 50%;
+    background: #fff;
+    color: #173f7b;
+    cursor: pointer;
+    font-size: 20px;
+  }
+
+  .ea-carousel-controls button:hover {
+    background: #0757d8;
+    color: white;
+  }
+
+  .ea-carousel {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding: 4px 2px 22px;
+    scrollbar-width: thin;
+  }
+
+  .ea-card {
+    flex: 0 0 285px;
+    scroll-snap-align: start;
+    overflow: hidden;
+    border-radius: 19px;
+    background: #fff;
+    border: 1px solid #e1e9f4;
+    box-shadow: 0 8px 25px rgba(14, 42, 83, .06);
+    transition: transform .2s, box-shadow .2s;
+  }
+
+  .ea-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(14, 42, 83, .12);
+  }
+
+  .ea-card-image {
+    height: 190px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(
+      135deg,
+      #d6eaff,
+      #d9efe9 55%,
+      #d9e3fb
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ea-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ea-placeholder {
+    font-size: 54px;
+    line-height: 1;
+    opacity: .85;
+  }
+
+  .ea-placeholder-label {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    color: #375c83;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .ea-card-body {
+    padding: 19px;
+  }
+
+  .ea-category {
+    display: inline-flex;
+    background: #edf5ff;
+    color: #145cb7;
+    border-radius: 50px;
+    padding: 6px 11px;
+    font-size: 11px;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+
+  .ea-card h3 {
+    font-size: 17px;
+    font-weight: 800;
+    color: #172c4f;
+    margin: 0 0 9px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .ea-card-location {
+    color: #71809a;
+    font-size: 12px;
+    margin: 0 0 12px;
+  }
+
+  .ea-card-description {
+    color: #60718c;
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 62px;
+    margin: 0;
+  }
+
+  .ea-card-footer {
+    margin-top: 17px;
+    padding-top: 14px;
+    border-top: 1px solid #edf1f7;
+  }
+
+  .ea-map-link {
+    color: #0757d8;
+    font-weight: 750;
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .ea-map-link:hover {
+    text-decoration: underline;
+  }
+
+  .ea-empty {
+    padding: 65px 24px;
+    border: 1px dashed #c4d5eb;
+    border-radius: 20px;
+    text-align: center;
+    background: #f8fbff;
+  }
+
+  .ea-empty-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+  }
+
+  .ea-empty h2 {
+    color: #17345d;
+    margin: 0 0 10px;
+    font-size: 21px;
+  }
+
+  .ea-empty p {
+    color: #70809a;
+    margin: 0 0 22px;
+  }
+
+  .ea-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 30px;
+  }
+
+  .ea-pagination a {
+    padding: 10px 15px;
+    background: #fff;
+    border: 1px solid #d8e3f2;
+    border-radius: 10px;
+    color: #0757d8;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .ea-pagination span {
+    color: #65758e;
+    font-size: 13px;
+  }
+
+  @media (max-width: 700px) {
+    .ea-attractions {
+      padding: 25px 15px 65px;
+    }
+
+    .ea-attractions-header {
+      flex-direction: column;
+    }
+
+    .ea-card {
+      flex-basis: 82%;
+      max-width: 320px;
+    }
+
+    .ea-summary {
+      padding: 20px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ea-carousel {
+      scroll-behavior: auto;
+    }
+
+    .ea-card {
+      transition: none;
+    }
+  }
+
+.ea-view-switch {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.ea-view-button {
+    border: 1px solid #d4dfed;
+    border-radius: 11px;
+    background: white;
+    color: #183c6b;
+    padding: 12px 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.ea-view-button[aria-pressed="true"] {
+    background: #0757d8;
+    border-color: #0757d8;
+    color: white;
+}
+
+#ea-attraction-map {
+    height: 460px;
+    width: 100%;
+    border-radius: 18px;
+    border: 1px solid #d4dfed;
+    background: #e8f0fa;
+    z-index: 0;
+}
+
+.ea-map-note {
+    color: #60718d;
+    font-size: 13px;
+}
+
+#ea-list-panel[hidden],
+#ea-map-panel[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 700px) {
+    #ea-attraction-map { height: 350px; }
+}
+
+
+/* exploreanywhere-places-repair-v2: fixes card overflow and keeps the original carousel/map. */
+.ea-attractions { max-width: 1280px; }
+.ea-carousel { gap: 16px; padding-bottom: 18px; }
+.ea-carousel .ea-card {
+  flex: 0 0 clamp(260px, 30%, 340px);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.ea-card-body { display: flex; flex-direction: column; flex: 1; padding: 20px; min-width: 0; }
+.ea-card-image { height: 180px; }
+.ea-card .ea-match-badge {
+  align-self: flex-start;
+  margin: 0 0 12px;
+  white-space: normal;
+  line-height: 1.35;
+}
+.ea-card-description { min-height: 0; }
+.ea-card-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  display: flex;
+  gap: 10px 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.ea-card-footer .ea-map-link {
+  display: inline-flex !important;
+  align-items: center;
+  margin-bottom: 0 !important;
+  min-height: 38px;
+}
+.ea-photo-empty {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  gap: 9px; padding: 18px;
+  color: #315f85; background: linear-gradient(145deg, #e8f3ff, #e9f7f1);
+  text-align: center; font-size: 12px; font-weight: 700;
+}
+.ea-photo-empty-icon { font-size: 32px; line-height: 1; }
+.ea-match-explainer {
+  margin: 0 0 14px; color: #526781; font-size: 12px; line-height: 1.5;
+}
+.ea-map-details .ea-detail-button + .ea-detail-button {
+  color: #075ee4 !important; background: #eef5ff;
+  border: 1px solid #cde1ff;
+}
+.ea-map-details .ea-detail-button + .ea-detail-button:hover { background: #dceaff; }
+@media (max-width: 700px) {
+  .ea-carousel .ea-card { flex: 0 0 min(86vw, 330px); }
+  .ea-card-image { height: 160px; }
+  .ea-map-layout { grid-template-columns: 1fr; }
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<style>
+.sample-photo-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 180px;
+    overflow: hidden;
+}
+.sample-photo-label {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    padding: 7px 9px;
+    border-radius: 7px;
+    background: rgba(15,23,42,.85);
+    color: white;
+    font-size: 11px;
+}
+</style>
+
+<main class="ea-attractions">
+
+  <header class="ea-attractions-header">
+    <div>
+      <span class="ea-eyebrow">
+        EXPLOREANYWHERE DESTINATIONS
+      </span>
+
+      <h1>
+        Discover {{ selected_city.name }}
+      </h1>
+
+      <p class="ea-subtitle">
+        Explore verified destinations and attractions
+        in Kabankalan City, Negros Occidental.
+      </p>
+    </div>
+
+    <a
+      href="{% url 'hobbies:select' %}"
+      class="ea-change-city"
+    >
+      &#8592; Change Hobbies
+    </a>
+  </header>
+
+  <section class="ea-summary">
+    <strong>
+      {{ total_attractions }}
+      Approved Attraction{{ total_attractions|pluralize }}
+    </strong>
+
+    <p>
+      {{ selected_city.name }}
+      {% if selected_city.province_ref %}
+        &middot; {{ selected_city.province_ref.name }}
+      {% elif selected_city.province %}
+        &middot; {{ selected_city.province }}
+      {% endif %}
+    </p>
+  </section>
+
+  {% if attractions %}
+
+    <section aria-label="City tourist attractions">
+
+      <div class="ea-section-heading">
+        <h2>
+  {% if search_query %}
+    Results for "{{ search_query }}"
+  {% else %}
+    Places to Explore
+  {% endif %}
+</h2>
+
+        <div class="ea-carousel-controls">
+          <button
+            type="button"
+            id="ea-prev"
+            aria-label="Previous attractions"
+            aria-controls="ea-carousel"
+          >
+            &#8592;
+          </button>
+
+          <button
+            type="button"
+            id="ea-next"
+            aria-label="Next attractions"
+            aria-controls="ea-carousel"
+          >
+            &#8594;
+          </button>
+        </div>
+      </div>
+
+      
+<div class="ea-view-switch" role="group"
+     aria-label="Results display mode">
+
+    <button type="button" id="ea-list-button"
+            class="ea-view-button"
+            aria-pressed="true">
+        List / Carousel
+    </button>
+
+    <button type="button" id="ea-map-button"
+            class="ea-view-button"
+            aria-pressed="false">
+        Map View
+    </button>
+
+    <a class="ea-change-city"
+       href="{% url 'hobbies:search' %}">
+        Change Search
+    </a>
+</div>
+
+<p class="ea-match-explainer">Recommendation scores use your selected hobbies and available ratings. GPS distance is not included yet.</p>
+
+<div id="ea-list-panel">
+
+<div
+        class="ea-carousel"
+        id="ea-carousel"
+        tabindex="0"
+        aria-label="Attraction cards"
+      >
+
+        {% for place in attractions %}
+
+          <article class="ea-card"
+          
+          data-detail-url="{% url 'places:place_detail' place.pk %}"
+          data-match="{{ place.match_percent|default_if_none:'0' }}"
+        {% if place.latitude != None and place.longitude != None %}
+        data-lat="{{ place.latitude }}"
+        data-lng="{{ place.longitude }}"
+        {% endif %}>
+
+            <div class="ea-card-image">
+
+              {% if place.cover_image %}
+                <img
+                  src="{{ place.cover_image.url }}"
+                  alt="{{ place.title }}"
+                  loading="lazy"
+                >
+
+              {% elif place.cover_image_url %}
+                <img
+                  src="{{ place.cover_image_url }}"
+                  alt="{{ place.title }}"
+                  loading="lazy"
+                >
+
+              {% else %}
+                <div class="ea-photo-empty" role="img" aria-label="No verified photo available for {{ place.title }}">
+                  <span class="ea-photo-empty-icon" aria-hidden="true">&#128247;</span>
+                  <span>Destination photo coming soon</span>
+                </div>
+              {% endif %}
+
+            </div>
+
+            <div class="ea-card-body">
+
+              <span class="ea-category"> 
+                {% if place.category %}
+                  {{ place.category }}
+                {% else %}
+                  Tourist Destination
+                {% endif %}
+              </span>
+
+              <h3>{{ place.title }}</h3>
+              {% if place.match_percent is not None %}
+              <span class="ea-match-badge" title="Calculated from selected hobbies and available ratings; GPS distance is not included.">
+                {{ place.match_percent }}% Recommendation Match
+              </span>
+              {% endif %}
+
+              <p class="ea-card-location">
+                &#128205; {{ selected_city.name }}
+              </p>
+
+              <p class="ea-card-description">
+                {% if place.description %}
+                  {{ place.description|truncatechars:115 }}
+                {% else %}
+                  Discover this mapped destination in
+                  {{ selected_city.name }}.
+                {% endif %}
+              </p>
+
+              <div class="ea-card-footer">
+                <a
+    class="ea-map-link"
+    href="{% url 'places:place_detail' place.pk %}"
+    style="display:inline-block;margin-bottom:12px;"
+>
+    View Details &#8594;
+</a>
+                {% if place.latitude != None and place.longitude != None %}
+                  <a
+                    class="ea-map-link"
+                    href="https://www.google.com/maps/search/?api=1&amp;query={{ place.latitude }},{{ place.longitude }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View on Map &#8599;
+                  </a>
+                {% else %}
+                  <span class="ea-card-location">
+                    Map location unavailable
+                  </span>
+                {% endif %}
+              </div>
+
+            </div>
+          </article>
+        {% endfor %}
+
+      </div>
+
+</div>
+
+<section id="ea-map-panel" hidden
+         aria-label="Attractions map">
+
+    <div id="ea-attraction-map"></div>
+
+    <p id="ea-map-note" class="ea-map-note">
+        Map shows attractions on this results page.
+    </p>
+</section>
+
+    </section>
+
+    {% if page_obj.has_other_pages %}
+      <nav
+        class="ea-pagination"
+        aria-label="Attraction pages"
+      >
+        {% if page_obj.has_previous %}
+          <a
+            href="?page={{ page_obj.previous_page_number }}"
+          >
+            &#8592; Previous
+          </a>
+        {% endif %}
+
+        <span>
+          Page {{ page_obj.number }}
+          of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+          <a
+            href="?page={{ page_obj.next_page_number }}"
+          >
+            Next &#8594;
+          </a>
+        {% endif %}
+      </nav>
+    {% endif %}
+
+  {% else %}
+
+    <section class="ea-empty">
+      <div class="ea-empty-icon">&#127759;</div>
+
+      <h2>No approved attractions yet</h2>
+
+      <p>
+  {% if search_query %}
+    No approved attractions matching
+    "{{ search_query }}" were found in
+    {{ selected_city.name }}.
+    Try another search or adjust your selected hobbies.
+  {% else %}
+    Destinations for {{ selected_city.name }}
+    are still being reviewed.
+  {% endif %}
+</p>
+
+      <a
+        href="{% url 'hobbies:select' %}"
+        class="ea-change-city"
+      >
+        Change Hobbies
+      </a>
+    </section>
+
+  {% endif %}
+
+</main>
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+(function () {
+    "use strict";
+
+    // Use the same MapTiler key already working in your project.
+    const mapTilerKey = "2G4T5asnBPm0kLPHVQsl";
+
+    const carousel = document.getElementById("ea-carousel");
+    const previous = document.getElementById("ea-prev");
+    const next = document.getElementById("ea-next");
+
+    const listButton = document.getElementById("ea-list-button");
+    const mapButton = document.getElementById("ea-map-button");
+
+    const listPanel = document.getElementById("ea-list-panel");
+    const mapPanel = document.getElementById("ea-map-panel");
+    const mapNote = document.getElementById("ea-map-note");
+
+    let map = null;
+    let markers = new Map();
+
+    // --------------------------------------------------
+    // 1. Preserve the existing attraction carousel
+    // --------------------------------------------------
+
+    function scrollCards(direction) {
+        if (!carousel) return;
+
+        const card = carousel.querySelector(".ea-card");
+        if (!card) return;
+
+        const gap = parseFloat(
+            window.getComputedStyle(carousel).gap
+        ) || 20;
+
+        const distance = card.getBoundingClientRect().width + gap;
+
+        carousel.scrollBy({
+            left: distance * direction,
+            behavior: window.matchMedia(
+                "(prefers-reduced-motion: reduce)"
+            ).matches ? "auto" : "smooth"
+        });
+    }
+
+    previous?.addEventListener("click", function () {
+        scrollCards(-1);
+    });
+
+    next?.addEventListener("click", function () {
+        scrollCards(1);
+    });
+
+    if (!mapPanel || !listPanel || !window.L) return;
+
+    // --------------------------------------------------
+    // 2. Create a Google Maps-style details panel
+    // --------------------------------------------------
+
+    const mapElement = document.getElementById(
+        "ea-attraction-map"
+    );
+
+    if (!mapElement) return;
+
+    const layout = document.createElement("div");
+    layout.className = "ea-map-layout";
+
+    mapElement.parentNode.insertBefore(layout, mapElement);
+    layout.appendChild(mapElement);
+
+    const details = document.createElement("aside");
+    details.className = "ea-map-details";
+    details.setAttribute("aria-label", "Attraction details");
+
+    details.innerHTML = `
+        <h3>Explore the Map</h3>
+        <p>
+            Click an attraction marker to see its name,
+            category, location, and directions.
+        </p>
+    `;
+
+    layout.appendChild(details);
+
+    // --------------------------------------------------
+    // 3. Read attraction data from the existing cards
+    // --------------------------------------------------
+
+    const attractions = [];
+
+    document.querySelectorAll(
+        ".ea-card[data-lat][data-lng]"
+    ).forEach(card => {
+
+        const lat = Number(card.dataset.lat);
+        const lng = Number(card.dataset.lng);
+
+        if (
+            !Number.isFinite(lat) ||
+            !Number.isFinite(lng) ||
+            Math.abs(lat) > 90 ||
+            Math.abs(lng) > 180
+        ) return;
+
+        const attraction = {
+            card,
+            matchPercent: Number(card.dataset.match || 0),
+            lat,
+            lng,
+            title: card.querySelector("h3")
+                ?.textContent.trim() || "Attraction",
+            category: card.querySelector(".ea-category")
+                ?.textContent.trim() || "Tourist Destination",
+            description: card.querySelector(
+                ".ea-card-description"
+            )?.textContent.trim() || "No description available."
+        };
+
+        attractions.push(attraction);
+    });
+
+    // --------------------------------------------------
+    // 4. Show the selected attraction's details
+    // --------------------------------------------------
+
+    function showDetails(attraction) {
+        details.replaceChildren();
+
+        const category = document.createElement("span");
+        category.className = "ea-detail-type";
+        category.textContent = attraction.category;
+
+        const title = document.createElement("h3");
+        title.textContent = attraction.title;
+
+        const description = document.createElement("p");
+        description.textContent = attraction.description;
+
+        const coordinates = document.createElement("p");
+        coordinates.textContent =
+            "Coordinates: " +
+            attraction.lat.toFixed(5) + ", " +
+            attraction.lng.toFixed(5);
+
+        const directions = document.createElement("a");
+        directions.className = "ea-detail-button";
+        directions.target = "_blank";
+        directions.rel = "noopener noreferrer";
+        directions.textContent = "Get Directions";
+
+        directions.href =
+            "https://www.google.com/maps/dir/?api=1&destination=" +
+            encodeURIComponent(
+                attraction.lat + "," + attraction.lng
+            );
+        const detailLink = document.createElement("a");
+        detailLink.className = "ea-detail-button";
+        detailLink.textContent = "View Full Details";
+        detailLink.href = attraction.card.dataset.detailUrl;
+            
+
+        details.append(
+          
+            category,
+            title,
+            description,
+            coordinates,
+            directions,
+            detailLink
+        );
+    }
+
+    // --------------------------------------------------
+    // 5. Initialize Leaflet with three map styles
+    // --------------------------------------------------
+
+    function initializeMap() {
+        if (map) return;
+
+        map = L.map("ea-attraction-map", {
+            scrollWheelZoom: false,
+            zoomControl: true
+        });
+
+        L.Icon.Default.mergeOptions({
+            iconUrl:
+                "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+            iconRetinaUrl:
+                "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+            shadowUrl:
+                "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png"
+        });
+
+        const attribution =
+            '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> ' +
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+        const streets = L.tileLayer(
+            `https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${mapTilerKey}`,
+            {
+                attribution,
+                maxZoom: 19
+            }
+        );
+
+        const satellite = L.tileLayer(
+            `https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=${mapTilerKey}`,
+            {
+                attribution,
+                maxZoom: 19
+            }
+        );
+
+        // Hybrid: satellite with a light streets overlay.
+        // This is a raster approximation, not a
+        // transparent labels-only layer.
+        const hybrid = L.layerGroup([
+            L.tileLayer(
+                `https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=${mapTilerKey}`,
+                {
+                    attribution,
+                    maxZoom: 19
+                }
+            ),
+            L.tileLayer(
+                `https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${mapTilerKey}`,
+                {
+                    opacity: 0.30,
+                    attribution,
+                    maxZoom: 19
+                }
+            )
+        ]);
+
+        streets.addTo(map);
+
+        L.control.layers(
+            {
+                "Detailed Streets": streets,
+                "Satellite": satellite,
+                "Hybrid (Street Overlay)": hybrid
+            },
+            null,
+            {
+                position: "topright",
+                collapsed: false
+            }
+        ).addTo(map);
+
+        // ----------------------------------------------
+        // 6. Add clickable attraction markers
+        // ----------------------------------------------
+
+        const coordinates = [];
+
+        // ea-hobby-match-legend-v1: color thresholds match markerColor below.
+
+        const hobbyLegend = L.control({ position: "bottomleft" });
+
+        hobbyLegend.onAdd = function () {
+
+          const el = L.DomUtil.create("div", "ea-hobby-match-legend");
+
+          el.setAttribute("role", "note");
+
+          el.setAttribute("aria-label", "Recommendation match marker legend");
+
+          el.style.cssText = "background:rgba(255,255,255,.96);padding:9px 11px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.14);font:12px/1.6 Arial,sans-serif;color:#17304f;max-width:160px;";
+
+          el.innerHTML = '<strong>Recommendation match</strong><div><span style="color:#16a34a">●</span> 80–100% High</div><div><span style="color:#f59e0b">●</span> 50–79% Medium</div><div><span style="color:#dc2626">●</span> 0–49% Low</div>';
+
+          L.DomEvent.disableClickPropagation(el);
+
+          return el;
+
+        };
+
+        hobbyLegend.addTo(map);
+
+
+        attractions.forEach((attraction, index) => {
+        
+const score = Number(attraction.matchPercent ?? 0);
+
+const markerColor =
+    score >= 80 ? "#16a34a" :
+    score >= 50 ? "#f59e0b" :
+                  "#dc2626";
+
+
+            const marker = L.circleMarker(
+    [attraction.lat, attraction.lng],
+    {
+        radius: 9,
+        color: "#ffffff",
+        weight: 3,
+        fillColor: markerColor,
+        fillOpacity: 1
+    }
+).addTo(map);
+            // Safe popup text, without injecting
+            // attraction titles as HTML.
+            const popup = document.createElement("div");
+
+            const popupTitle = document.createElement("strong");
+            popupTitle.textContent = attraction.title;
+
+            const popupCategory = document.createElement("p");
+            popupCategory.textContent = attraction.category;
+
+            
+const popupMatch = document.createElement("p");
+popupMatch.style.fontWeight = "700";
+popupMatch.style.color = markerColor;
+popupMatch.textContent =
+    attraction.matchPercent + "% Recommendation Match";
+
+popup.append(popupTitle, popupCategory, popupMatch);
+
+
+            marker.bindPopup(popup);
+
+            marker.on("click", function () {
+                showDetails(attraction);
+            });
+
+            markers.set(index, marker);
+            coordinates.push([
+                attraction.lat,
+                attraction.lng
+            ]);
+        });
+
+        if (coordinates.length) {
+            map.fitBounds(
+                L.latLngBounds(coordinates).pad(0.25),
+                {maxZoom: 15}
+            );
+        } else {
+            map.setView([12.8797, 121.7740], 5);
+        }
+
+        if (mapNote) {
+            mapNote.textContent =
+                coordinates.length +
+                " attractions mapped on this results page.";
+        }
+    }
+
+    // --------------------------------------------------
+    // 7. Toggle List and Map views
+    // --------------------------------------------------
+
+    function showView(view) {
+        const showingMap = view === "map";
+
+        listPanel.hidden = showingMap;
+        mapPanel.hidden = !showingMap;
+
+        listButton?.setAttribute(
+            "aria-pressed", String(!showingMap)
+        );
+
+        mapButton?.setAttribute(
+            "aria-pressed", String(showingMap)
+        );
+
+        if (showingMap) {
+            initializeMap();
+
+            requestAnimationFrame(function () {
+                map.invalidateSize();
+            });
+        }
+    }
+
+    listButton?.addEventListener("click", function () {
+        showView("list");
+    });
+
+    mapButton?.addEventListener("click", function () {
+        showView("map");
+    });
+
+    // --------------------------------------------------
+    // 8. Card click -> zoom to selected attraction
+    // --------------------------------------------------
+
+    attractions.forEach((attraction, index) => {
+        const card = attraction.card;
+
+        card.tabIndex = 0;
+        card.setAttribute(
+            "aria-label",
+            "Show " + attraction.title + " on map"
+        );
+
+        function focusAttraction() {
+            showView("map");
+
+            map.flyTo(
+                [attraction.lat, attraction.lng],
+                16,
+                {
+                    animate: true,
+                    duration: 1.2
+                }
+            );
+
+            markers.get(index)?.openPopup();
+            showDetails(attraction);
+        }
+
+        card.addEventListener("click", function (event) {
+            if (event.target.closest("a, button")) return;
+            focusAttraction();
+        });
+
+        card.addEventListener("keydown", function (event) {
+            if (
+                event.key === "Enter" ||
+                event.key === " "
+            ) {
+                if (event.target !== card) return;
+                event.preventDefault();
+                focusAttraction();
+            }
+        });
+    });
+
+})();
+</script>
+{% endblock %}
+
+
+

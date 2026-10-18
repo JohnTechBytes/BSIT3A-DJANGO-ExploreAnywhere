@@ -1,0 +1,121 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_list %}
+{% block content_title %}{% endblock %}
+{% block extrastyle %}
+{{ block.super }}
+<style>
+/* ExploreAnywhere Phase 5D.2: scoped to Destinations only. */
+#content {max-width:1640px;}
+.ea-dest-heading {margin:0 0 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;}
+.ea-dest-heading h1 {margin:0 0 5px !important;font-size:25px !important;}
+.ea-dest-heading p {margin:0;color:#637d99;font-size:13px;line-height:1.5;}
+#ea-dest-filter-form {background:#fff;border:1px solid #dbe6f3;border-radius:14px;padding:18px;margin-bottom:12px;box-shadow:0 5px 24px rgba(20,50,95,.03);}
+.ea-dest-filter-grid {display:grid;grid-template-columns:minmax(200px,2fr) repeat(3,minmax(125px,1fr));gap:12px;align-items:end;}
+.ea-dest-filter-grid label {display:block;margin:0 0 6px;color:#305175;font-size:12px;font-weight:750;}
+.ea-dest-filter-grid input,.ea-dest-filter-grid select {box-sizing:border-box;width:100%;max-width:none;min-width:0;min-height:40px;border-radius:9px;border:1px solid #cbd9e9;background:white;color:#15385c;font-size:13px;padding:7px 10px;}
+.ea-dest-filter-grid input:focus-visible,.ea-dest-filter-grid select:focus-visible {outline:2px solid #1260db;outline-offset:1px;}
+.ea-dest-filter-actions {display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:14px;}
+.ea-dest-filter-actions button {border:0;border-radius:9px;padding:11px 16px;background:#1260db;color:#fff;font-weight:750;cursor:pointer;}
+.ea-dest-filter-actions a {display:inline-flex;align-items:center;min-height:40px;padding:0 15px;border:1px solid #cbd9e9;border-radius:9px;text-decoration:none;color:#1254a1;font-weight:700;}
+.ea-dest-filter-note {color:#617b96;font-size:12px;}
+.ea-dest-help {margin:10px 0 18px;color:#627b97;font-size:12px;line-height:1.55;}
+.ea-dest-state {display:inline-block;border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;white-space:nowrap;}
+.ea-dest-good {background:#e7f7ee;color:#177047;}
+.ea-dest-warn {background:#fff1e4;color:#95520f;}
+/* No giant right-hand category filter; the native filter back end remains active. */
+#changelist-filter {display:none !important;}
+#changelist.filtered {margin-right:0 !important;width:100% !important;}
+#changelist.filtered .results,#changelist.filtered .paginator,#changelist.filtered #toolbar,#changelist.filtered #changelist-form {margin-right:0 !important;width:100% !important;max-width:none !important;}
+#changelist .results {overflow-x:auto !important;max-width:100%;}
+#changelist .results table {width:100%;min-width:730px;}
+#changelist .results th,#changelist .results td {padding:12px 11px;vertical-align:middle;}
+#changelist .results thead th {background:#eef5ff;color:#31577b;text-transform:none;letter-spacing:.02em;}
+#changelist .results tbody tr:hover {background:#f3f8ff;}
+#changelist .actions {padding:12px 14px;background:#f8fbff;border:1px solid #dce7f4;border-radius:10px;}
+#changelist-form .actions.ea-no-selection {display:none !important;}
+.ea-bulk-hint {display:block;margin:7px 0 8px;color:#577390;font-size:12px;}
+.ea-bulk-hint.ea-selected {display:none;}
+#changelist .paginator {padding:15px 8px;}
+@media(max-width:1100px){.ea-dest-filter-grid {grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:620px){.ea-dest-filter-grid {grid-template-columns:minmax(0,1fr);}#ea-dest-filter-form {padding:13px;} .ea-dest-heading h1 {font-size:21px !important;}}
+</style>
+{% endblock %}
+
+{% block search %}
+<section aria-label="Kabankalan destination management">
+  <header class="ea-dest-heading">
+    <div>
+      <h1>Destination management</h1>
+      <p>Manage published information, verified locations, and genuine photos for Kabankalan City.</p>
+    </div>
+  </header>
+  <form id="ea-dest-filter-form" method="get" role="search" aria-label="Search and filter destinations">
+    <div class="ea-dest-filter-grid">
+      <div><label for="ea-dest-search">Search destinations</label><input id="ea-dest-search" type="search" name="q" value="{{ ea_filters.query }}" placeholder="Destination name or activity" autocomplete="off"></div>
+      <div><label for="ea-dest-category">Category</label>
+        <select id="ea-dest-category" name="category__id__exact">
+          <option value="">All categories</option>
+          {% for category in ea_filters.categories %}
+            <option value="{{ category.id }}"{% if category.selected %} selected{% endif %}>{{ category.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div><label for="ea-dest-verified">Verification</label>
+        <select id="ea-dest-verified" name="is_verified__exact">
+          <option value="">All verification states</option>
+          <option value="1"{% if ea_filters.verified == '1' %} selected{% endif %}>Verified</option>
+          <option value="0"{% if ea_filters.verified == '0' %} selected{% endif %}>Not verified</option>
+        </select>
+      </div>
+      <div><label for="ea-dest-active">Activity</label>
+        <select id="ea-dest-active" name="is_active__exact">
+          <option value="">All publication states</option>
+          <option value="1"{% if ea_filters.active == '1' %} selected{% endif %}>Active</option>
+          <option value="0"{% if ea_filters.active == '0' %} selected{% endif %}>Inactive</option>
+        </select>
+      </div>
+    </div>
+    <div class="ea-dest-filter-actions">
+      <button type="submit">Apply filters</button>
+      <a href="{% url 'admin:places_place_changelist' %}">Clear filters</a>
+      <span class="ea-dest-filter-note">{{ cl.result_count }} of {{ cl.full_result_count }} Kabankalan destinations shown</span>
+    </div>
+  </form>
+  <p class="ea-dest-help">Select a destination name to edit its content. Use the checkboxes for authorized bulk publication actions. Cover-photo labels indicate whether an image is set, not whether its usage rights have been verified.</p>
+</section>
+{% endblock %}
+
+{% block filters %}{% endblock %}
+
+{% block result_list %}
+<p id="ea-bulk-hint" class="ea-bulk-hint">Select destinations to access bulk actions.</p>
+{{ block.super }}
+<script>
+(function () {
+  'use strict';
+  function ready() {
+    var form = document.getElementById('changelist-form');
+    if (!form) return;
+    var selections = form.querySelectorAll('input.action-select');
+    var actionBars = form.querySelectorAll('.actions');
+    var hint = document.getElementById('ea-bulk-hint');
+    if (!selections.length || !actionBars.length) {
+      if (hint) hint.style.display = 'none';
+      return;
+    }
+    function refresh() {
+      var anySelected = Array.prototype.some.call(selections, function (checkbox) { return checkbox.checked; });
+      Array.prototype.forEach.call(actionBars, function (bar) { bar.classList.toggle('ea-no-selection', !anySelected); });
+      if (hint) hint.classList.toggle('ea-selected', anySelected);
+    }
+    form.addEventListener('change', refresh);
+    form.addEventListener('click', function (event) {
+      if (event.target && event.target.id === 'action-toggle') window.setTimeout(refresh, 0);
+    });
+    refresh();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready);
+  else ready();
+})();
+</script>
+{% endblock %}

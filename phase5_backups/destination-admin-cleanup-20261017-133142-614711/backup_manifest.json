@@ -1,0 +1,22 @@
+{
+  "apps/places/admin.py": {
+    "existed": true,
+    "original": "909b2b8bf5e6763a1c7b60bf9c4bba39001b8063a493f8523484cfe655ae3433",
+    "installed": "390dfcb3a78df89e771cdbe2f52d54944bd2be96a64fdb45ac78f2b1022582b3"
+  },
+  "templates/admin/base_site.html": {
+    "existed": true,
+    "original": "42843691139953bd53ab30843ec1d142a7d3af2845bf86cabe46098bdf2561b0",
+    "installed": "cfe02e5dc369fdbce9a5e68e83b88a4aca809893d3846bc0b9c6cbf350c6367e"
+  },
+  "templates/admin/index.html": {
+    "existed": true,
+    "original": "a56a1373675c0a1b2510f694a6cb27300194fd22b5124789295fd1e98d21fbf9",
+    "installed": "7e4a12f2287af4fa337236ebf36c9e01bdd472e2d492b3ff36a078750d266c40"
+  },
+  "templates/admin/places/place/change_list.html": {
+    "existed": false,
+    "original": null,
+    "installed": "935000a8f6413568aef74d61bf93710d343ccdcb797b6c3ce47c6f1b6cfd51cf"
+  }
+}

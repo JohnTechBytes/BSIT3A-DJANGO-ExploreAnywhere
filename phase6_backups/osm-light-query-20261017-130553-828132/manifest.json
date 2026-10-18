@@ -1,0 +1,6 @@
+{
+  "format": "exploreanywhere-phase6b2-query-fix-v1",
+  "target": "apps/places/management/commands/discover_kabankalan_businesses.py",
+  "old_sha256": "dd67949273f82099598c312d8f3140716f07418198630b87c1ab068c4714c42d",
+  "new_sha256": "4342dbc3649a93f84109fabddc6d2babc5f500f55be79373394491bf6c938591"
+}

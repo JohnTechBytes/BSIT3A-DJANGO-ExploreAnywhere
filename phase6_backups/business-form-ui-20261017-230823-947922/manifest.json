@@ -1,0 +1,15 @@
+{
+  "format": "exploreanywhere-phase6d1-business-form-v1",
+  "files": [
+    {
+      "path": "apps/places/admin.py",
+      "old_existed": true,
+      "new_hash": "1d39d9ebf2d508c41510791c85c02887e74eb8cb0344837d182c42255c71e533"
+    },
+    {
+      "path": "templates/admin/places/place/change_form.html",
+      "old_existed": false,
+      "new_hash": "e4b5b09105830dd32ae3e4f176e4cc26188f95037659984a7cc8e7b7b09ef123"
+    }
+  ]
+}

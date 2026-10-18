@@ -1,0 +1,70 @@
+{% extends "theme/public_base.html" %}
+{% block extra_css %}<style>
+.ea-trip{max-width:1100px;margin:auto;padding:38px 20px 92px;color:#12345b}
+.ea-trip h1{font-size:clamp(28px,4vw,40px);font-weight:800;color:#102f59;margin:8px 0 14px}
+.ea-trip h2{font-size:20px;color:#13365e;margin:0 0 12px}
+.ea-trip p,.ea-trip small{color:#637993;line-height:1.6}
+.ea-trip .eyebrow{font-size:12px;font-weight:800;letter-spacing:.12em;color:#0757d8;text-transform:uppercase}
+.ea-trip .panel{background:#fff;border:1px solid #dce8f5;border-radius:18px;padding:22px;margin:16px 0;box-shadow:0 8px 22px rgba(20,47,80,.04)}
+.ea-trip .hero{background:linear-gradient(115deg,#102f64,#075ee4);color:white;border-radius:18px;padding:26px;margin-bottom:20px}
+.ea-trip .hero h1,.ea-trip .hero p{color:white}.ea-trip .hero p{opacity:.9;margin:0}
+.ea-trip .actions{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin:16px 0}
+.ea-trip .btn{display:inline-flex;justify-content:center;align-items:center;text-decoration:none;background:#075ee4;border:1px solid #075ee4;color:#fff!important;border-radius:10px;padding:10px 15px;min-height:42px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.ea-trip .btn.outline{background:#fff;color:#0757d8!important;border-color:#bdd3ef}.ea-trip .btn.danger{background:#fff;color:#a51e35!important;border-color:#efbac6}
+.ea-trip .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ea-trip .trip-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.ea-trip .field{display:flex;flex-direction:column;gap:6px;margin-bottom:13px}.ea-trip .field label{font-size:13px;font-weight:700;color:#254b73}
+.ea-trip input,.ea-trip select,.ea-trip textarea{width:100%;border:1px solid #c9d7e9;border-radius:10px;padding:11px 12px;color:#16375c;background:#fff;font:inherit;font-size:14px}
+.ea-trip .muted{color:#637993;font-size:13px}.ea-trip .pill{display:inline-block;background:#e8f2ff;color:#0757d8;padding:5px 9px;border-radius:99px;font-size:12px;font-weight:700}
+.ea-trip .stop{border-left:4px solid #075ee4}.ea-trip .stop-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.ea-trip .stop h3{font-size:18px;margin:4px 0;color:#12385f}.ea-trip .stop .mini-actions{display:flex;gap:8px;flex-wrap:wrap}
+.ea-trip .stop .mini-actions form,.ea-trip .actions form{margin:0}
+.ea-trip .messages{list-style:none;padding:0;margin:0 0 16px}.ea-trip .messages li{padding:12px;background:#eaf3ff;color:#143f75;border-radius:10px;margin:8px 0}
+.ea-trip .empty{border:1px dashed #b9cfe8;border-radius:16px;padding:26px;background:white}
+@media(max-width:720px){.ea-trip{padding:22px 14px 72px}.ea-trip .grid{grid-template-columns:1fr}.ea-trip .panel{padding:17px}}
+</style>{% endblock %}
+{% block content %}
+<main class="ea-trip">
+  <div class="hero"><p>MY KABANKALAN JOURNEY · TRIP PLANNER</p><h1>{{ trip.title }}</h1><p>Day {{ trip.day_number }} · Kabankalan, Negros Occidental</p></div>
+  {% if messages %}<ul class="messages" aria-live="polite">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
+  <nav class="actions" aria-label="Itinerary navigation"><a class="btn outline" href="{% url 'itineraries:list' %}">All Itineraries</a><a class="btn outline" href="{% url 'places:journey_dashboard' %}">My Journey</a><a class="btn outline" href="{% url 'places:saved_places' %}">Saved Places</a></nav>
+  <div class="grid"><section class="panel"><h2>Trip Information</h2>
+    <form method="post" action="{% url 'itineraries:update' trip.pk %}">{% csrf_token %}
+      <div class="field"><label for="edit-title">Trip title</label><input id="edit-title" name="title" value="{{ trip.title }}" maxlength="255" required></div>
+      <div class="field"><label for="edit-day">Day number</label><input id="edit-day" type="number" name="day_number" min="1" max="365" value="{{ trip.day_number }}" required></div>
+      <button class="btn" type="submit">Save Trip Details</button>
+    </form></section>
+    <section class="panel"><h2>Add a Destination</h2>
+      <form method="post" action="{% url 'itineraries:add_stop' trip.pk %}">{% csrf_token %}
+        <div class="field"><label for="add-place">Kabankalan place</label><select id="add-place" name="place_id" required><option value="">Choose a destination</option>
+          {% for place in places %}<option value="{{ place.pk }}">{{ place.title }}</option>{% endfor %}</select></div>
+        <div class="field"><label for="add-time">Planned arrival time</label><input id="add-time" type="time" name="start_time" value="09:00" required></div>
+        <div class="field"><label for="add-note">Notes (optional)</label><input id="add-note" name="notes" maxlength="255" placeholder="What would you like to do here?"></div>
+        <button class="btn" type="submit">+ Add Stop</button>
+      </form>
+      <p class="muted">Adding a stop is a plan, not confirmation that you visited.</p>
+    </section></div>
+  <section aria-label="Scheduled itinerary stops"><h2>Your Planned Stops ({{ stops|length }})</h2>
+    {% if stops %}<div class="trip-cards">{% for stop in stops %}
+      <article class="panel stop"><div class="stop-head"><div><span class="pill">Stop {{ stop.stop_order }}</span><h3>{{ stop.place.title }}</h3></div>
+      <div class="mini-actions">
+        <form method="post" action="{% url 'itineraries:move_stop' trip.pk stop.pk %}">{% csrf_token %}<input type="hidden" name="direction" value="up"><button type="submit" class="btn outline" aria-label="Move {{ stop.place.title }} up">↑</button></form>
+        <form method="post" action="{% url 'itineraries:move_stop' trip.pk stop.pk %}">{% csrf_token %}<input type="hidden" name="direction" value="down"><button type="submit" class="btn outline" aria-label="Move {{ stop.place.title }} down">↓</button></form>
+      </div></div>
+      <p class="muted">Kabankalan{% if not stop.place.is_verified or not stop.place.is_active %} · Currently unpublished{% endif %}</p>
+      <form method="post" action="{% url 'itineraries:update_stop' trip.pk stop.pk %}">{% csrf_token %}
+        <div class="field"><label for="time-{{ stop.pk }}">Planned arrival time</label><input id="time-{{ stop.pk }}" type="time" name="start_time" value="{{ stop.start_time|time:'H:i' }}" required></div>
+        <div class="field"><label for="notes-{{ stop.pk }}">Stop notes</label><input id="notes-{{ stop.pk }}" name="notes" value="{{ stop.notes }}" maxlength="255"></div>
+        <button class="btn outline" type="submit">Save Stop</button>
+      </form>
+      <div class="actions">{% if stop.place.is_active and stop.place.is_verified %}<a class="btn outline" href="{% url 'places:place_detail' stop.place.pk %}">Place Details</a>{% endif %}
+      {% if stop.place.latitude != None and stop.place.longitude != None %}<a class="btn outline" href="https://www.google.com/maps/search/?api=1&amp;query={{ stop.place.latitude }},{{ stop.place.longitude }}" target="_blank" rel="noopener noreferrer">View on Map ↗</a>{% endif %}
+      <form method="post" action="{% url 'itineraries:remove_stop' trip.pk stop.pk %}" onsubmit="return confirm('Remove this stop?');">{% csrf_token %}<button type="submit" class="btn danger">Remove Stop</button></form></div>
+      </article>{% endfor %}</div>
+    {% else %}<div class="empty"><h2>No stops yet</h2><p>Use the Add a Destination form above to plan your first stop.</p></div>{% endif %}
+  </section>
+  <section class="panel"><h2>Manage Itinerary</h2><p>This permanently removes the trip and its planned stops, but does not remove your Saved Places.</p>
+    <form method="post" action="{% url 'itineraries:delete' trip.pk %}" onsubmit="return confirm('Delete this entire itinerary? This cannot be undone.');">{% csrf_token %}<button class="btn danger" type="submit">Delete Itinerary</button></form>
+  </section>
+</main>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "admin/base_site.html" %}
+{% load ea_admin_summary %}
+{% block breadcrumbs %}{% endblock %}
+{% block content_title %}{% endblock %}
+{% block content %}
+{% ea_admin_summary as stats %}
+<div class="ea-dashboard">
+  <section class="ea-dash-hero" aria-labelledby="ea-dash-title">
+    <div class="ea-eyebrow">One city. Your hobbies. Our map.</div>
+    <h1 id="ea-dash-title">ExploreAnywhere Admin</h1>
+    <p>A focused workspace for Kabankalan destination information, visit verification and other authorized management activities.</p>
+  </section>
+  <section aria-labelledby="ea-metrics-title">
+    <h2 class="ea-dash-section-head" id="ea-metrics-title">Overview</h2>
+    <div class="ea-metrics-grid">
+      {% if stats.published is not None %}
+      <div class="ea-metric"><strong>{{ stats.published }}</strong><span>Published Kabankalan destinations</span></div>
+      {% endif %}
+      {% if stats.pending is not None %}
+      <div class="ea-metric"><strong>{{ stats.pending }}</strong><span>Pending staff-reviewed visits</span></div>
+      {% endif %}
+      {% if stats.missing_photos is not None %}
+      <div class="ea-metric"><strong>{{ stats.missing_photos }}</strong><span>Destinations without cover photos</span></div>
+      {% endif %}
+      {% if stats.users is not None %}
+      <div class="ea-metric"><strong>{{ stats.users }}</strong><span>Registered user accounts</span></div>
+      {% endif %}
+    </div>
+  </section>
+  <section aria-labelledby="ea-shortcuts-title">
+    <h2 class="ea-dash-section-head" id="ea-shortcuts-title">Quick management</h2>
+    <div class="ea-shortcuts">
+      {% for app in available_apps %}
+        {% for model in app.models %}
+          {% if model.admin_url %}
+            {% if app.app_label == 'places' and model.object_name == 'Place' %}
+              <a class="ea-shortcut" href="{{ model.admin_url }}"><div><b>Manage destinations</b><span>Photos, hobbies, publication and verified locations</span></div><i aria-hidden="true">↗</i></a>
+              <a class="ea-shortcut" href="{% url 'admin:places_place_osm_review' %}"><div><b>Business review queue</b><span>Independently verify imported OSM listings before publication</span></div><i aria-hidden="true">↗</i></a>
+            {% elif app.app_label == 'visits' and model.object_name == 'VisitCheckIn' %}
+              <a class="ea-shortcut" href="{{ model.admin_url }}"><div><b>Review check-ins</b><span>Approve only visits supported by independent evidence</span></div><i aria-hidden="true">↗</i></a>
+            {% elif app.app_label == 'auth' and model.object_name == 'User' %}
+              <a class="ea-shortcut" href="{{ model.admin_url }}"><div><b>Manage users</b><span>View and administer authorized accounts</span></div><i aria-hidden="true">↗</i></a>
+            {% elif app.app_label == 'info' and model.object_name == 'CityInformation' %}
+              <a class="ea-shortcut" href="{{ model.admin_url }}"><div><b>City information</b><span>Edit Kabankalan information content</span></div><i aria-hidden="true">↗</i></a>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </section>
+  <section aria-label="Other modules">
+    <details class="ea-modules"><summary>All permitted admin modules</summary>
+      <div class="ea-modules-content">
+        {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
+      </div>
+    </details>
+  </section>
+  <p class="ea-permission-note">Navigation and figures are shown only for permissions granted to your staff account. The existing Django admin forms and safeguards remain in place.</p>
+</div>
+{% endblock %}

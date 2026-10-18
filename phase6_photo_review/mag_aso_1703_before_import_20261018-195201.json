@@ -1,0 +1,38 @@
+[
+{
+  "model": "places.place",
+  "pk": 1703,
+  "fields": {
+    "city": 2,
+    "title": "Mag Aso Falls",
+    "slug": "osm-node-3369728379",
+    "category": null,
+    "description": "",
+    "address": "Kabankalan",
+    "barangay": "",
+    "latitude": "9.900694",
+    "longitude": "122.893451",
+    "phone": "",
+    "website": "",
+    "email": "",
+    "is_verified": true,
+    "is_active": true,
+    "owner": null,
+    "avg_rating": "0.00",
+    "review_count": 0,
+    "cover_image": "",
+    "cover_image_url": "",
+    "photo_credit": "",
+    "photo_source_url": "",
+    "photo_license": "",
+    "photo_license_url": "",
+    "created_at": "2026-10-14T04:27:06.223Z",
+    "updated_at": "2026-10-14T04:27:06.223Z",
+    "hobbies": [
+      10,
+      4,
+      5
+    ]
+  }
+}
+]

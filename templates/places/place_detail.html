@@ -1,0 +1,360 @@
+{% extends "theme/public_base.html" %}
+
+{% block extra_css %}
+<style>
+/* ExploreAnywhere Phase 5B: destination-detail presentation only. */
+.ea-place-v2{--pd-navy:#102b53;--pd-blue:#075ee4;--pd-text:#1e3958;--pd-muted:#60758e;--pd-line:#dce7f4;max-width:1190px;margin:auto;padding:30px 24px 82px;color:var(--pd-text);font-size:15px}
+.ea-place-v2 *{box-sizing:border-box}
+.ea-place-v2 a{color:#0757cc;text-decoration:none}
+.ea-place-v2 a:hover{text-decoration:underline}
+.ea-place-v2 :is(a,button,input,textarea):focus-visible{outline:3px solid #60a5fa;outline-offset:3px}
+.pd-breadcrumb{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:2px 0 23px;font-size:13px;color:var(--pd-muted)}
+.pd-breadcrumb a{font-weight:750}
+.pd-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:26px;margin-bottom:23px}
+.pd-kicker{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:11px}
+.pd-pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:7px 11px;background:#e5f0ff;color:#1453ae;font-size:12px;font-weight:760;max-width:100%}
+.pd-pill.pd-published{background:#e5f6ed;color:#13693e}
+.pd-heading h1{font-size:clamp(29px,4vw,46px);letter-spacing:-.035em;line-height:1.12;font-weight:850;margin:0 0 11px;color:var(--pd-navy);overflow-wrap:anywhere}
+.pd-subtitle{color:var(--pd-muted);margin:0;line-height:1.6}
+.pd-heading-rating{background:white;border:1px solid var(--pd-line);border-radius:15px;padding:14px 17px;text-align:center;flex:0 0 auto;min-width:145px}
+.pd-heading-rating strong{display:block;color:#0d3673;font-size:23px;font-weight:850}
+.pd-heading-rating span{display:block;font-size:12px;color:var(--pd-muted);margin-top:3px}
+.pd-hobbies{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:16px 0 0}
+.pd-hobbies-label{font-size:12px;font-weight:800;color:#566d88;margin-right:3px}
+.pd-hobby{border:1px solid #d7e4f5;background:#fff;border-radius:999px;padding:6px 11px;color:#355d88;font-size:12px;font-weight:650}
+.pd-actions{background:#fff;border:1px solid var(--pd-line);box-shadow:0 10px 28px rgba(13,55,102,.045);border-radius:17px;padding:13px;display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-bottom:23px}
+.pd-actions form{margin:0}
+.pd-action{display:inline-flex;align-items:center;justify-content:center;text-align:center;min-height:43px;padding:10px 15px;border-radius:10px;border:1px solid #cbdcf0;background:#fff;color:#0c50b1!important;font-size:13px;font-weight:760;text-decoration:none!important;line-height:1.35;cursor:pointer;white-space:normal}
+.pd-action:hover{background:#f0f6ff}
+.pd-action-primary{background:var(--pd-blue);color:white!important;border-color:var(--pd-blue)}
+.pd-action-primary:hover{background:#064ac0;color:white!important}
+.pd-action-saved{background:#eaf4ff;border-color:#99c4f5;color:#1254b3!important}
+.pd-actions-note{margin:0 0 0 auto;color:var(--pd-muted);font-size:12px}
+.pd-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr);gap:23px;align-items:start}
+.pd-main,.pd-aside{min-width:0}
+.pd-card{border:1px solid var(--pd-line);border-radius:18px;background:white;padding:22px;margin-bottom:20px;box-shadow:0 9px 28px rgba(13,55,102,.035)}
+.pd-card h2{color:var(--pd-navy);font-size:20px;line-height:1.3;font-weight:820;margin:0 0 12px;letter-spacing:-.015em}
+.pd-card p{color:#536b84;line-height:1.75;margin:0 0 10px;overflow-wrap:anywhere}
+.pd-card p:last-child{margin-bottom:0}
+.pd-card-heading{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px}
+.pd-card-heading h2{margin:0}
+.pd-small{color:var(--pd-muted);font-size:12px}
+.pd-hero{height:clamp(275px,37vw,435px);border-radius:19px;overflow:hidden;position:relative;background:linear-gradient(135deg,#d9eeff,#e4f2ed);margin-bottom:11px}
+.pd-hero a[data-gallery-image]{display:block;width:100%;height:100%;position:relative}
+.pd-hero img{width:100%;height:100%;display:block;object-fit:cover}
+.pd-photo-expand{position:absolute;right:15px;bottom:15px;background:rgba(11,35,64,.86);color:#fff;border-radius:10px;padding:10px 13px;font-size:13px;font-weight:750}
+.pd-no-photo{width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:9px;color:#326387;padding:28px}
+.pd-no-photo-icon{display:grid;place-items:center;width:68px;height:68px;border-radius:19px;background:#ffffffb0;font-size:30px}
+.pd-no-photo strong{font-size:17px;color:#235676}
+.pd-no-photo small{max-width:310px;line-height:1.5;color:#507b93}
+.pd-photo-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;color:#667991;font-size:12px;line-height:1.55;margin:0 3px 14px;overflow-wrap:anywhere}
+.pd-photo-meta a{font-weight:700}
+.pd-gallery{display:flex;gap:11px;overflow-x:auto;padding:3px 1px 11px;margin:0 0 20px;scrollbar-width:thin}
+.pd-gallery-link{position:relative;display:block;width:137px;height:94px;flex:0 0 137px;border-radius:12px;overflow:hidden;border:2px solid #fff;box-shadow:0 0 0 1px #dce7f4}
+.pd-gallery-link img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .18s ease}
+.pd-gallery-link:hover img{transform:scale(1.045)}
+.pd-gallery-caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;font-size:10px;padding:22px 6px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pd-info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 18px}
+.pd-info-row{padding:0 0 12px;border-bottom:1px solid #eef2f7;min-width:0}
+.pd-info-row strong{display:block;font-size:12px;color:#365c81;margin-bottom:5px}
+.pd-info-row span,.pd-info-row div{font-size:13px;color:#516c89;line-height:1.6;overflow-wrap:anywhere}
+.pd-info-row a{font-weight:700;overflow-wrap:anywhere}
+.pd-hours{margin:0;padding:0;list-style:none}
+.pd-hours li{display:flex;justify-content:space-between;gap:14px;border-top:1px solid #eff3f8;padding:9px 0;font-size:13px;color:#536b84}
+.pd-hours li:first-child{border-top:0}
+.pd-hours .pd-hours-day{font-weight:750;color:#2d527b}
+.pd-map{width:100%;height:240px;display:block;border:0;border-radius:12px;background:#e7eef6}
+.pd-coordinates{font-size:12px!important;line-height:1.55;color:var(--pd-muted)!important;margin:10px 0 0!important}
+.pd-map-missing{border:1px dashed #b9cde6;border-radius:13px;padding:20px;background:#f4f8fd;color:#57718b;font-size:13px;line-height:1.65}
+.pd-map-missing strong{display:block;color:#244f7b;margin-bottom:4px}
+.pd-cta{display:inline-flex;justify-content:center;align-items:center;text-align:center;padding:11px 16px;border-radius:10px;background:#075ee4;color:#fff!important;font-size:13px;font-weight:800;text-decoration:none!important;margin-top:12px;width:100%}
+.pd-cta:hover{background:#0648b3}
+.pd-nearby{display:block;padding:13px 0;border-top:1px solid #ecf2f9;font-weight:760;color:#214c7b!important;overflow-wrap:anywhere}
+.pd-nearby:first-of-type{border-top:0}
+.pd-nearby small{display:block;color:var(--pd-muted);font-weight:400;margin-top:4px}
+.pd-review-section{margin-top:8px;scroll-margin-top:24px}
+.pd-reviews{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px}
+.pd-reviews .pd-card{margin-bottom:0}
+.pd-rating-overview{display:inline-flex;align-items:center;gap:9px;border-radius:11px;background:#eff6ff;padding:10px 13px;color:#0d50ac;font-weight:780;font-size:13px;margin:0 0 10px}
+.pd-review-card{padding:15px 0;border-top:1px solid #e9f0f8}
+.pd-review-card:first-of-type{border-top:0}
+.pd-review-card strong{color:#254e7b}
+.pd-review-card small{color:#657a94;font-size:12px}
+.pd-review-card p{margin:6px 0 0;font-size:13px;line-height:1.65;overflow-wrap:anywhere}
+.pd-stars{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px}
+.pd-stars label{display:inline-flex;align-items:center;gap:6px;border:1px solid #d2e2f2;border-radius:10px;padding:9px 12px;font-size:13px;font-weight:730;color:#25517e;cursor:pointer}
+.pd-stars label:has(input:checked){background:#e9f3ff;border-color:#075ee4}
+.pd-stars input{accent-color:#075ee4}
+.pd-textarea{display:block;width:100%;min-height:115px;border:1px solid #b9cce0;border-radius:11px;padding:12px;font:inherit;color:#183a5f;resize:vertical}
+.pd-form-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:13px}
+.pd-form-actions form{margin:0}
+.pd-danger{background:#fff;color:#a02940!important;border-color:#e6b5bf}
+.pd-review-note{background:#f1f6fc;border:1px solid #e2ebf6;border-radius:11px;padding:11px 13px;color:#5d728b;font-size:12px;line-height:1.55;margin:13px 0}
+.pd-dialog{max-width:min(92vw,900px);width:100%;padding:12px;border:0;border-radius:17px;background:#0e1a2c;color:#fff;box-shadow:0 25px 75px #0008}
+.pd-dialog::backdrop{background:rgba(5,18,33,.83)}
+.pd-dialog-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+.pd-dialog-top strong{font-size:13px;color:#dce8fa}
+.pd-dialog-close{border:1px solid #526175;background:#1e314b;color:#fff;padding:8px 13px;border-radius:9px;cursor:pointer;font-weight:750}
+.pd-dialog img{display:block;max-width:100%;max-height:74vh;margin:auto;object-fit:contain;border-radius:7px}
+.pd-dialog figcaption{text-align:center;margin:8px 0;color:#c5d6e9;font-size:13px}
+.pd-mobile-foot{display:none}
+@media(max-width:960px){.pd-layout{grid-template-columns:1fr}.pd-aside{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.pd-aside .pd-card{margin:0}.pd-main .pd-card:last-child{margin-bottom:18px}.pd-actions-note{margin:0}}
+@media(max-width:670px){.ea-place-v2{padding:19px 15px 65px}.pd-heading{flex-direction:column;gap:12px}.pd-heading-rating{text-align:left;min-width:0;padding:11px 15px}.pd-heading-rating strong{display:inline;margin-right:8px;font-size:18px}.pd-heading-rating span{display:inline}.pd-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px}.pd-actions form{width:100%}.pd-actions .pd-action{width:100%;font-size:12px;min-height:47px;padding:10px 8px}.pd-actions-note{grid-column:1/-1}.pd-hero{height:255px}.pd-info-grid{grid-template-columns:1fr}.pd-aside{grid-template-columns:1fr}.pd-card{padding:18px}.pd-reviews{grid-template-columns:1fr}.pd-gallery-link{width:115px;height:85px;flex-basis:115px}.pd-hobbies{gap:6px}}
+@media(prefers-reduced-motion:reduce){.pd-gallery-link img{transition:none}}
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="ea-place-v2">
+  <nav class="pd-breadcrumb" aria-label="Breadcrumb">
+    <a href="{% url 'places:attraction_carousel' %}">← Explore Places</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{{ place.title }}</span>
+  </nav>
+
+  <header class="pd-heading">
+    <div>
+      <div class="pd-kicker">
+        <span class="pd-pill">{{ place.category.name|default:"Tourist Destination" }}</span>
+        <span class="pd-pill pd-published">Published Kabankalan destination</span>
+      </div>
+      <h1>{{ place.title }}</h1>
+      <p class="pd-subtitle">📍 {{ place.city.name }}{% if place.city.province %}, {{ place.city.province }}{% endif %}</p>
+      {% with hobbies=place.hobbies.all %}
+      {% if hobbies %}
+      <div class="pd-hobbies" aria-label="Destination hobbies">
+        <span class="pd-hobbies-label">Explore by hobby:</span>
+        {% for hobby in hobbies %}<span class="pd-hobby">{{ hobby.name|default:hobby }}</span>{% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
+    </div>
+    <div class="pd-heading-rating" aria-label="Visitor rating">
+      {% if place.review_count %}
+      <strong>★ {{ place.avg_rating|floatformat:1 }}/5</strong>
+      <span>{{ place.review_count }} visitor review{{ place.review_count|pluralize }}</span>
+      {% else %}
+      <strong>☆ No ratings</strong>
+      <span>Visitor reviews not yet available</span>
+      {% endif %}
+    </div>
+  </header>
+
+  <nav class="pd-actions" aria-label="Destination actions">
+    {% if is_saved %}
+    <form method="post" action="{% url 'places:unsave_place' place.pk %}">
+      {% csrf_token %}
+      <button class="pd-action pd-action-saved" type="submit">✓ Saved · Remove</button>
+    </form>
+    {% else %}
+    <form method="post" action="{% url 'places:save_place' place.pk %}">
+      {% csrf_token %}
+      <button class="pd-action pd-action-primary" type="submit">♡ Save Place</button>
+    </form>
+    {% endif %}
+    <a class="pd-action" href="{% url 'itineraries:choose_for_place' place.pk %}">＋ Add to Itinerary</a>
+    <a class="pd-action" href="{% url 'visits:check_in' place.pk %}">Report a Visit</a>
+    <a class="pd-action" href="{% url 'places:saved_places' %}">Saved Places</a>
+    <a class="pd-action" href="{% url 'places:journey_dashboard' %}">My Journey</a>
+    <p class="pd-actions-note">Visit reports require staff review before rewards are granted.</p>
+  </nav>
+
+  <div class="pd-layout">
+    <div class="pd-main">
+      <section aria-label="Destination photographs">
+        <div class="pd-hero">
+          {% if place.cover_image %}
+            <a href="{{ place.cover_image.url }}" data-gallery-image data-gallery-caption="Cover photograph of {{ place.title }}" aria-label="Enlarge photograph of {{ place.title }}">
+              <img src="{{ place.cover_image.url }}" alt="{{ place.title }} destination photograph" fetchpriority="high">
+              <span class="pd-photo-expand">⤢ View photo</span>
+            </a>
+          {% elif place.cover_image_url %}
+            <a href="{{ place.cover_image_url }}" data-gallery-image data-gallery-caption="Cover photograph of {{ place.title }}" aria-label="Enlarge photograph of {{ place.title }}">
+              <img src="{{ place.cover_image_url }}" alt="{{ place.title }} destination photograph" fetchpriority="high">
+              <span class="pd-photo-expand">⤢ View photo</span>
+            </a>
+          {% else %}
+            <div class="pd-no-photo">
+              <span class="pd-no-photo-icon" aria-hidden="true">▣</span>
+              <strong>Destination photo coming soon</strong>
+              <small>A verified photo of this place has not been added yet.</small>
+            </div>
+          {% endif %}
+        </div>
+
+        {% if place.cover_image or place.cover_image_url %}
+          {% if place.photo_credit or place.photo_source_url or place.photo_license %}
+          <div class="pd-photo-meta">
+            <span>Cover photo{% if place.photo_credit %} by {{ place.photo_credit }}{% endif %}</span>
+            {% if place.photo_source_url %}<span> · <a href="{{ place.photo_source_url }}" target="_blank" rel="noopener noreferrer">Photo source ↗</a></span>{% endif %}
+            {% if place.photo_license %}
+              <span> · {% if place.photo_license_url %}<a href="{{ place.photo_license_url }}" target="_blank" rel="noopener noreferrer">{{ place.photo_license }}</a>{% else %}{{ place.photo_license }}{% endif %}</span>
+            {% endif %}
+          </div>
+          {% else %}
+          <p class="pd-photo-meta">Cover photo attribution has not yet been recorded.</p>
+          {% endif %}
+        {% endif %}
+
+        {% if photos %}
+          <div class="pd-card-heading"><h2 style="font-size:16px;margin:0;color:#12345b">Photo gallery</h2><span class="pd-small">Select a photo to enlarge</span></div>
+          <div class="pd-gallery" aria-label="Destination photo gallery">
+            {% for photo in photos %}
+              {% if photo.image %}
+                <a class="pd-gallery-link" href="{{ photo.image.url }}" data-gallery-image data-gallery-caption="{{ photo.caption|default:place.title }}" aria-label="View gallery photo: {{ photo.caption|default:place.title }}">
+                  <img src="{{ photo.image.url }}" alt="{{ photo.caption|default:place.title }}" loading="lazy" decoding="async">
+                  {% if photo.caption %}<span class="pd-gallery-caption">{{ photo.caption }}</span>{% endif %}
+                </a>
+              {% elif photo.image_url %}
+                <a class="pd-gallery-link" href="{{ photo.image_url }}" data-gallery-image data-gallery-caption="{{ photo.caption|default:place.title }}" aria-label="View gallery photo: {{ photo.caption|default:place.title }}">
+                  <img src="{{ photo.image_url }}" alt="{{ photo.caption|default:place.title }}" loading="lazy" decoding="async">
+                  {% if photo.caption %}<span class="pd-gallery-caption">{{ photo.caption }}</span>{% endif %}
+                </a>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <p class="pd-small" style="margin:-10px 0 17px">Additional gallery photos may have separate ownership or licensing; confirm their permissions with the destination administrator.</p>
+        {% endif %}
+      </section>
+
+      <section class="pd-card" id="place-about" aria-labelledby="pd-about-title">
+        <h2 id="pd-about-title">About this destination</h2>
+        {% if place.description %}
+          <p>{{ place.description|linebreaksbr }}</p>
+        {% else %}
+          <p>Detailed information about this destination is being prepared and verified by the destination administrator.</p>
+        {% endif %}
+      </section>
+
+      <section class="pd-card" id="place-information" aria-labelledby="pd-info-title">
+        <h2 id="pd-info-title">Visitor information</h2>
+        <div class="pd-info-grid">
+          <div class="pd-info-row"><strong>Address</strong><span>{{ place.address|default:"Address not provided" }}</span></div>
+          <div class="pd-info-row"><strong>Barangay</strong><span>{{ place.barangay|default:"Not yet provided" }}</span></div>
+          <div class="pd-info-row"><strong>Category</strong><span>{{ place.category.name|default:"Tourist Destination" }}</span></div>
+          <div class="pd-info-row"><strong>Contact</strong><span>{% if place.phone %}{{ place.phone }}{% elif place.email %}<a href="mailto:{{ place.email }}">{{ place.email }}</a>{% else %}Not yet provided{% endif %}</span></div>
+          {% if place.website %}
+          <div class="pd-info-row"><strong>Website</strong><span><a href="{{ place.website }}" target="_blank" rel="noopener noreferrer">Visit official website ↗</a></span></div>
+          {% endif %}
+          <div class="pd-info-row"><strong>Opening hours status</strong><span>{% if opening_hours %}See the weekly schedule below{% else %}Not yet provided{% endif %}</span></div>
+        </div>
+        {% if opening_hours %}
+          <h3 style="font-size:15px;color:#12345b;margin:23px 0 9px;font-weight:800">Weekly opening hours</h3>
+          <ul class="pd-hours">
+            {% for hours in opening_hours %}
+              <li><span class="pd-hours-day">{{ hours.get_weekday_display }}</span><span>{% if hours.is_closed %}Closed{% elif hours.open_time and hours.close_time %}{{ hours.open_time|time:"g:i A" }} – {{ hours.close_time|time:"g:i A" }}{% else %}Hours not specified{% endif %}</span></li>
+            {% endfor %}
+          </ul>
+          <p class="pd-small" style="margin-top:8px">Opening hours are provided by administrators and may change. Confirm with the destination before traveling.</p>
+        {% endif %}
+      </section>
+    </div>
+
+    <aside class="pd-aside" aria-label="Location and nearby destinations">
+      <section class="pd-card" id="place-location">
+        <h2>Location &amp; directions</h2>
+        {% if place.latitude != None and place.longitude != None %}
+          <iframe class="pd-map" title="Map of {{ place.title }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q={{ place.latitude }},{{ place.longitude }}&amp;z=14&amp;output=embed"></iframe>
+          <p class="pd-coordinates">Destination coordinates: {{ place.latitude }}, {{ place.longitude }}</p>
+          <a class="pd-cta" href="https://www.google.com/maps/dir/?api=1&amp;destination={{ place.latitude }},{{ place.longitude }}" target="_blank" rel="noopener noreferrer">Get directions ↗</a>
+        {% else %}
+          <div class="pd-map-missing"><strong>Location not mapped yet</strong>Verified coordinates have not been added. Directions will be available after an administrator confirms this location.</div>
+        {% endif %}
+      </section>
+      <section class="pd-card">
+        <h2>More Kabankalan places</h2>
+        {% for nearby in nearby_places %}
+          <a class="pd-nearby" href="{% url 'places:place_detail' nearby.pk %}">
+            {{ nearby.title }}
+            <small>{{ nearby.category.name|default:"Tourist Destination" }}</small>
+          </a>
+        {% empty %}
+          <p>No other published Kabankalan destinations are available at the moment.</p>
+        {% endfor %}
+        <a class="pd-cta" href="{% url 'places:attraction_carousel' %}?browse=all">Explore all destinations ↗</a>
+      </section>
+    </aside>
+  </div>
+
+  <section class="pd-review-section" id="place-reviews" aria-label="Destination reviews">
+    <div class="pd-reviews">
+      <div class="pd-card">
+        <h2>Visitor ratings &amp; reviews</h2>
+        {% if place.review_count %}
+          <div class="pd-rating-overview" aria-label="{{ place.avg_rating|floatformat:1 }} out of five stars">★ {{ place.avg_rating|floatformat:1 }} / 5 · {{ place.review_count }} review{{ place.review_count|pluralize }}</div>
+        {% else %}
+          <p class="pd-small">No visitor ratings yet. You can share your experience below.</p>
+        {% endif %}
+        {% for review in public_reviews %}
+          <article class="pd-review-card">
+            <strong>{{ review.rating }} / 5 ★</strong> · {{ review.user.username }}
+            <small> · {{ review.created_at|date:"M j, Y" }}</small>
+            {% if review.comment %}<p>{{ review.comment|linebreaksbr }}</p>{% endif %}
+          </article>
+        {% empty %}
+          <p class="pd-small">Visitor reviews will appear here when submitted.</p>
+        {% endfor %}
+      </div>
+      <div class="pd-card">
+        <h2>{% if my_review %}Update your review{% else %}Write a review{% endif %}</h2>
+        <p class="pd-small" style="margin:0 0 14px">Your review helps others learn about Kabankalan destinations.</p>
+        <form method="post" action="{% url 'places:submit_review' place.pk %}">
+          {% csrf_token %}
+          <fieldset style="border:0;padding:0;margin:0">
+            <legend class="pd-small" style="margin:0 0 8px">Choose your rating (required)</legend>
+            <div class="pd-stars">
+              {% for value in review_rating_options %}
+                <label><input type="radio" name="rating" value="{{ value }}" required {% if my_review.rating == value %}checked{% endif %}>{{ value }} ★</label>
+              {% endfor %}
+            </div>
+          </fieldset>
+          <label for="pd-review-comment" class="pd-small" style="display:block;margin:0 0 8px">Your experience (optional · max 1,500 characters)</label>
+          <textarea class="pd-textarea" id="pd-review-comment" name="comment" maxlength="1500" placeholder="What should other Kabankalan explorers know?">{{ my_review.comment|default_if_none:"" }}</textarea>
+          <div class="pd-form-actions"><button class="pd-action pd-action-primary" type="submit">{% if my_review %}Update Review{% else %}Submit Review{% endif %}</button></div>
+        </form>
+        {% if my_review %}
+          <form method="post" action="{% url 'places:delete_review' place.pk %}" onsubmit="return confirm('Delete your review?');">
+            {% csrf_token %}
+            <div class="pd-form-actions"><button class="pd-action pd-danger" type="submit">Delete My Review</button></div>
+          </form>
+        {% endif %}
+        <p class="pd-review-note">Reviews are opinions and do not prove an in-person visit. Visit rewards require a separately reviewed check-in.</p>
+        <a href="{% url 'places:my_reviews' %}" style="font-weight:750;font-size:13px">My Reviews →</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<dialog class="pd-dialog" id="pd-photo-dialog" aria-label="Expanded destination photograph">
+  <div class="pd-dialog-top"><strong>Destination gallery</strong><button type="button" class="pd-dialog-close" id="pd-photo-dialog-close" aria-label="Close photo">Close ✕</button></div>
+  <figure style="margin:0"><img id="pd-dialog-image" alt=""><figcaption id="pd-dialog-caption"></figcaption></figure>
+</dialog>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  "use strict";
+  const dialog = document.getElementById("pd-photo-dialog");
+  if (!dialog || typeof dialog.showModal !== "function") return;
+  const image = document.getElementById("pd-dialog-image");
+  const caption = document.getElementById("pd-dialog-caption");
+  const close = document.getElementById("pd-photo-dialog-close");
+  document.querySelectorAll(".ea-place-v2 [data-gallery-image]").forEach(function (link) {
+    link.addEventListener("click", function (event) {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      image.src = link.href;
+      image.alt = link.dataset.galleryCaption || "Destination photo";
+      caption.textContent = link.dataset.galleryCaption || "";
+      dialog.showModal();
+    });
+  });
+  close.addEventListener("click", function () { dialog.close(); });
+  dialog.addEventListener("click", function (event) {
+    if (event.target === dialog) dialog.close();
+  });
+  dialog.addEventListener("close", function () { image.removeAttribute("src"); });
+})();
+</script>
+{% endblock %}

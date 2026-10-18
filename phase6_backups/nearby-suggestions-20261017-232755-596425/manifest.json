@@ -1,0 +1,13 @@
+{
+  "format": "exploreanywhere-phase6e-nearby-v1",
+  "files": [
+    {
+      "path": "apps/places/nearby.py",
+      "installed_hash": "e57e9e434048d5b94b461d6a22ce8b0cae6dd69f321d5b80bf3d94d13b6b18d5"
+    },
+    {
+      "path": "templates/places/nearby_places.html",
+      "installed_hash": "f4ab55e666ed164fdf2f75164e47cd47a1bef7d603ebb5b1bba7b1f7a53b2aa0"
+    }
+  ]
+}

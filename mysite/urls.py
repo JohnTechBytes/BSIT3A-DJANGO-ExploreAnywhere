@@ -18,15 +18,35 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import path, include
 from . import views
+from django.views.generic import RedirectView
 
 urlpatterns = [
+    path('visits/', include('apps.visits.urls')),  # ExploreAnywhere phase3f visits-and-rewards v1
+    path('itineraries/', include('apps.itineraries.urls')),  # ExploreAnywhere phase3d itinerary integration v1
+    path(
+    "cities/select/",
+    RedirectView.as_view(
+        pattern_name="hobbies:select",
+        permanent=False,
+    ),
+    name="kabankalan_city_redirect",
+),
+    path("cities/", include("apps.cities.urls")),
+    path("places/", include("apps.places.urls")),
+    path("hobbies/", include("apps.hobbies.urls")),
+    path('accounts/', include('apps.users.auth_urls')),
+    path("accounts/", include("apps.users.urls")),
     path("", views.home, name="home"),
     path('admin/', admin.site.urls),
     path('', include('apps.core.urls')),
+    path("accounts/", include("apps.users.auth_urls")),
+    path("cities/select/", include("apps.cities.selection_urls")),
     path('users/', include('apps.users.urls')),
     path('info/', include('apps.info.urls')),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

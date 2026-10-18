@@ -1,0 +1,177 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }} | ExploreAnywhere Admin{% endblock %}
+{% block branding %}
+<div class="ea-brand-top">
+  <a href="{% url 'admin:index' %}" aria-label="ExploreAnywhere admin dashboard">ExploreAnywhere <span>Admin</span></a>
+</div>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+/* ExploreAnywhere Phase 5D.1: visual admin theme only. Permissions and actions remain native Django. */
+:root {--ea-navy:#081e3d;--ea-sidebar:#091e3d;--ea-blue:#1260db;--ea-line:#dbe6f3;--ea-soft:#f3f7fc;--ea-text:#102b4c;}
+html, body {min-width:0 !important;}
+body {background:var(--ea-soft);}
+#container {min-width:0 !important;}
+#header {box-sizing:border-box;min-height:76px;margin-left:252px;padding:14px 24px;background:#fff;color:var(--ea-text);border-bottom:1px solid var(--ea-line);box-shadow:0 3px 14px rgba(18,48,86,.035);}
+#branding h1,#branding h1 a:link,#branding h1 a:visited {color:var(--ea-text);}
+.ea-brand-top a {color:#0a2e60 !important;text-decoration:none;font-weight:800;font-size:19px;letter-spacing:-.45px;}
+.ea-brand-top a span {color:#1260db;font-weight:700;}
+#user-tools {color:#58708d;}
+#user-tools a {color:#124c99;}
+#user-tools button {color:#124c99;}
+#main {margin-left:252px;min-width:0;}
+#content-start {min-width:0;}
+#content {box-sizing:border-box;max-width:1510px;padding:28px 30px;}
+#footer {margin-left:252px;}
+#breadcrumbs,.breadcrumbs {box-sizing:border-box;margin-left:252px;background:#e9f0fa;color:#365576;border-bottom:1px solid var(--ea-line);padding:12px 30px;}
+#breadcrumbs a,.breadcrumbs a {color:#135eb6;}
+#content h1 {font-weight:750;letter-spacing:-.5px;color:#0b305a;}
+#content .module,#content fieldset.module {border-radius:12px;border:1px solid var(--ea-line);overflow:hidden;box-shadow:0 6px 25px rgba(10,51,101,.025);}
+#content .module h2,#content .module caption,#content .inline-group h2 {background:#eaf2ff;color:#123e79;}
+#content .object-tools a,#content .submit-row input.default {background:var(--ea-blue);border-radius:8px;}
+#content .submit-row {border:1px solid var(--ea-line);border-radius:12px;background:#f8fbff;}
+#changelist .actions {border-radius:10px;}
+#changelist-filter {border-radius:12px;border:1px solid var(--ea-line);overflow:hidden;}
+/* Built-in right-hand app-navigation tree is replaced by our permission-aware left menu. */
+#nav-sidebar,#toggle-nav-sidebar {display:none !important;}
+#main.main {display:block;}
+.ea-mobile-toggle {display:none !important;}
+.ea-admin-sidebar {position:fixed;top:0;left:0;bottom:0;width:252px;box-sizing:border-box;z-index:1001;background:var(--ea-sidebar);color:#dbe8fa;display:flex;flex-direction:column;box-shadow:8px 0 25px rgba(0,25,57,.06);}
+.ea-side-head {padding:26px 19px 20px;border-bottom:1px solid rgba(255,255,255,.10);}
+.ea-side-head a {color:white !important;font-size:18px;line-height:1.35;font-weight:800;text-decoration:none;letter-spacing:-.4px;}
+.ea-side-head small {display:block;color:#9fb7d4;font-size:11px;font-weight:500;margin-top:7px;letter-spacing:.05em;}
+.ea-side-scroll {overflow:auto;min-height:0;flex:1;padding:17px 12px 24px;scrollbar-color:#42618b transparent;}
+.ea-side-heading {display:block;margin:18px 10px 9px;color:#83a6ce;text-transform:uppercase;font-size:10px;font-weight:800;letter-spacing:1.1px;}
+.ea-side-link {display:flex;align-items:center;gap:10px;padding:12px 13px;margin:3px 0;color:#d9e7f7 !important;text-decoration:none !important;border-radius:10px;font-size:13px;line-height:1.3;font-weight:600;}
+.ea-side-link:hover,.ea-side-link:focus-visible {background:#173e70;color:#fff !important;outline-offset:-2px;}
+.ea-side-link.ea-side-home {background:#1451a1;color:#fff !important;}
+.ea-side-dot {display:inline-flex;align-items:center;justify-content:center;width:27px;height:27px;flex:none;border-radius:8px;background:#17436f;color:#b9dcff;font-size:14px;}
+.ea-side-home .ea-side-dot {background:#2b76cf;color:#fff;}
+.ea-side-more {margin:18px 1px;border-top:1px solid rgba(255,255,255,.11);padding:12px 9px 0;}
+.ea-side-more summary {cursor:pointer;color:#a9c9ea;font-size:12px;font-weight:700;padding:9px 3px;}
+.ea-side-more .ea-side-link {font-size:12px;padding:8px 10px;}
+.ea-side-foot {padding:15px 20px;border-top:1px solid rgba(255,255,255,.1);color:#8daacc;font-size:11px;}
+.ea-side-scrim {display:none;}
+.ea-side-dismiss {display:none;}
+.ea-dashboard {display:grid;gap:22px;max-width:1170px;}
+.ea-dash-hero {border-radius:17px;background:linear-gradient(110deg,#0a3273,#0665de);color:#fff;padding:28px 31px;}
+.ea-dash-hero .ea-eyebrow {font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:800;color:#cae3ff;}
+.ea-dash-hero h1 {margin:9px 0 8px !important;font-size:29px !important;line-height:1.2;color:#fff !important;}
+.ea-dash-hero p {margin:0;color:#e1efff;font-size:13px;max-width:660px;line-height:1.7;}
+.ea-dash-section-head {margin:0 0 12px;font-size:16px;font-weight:800;color:#153a64;}
+.ea-metrics-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;}
+.ea-metric {background:#fff;border:1px solid var(--ea-line);border-radius:13px;padding:19px;min-width:0;box-shadow:0 5px 21px rgba(15,46,85,.025);}
+.ea-metric strong {display:block;color:#0c4b99;font-size:28px;line-height:1.3;}
+.ea-metric span {display:block;margin-top:5px;color:#55718f;font-size:12px;line-height:1.5;}
+.ea-shortcuts {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.ea-shortcut {display:flex;justify-content:space-between;align-items:center;gap:14px;min-height:70px;padding:16px 18px;background:#fff;border:1px solid var(--ea-line);border-radius:12px;color:#113866 !important;text-decoration:none !important;}
+.ea-shortcut:hover,.ea-shortcut:focus-visible {border-color:#6ba5ef;box-shadow:0 6px 20px rgba(20,92,180,.09);}
+.ea-shortcut span {display:block;color:#54718f;font-size:12px;margin-top:6px;}
+.ea-shortcut b {font-size:15px;}
+.ea-shortcut i {font-style:normal;color:#1260db;font-size:19px;}
+.ea-modules {background:#fff;border:1px solid var(--ea-line);border-radius:13px;overflow:hidden;}
+.ea-modules summary {cursor:pointer;padding:16px 20px;font-weight:800;color:#153d68;}
+.ea-modules .ea-modules-content {padding:6px 20px 18px;}
+.ea-modules .app-list {width:100%;}
+.ea-modules .app-list a {color:#1258a9;}
+.ea-permission-note {font-size:12px;color:#68809a;}
+body.dashboard .ea-dash-hero {padding:21px 25px;}
+body.dashboard .ea-dash-hero h1 {font-size:25px !important;}
+@media(max-width:1200px){.ea-metrics-grid {grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:960px){
+ #header {margin-left:0;padding:13px 18px 13px 72px;min-height:64px;}
+ #main,#footer {margin-left:0;}
+ #breadcrumbs,.breadcrumbs {margin-left:0;padding:11px 17px;}
+ #content {padding:20px 16px;}
+ .ea-admin-sidebar {transform:translateX(-105%);transition:transform .2s ease;}
+ body.ea-side-open .ea-admin-sidebar {transform:translateX(0);}
+ .ea-mobile-toggle {display:inline-flex !important;position:absolute;top:13px;left:14px;padding:7px 12px;border:1px solid #c8dbf1;background:#fff;border-radius:9px;color:#123f75;font-size:12px;font-weight:800;z-index:1002;cursor:pointer;}
+ .ea-side-dismiss {display:block;position:absolute;top:13px;right:12px;background:#1d416a;border:0;color:#fff;border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer;}
+ .ea-side-scrim {display:none;position:fixed;inset:0;background:rgba(6,21,42,.5);z-index:1000;}
+ body.ea-side-open .ea-side-scrim {display:block;}
+ .ea-dash-hero {padding:22px;}
+}
+@media(max-width:650px){
+ #header {display:flex;flex-wrap:wrap;gap:5px;align-items:center;min-height:64px;}
+ #user-tools {text-align:left;margin-left:0;white-space:normal;}
+ #content {padding:17px 11px;}
+ .ea-metrics-grid,.ea-shortcuts {grid-template-columns:1fr;}
+ .ea-dash-hero h1 {font-size:24px !important;}
+ #changelist .results {overflow-x:auto;}
+}
+</style>
+{% endblock %}
+
+{% block nav-global %}
+{{ block.super }}
+<button type="button" class="ea-mobile-toggle" id="ea-mobile-toggle" aria-controls="ea-admin-sidebar" aria-expanded="false">☰ Menu</button>
+<div class="ea-side-scrim" id="ea-side-scrim" aria-hidden="true"></div>
+<aside id="ea-admin-sidebar" class="ea-admin-sidebar" aria-label="ExploreAnywhere administration navigation">
+  <div class="ea-side-head">
+    <a href="{% url 'admin:index' %}">ExploreAnywhere</a>
+    <small>ADMINISTRATION · KABANKALAN</small>
+    <button type="button" class="ea-side-dismiss" id="ea-side-dismiss" aria-label="Close navigation">✕ Close</button>
+  </div>
+  <nav class="ea-side-scroll" aria-label="Admin sections">
+    <span class="ea-side-heading">Workspace</span>
+    <a class="ea-side-link ea-side-home" href="{% url 'admin:index' %}"><span class="ea-side-dot" aria-hidden="true">⌂</span>Dashboard</a>
+    <span class="ea-side-heading">Management</span>
+    {% for app in available_apps %}
+      {% for model in app.models %}
+        {% if model.admin_url %}
+          {% if app.app_label == 'places' and model.object_name == 'Place' %}
+            <a class="ea-side-link{% if request.resolver_match.url_name == 'places_place_changelist' or request.resolver_match.url_name == 'places_place_change' or request.resolver_match.url_name == 'places_place_add' %} ea-side-active{% endif %}" href="{{ model.admin_url }}"><span class="ea-side-dot" aria-hidden="true">◇</span>Destinations</a>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    {% for app in available_apps %}
+      {% for model in app.models %}
+        {% if model.admin_url %}
+          {% if app.app_label == 'visits' and model.object_name == 'VisitCheckIn' %}
+            <a class="ea-side-link" href="{{ model.admin_url }}"><span class="ea-side-dot" aria-hidden="true">✓</span>Visit approvals</a>
+          {% elif app.app_label == 'info' and model.object_name == 'CityInformation' %}
+            <a class="ea-side-link" href="{{ model.admin_url }}"><span class="ea-side-dot" aria-hidden="true">ⓘ</span>City information</a>
+          {% elif app.app_label == 'auth' and model.object_name == 'User' %}
+            <a class="ea-side-link" href="{{ model.admin_url }}"><span class="ea-side-dot" aria-hidden="true">♙</span>Users</a>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    <details class="ea-side-more">
+      <summary>Other permitted modules</summary>
+      {% for app in available_apps %}
+        {% for model in app.models %}
+          {% if model.admin_url %}
+            {% if app.app_label == 'places' and model.object_name == 'Place' %}
+            {% elif app.app_label == 'visits' and model.object_name == 'VisitCheckIn' %}
+            {% elif app.app_label == 'info' and model.object_name == 'CityInformation' %}
+            {% elif app.app_label == 'auth' and model.object_name == 'User' %}
+            {% else %}
+              <a class="ea-side-link" href="{{ model.admin_url }}">{{ app.name }} · {{ model.name }}</a>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    </details>
+  </nav>
+  <div class="ea-side-foot">Manage verified Kabankalan destinations responsibly.</div>
+</aside>
+<script>
+(function () {
+  var toggle=document.getElementById('ea-mobile-toggle');
+  var dismiss=document.getElementById('ea-side-dismiss');
+  var scrim=document.getElementById('ea-side-scrim');
+  function setOpen(open){document.body.classList.toggle('ea-side-open',open);if(toggle)toggle.setAttribute('aria-expanded',String(open));}
+  if(toggle)toggle.addEventListener('click',function(){setOpen(!document.body.classList.contains('ea-side-open'));});
+  if(dismiss)dismiss.addEventListener('click',function(){setOpen(false);});
+  if(scrim)scrim.addEventListener('click',function(){setOpen(false);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(false);});
+})();
+</script>
+{% endblock %}
+{% block nav-sidebar %}{% endblock %}

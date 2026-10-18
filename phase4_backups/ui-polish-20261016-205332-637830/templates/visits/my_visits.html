@@ -1,0 +1,56 @@
+{% extends "theme/public_base.html" %}
+{% block extra_css %}
+<style>
+.ea-visits{max-width:1100px;margin:auto;padding:44px 20px 90px;color:#183454}
+.ea-visits h1{font-size:clamp(29px,4vw,42px);font-weight:800;color:#102f5b;margin:8px 0}
+.ea-visits p{color:#5e728b;line-height:1.6}
+.ea-visits-nav{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
+.ea-visits-link{background:#075ee4;color:#fff!important;padding:11px 16px;text-decoration:none;border-radius:10px;display:inline-block;font-weight:750}
+.ea-visits-link.alt{color:#0757d8!important;background:#fff;border:1px solid #c8d9ed}
+.ea-visits-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:25px 0}
+.ea-visits-stat{background:#fff;border:1px solid #dce7f3;border-radius:15px;padding:21px}
+.ea-visits-stat strong{display:block;font-size:30px;color:#0757d8}
+.ea-visits-stat span{color:#597087;font-size:13px}
+.ea-visit-card{border:1px solid #dce7f3;border-radius:16px;background:#fff;margin:14px 0;padding:22px}
+.ea-visit-card h2{font-size:20px;margin:0 0 7px}
+.ea-visit-status{font-size:12px;font-weight:800;padding:5px 10px;border-radius:999px;background:#f1f5f9;color:#334155;display:inline-block}
+.ea-visit-status.approved{background:#dcfce7;color:#166534}
+.ea-visit-status.pending{background:#fef3c7;color:#92400e}
+.ea-visit-status.rejected{background:#fee2e2;color:#991b1b}
+.ea-visit-badges{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin:18px 0}
+.ea-visit-badge{border-radius:13px;border:1px solid #d5e0ef;padding:16px;background:#f9fbff}
+.ea-visit-badge.earned{border-color:#9dd6b6;background:#f1fcf6}
+.ea-visit-badge strong{display:block;margin-bottom:5px}
+.ea-empty{border:1px dashed #cbd8e9;background:white;border-radius:16px;padding:27px}
+</style>
+{% endblock %}
+{% block content %}
+<main class="ea-visits">
+  <p>ONE CITY. YOUR HOBBIES. OUR MAP.</p><h1>My Kabankalan Visits</h1>
+  <p>Only staff-approved destination check-ins earn points and badges. A visit report, saved place, map view, or submitted review does not verify physical presence.</p>
+  <nav class="ea-visits-nav"><a class="ea-visits-link" href="{% url 'places:journey_dashboard' %}">My Journey</a><a class="ea-visits-link alt" href="{% url 'places:attraction_carousel' %}">Explore Places</a></nav>
+  <section class="ea-visits-stats" aria-label="Visit statistics">
+    <div class="ea-visits-stat"><strong>{{ approved_count }}</strong><span>Staff-approved destinations</span></div>
+    <div class="ea-visits-stat"><strong>{{ pending_count }}</strong><span>Pending check-ins</span></div>
+    <div class="ea-visits-stat"><strong>{{ reward_points }}</strong><span>Points from approved visits</span></div>
+  </section>
+  <h2>My Badges</h2>
+  <section class="ea-visit-badges" aria-label="Earned and future badges">
+    {% for badge in badges %}
+      <div class="ea-visit-badge {% if badge.earned %}earned{% endif %}"><strong>{% if badge.earned %}Earned: {% else %}Locked: {% endif %}{{ badge.name }}</strong><p>{{ badge.description }}</p></div>
+    {% endfor %}
+  </section>
+  <h2>Check-in History</h2>
+  {% for visit in entries %}
+    <article class="ea-visit-card">
+      <h2>{{ visit.place.title }}</h2><p>Visited on {{ visit.visited_on|date:'M j, Y' }}</p>
+      <span class="ea-visit-status {{ visit.status }}">{{ visit.get_status_display }}</span>
+      <p>{{ visit.visit_note|linebreaksbr }}</p>
+      {% if visit.status == 'rejected' and visit.place.is_active and visit.place.is_verified %}<p><a class="ea-visits-link alt" href="{% url 'visits:check_in' visit.place.pk %}">Correct and Resubmit</a></p>{% endif %}
+      {% if visit.place.is_active and visit.place.is_verified %}<a class="ea-visits-link alt" href="{% url 'places:place_detail' visit.place.pk %}">View Destination</a>{% endif %}
+    </article>
+  {% empty %}
+    <section class="ea-empty"><h2>No visits reported yet</h2><p>Open an eligible Kabankalan place and use Report a Visit to submit a check-in.</p></section>
+  {% endfor %}
+</main>
+{% endblock %}

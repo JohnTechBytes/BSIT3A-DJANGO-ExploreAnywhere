@@ -1,0 +1,10 @@
+{
+  "templates/admin/base_site.html": {
+    "original_sha": "cfe02e5dc369fdbce9a5e68e83b88a4aca809893d3846bc0b9c6cbf350c6367e",
+    "installed_sha": "8c3cbddb304f5960329fc60070b9d6afb1b9a39a6c8c7edf0311f4e370dd63e9"
+  },
+  "templates/admin/places/place/change_list.html": {
+    "original_sha": "935000a8f6413568aef74d61bf93710d343ccdcb797b6c3ce47c6f1b6cfd51cf",
+    "installed_sha": "8efc012f6a8ef4096d7d992d503349f1456a77b5ce1ea3c71a6140f54091cdb8"
+  }
+}

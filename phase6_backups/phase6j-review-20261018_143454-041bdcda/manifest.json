@@ -1,0 +1,7 @@
+{
+  "phase": "6J",
+  "files": {
+    "apps/places/admin.py": "1d39d9ebf2d508c41510791c85c02887e74eb8cb0344837d182c42255c71e533",
+    "templates/admin/places/place/osm_review.html": "771ed4a91e26a216e371bdb72c10e6cbcea00310698eccfb4ea7a1400bdf53ed"
+  }
+}

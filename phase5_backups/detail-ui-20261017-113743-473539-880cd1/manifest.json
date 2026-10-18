@@ -1,0 +1,11 @@
+{
+  "kind": "exploreanywhere-phase5b-detail",
+  "previous": {
+    "apps\\places\\views.py": "6d235bc2e1433d8bfcef0d82e46991d5bfc24379d24886c5e76b1f7823b9f326",
+    "templates\\places\\place_detail.html": "cff163d04bb788e1cb7c08a9129ff7a65ac62124493293196b288b9be4ee5680"
+  },
+  "installed": {
+    "apps\\places\\views.py": "4b7a8f16ee2c19d426e067107a4d39e4199a293428908b867e74e7fd6d2b5551",
+    "templates\\places\\place_detail.html": "17b86b00ac24a2e8cc05ff640ced89a2d72688c7d7bb953d9fb23ebc21019dd6"
+  }
+}
