@@ -1,2 +1,9 @@
 
 _trash/
+
+# Python virtual environment and generated files
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.env
