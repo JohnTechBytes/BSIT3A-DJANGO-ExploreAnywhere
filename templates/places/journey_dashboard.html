@@ -22,7 +22,7 @@
 .ea4b-eyebrow {display:flex;align-items:center;justify-content:space-between;gap:12px;margin:28px 0 13px}
 .ea4b-eyebrow h2 {margin:0;color:#153658;font-size:19px;font-weight:800}
 .ea4b-caption {color:#64758c;font-size:12px;margin:0}
-.ea4b-metrics {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.ea4b-metrics {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .ea4b-metric {position:relative;display:flex;flex-direction:column;gap:11px;background:#fff;border:1px solid var(--ea4b-line);border-radius:17px;padding:18px 15px;min-width:0;box-shadow:0 6px 24px rgba(9,43,84,.035)}
 .ea4b-metric:hover {border-color:#a7c9f7}
 .ea4b-metric-symbol {width:35px;height:35px;border-radius:10px;background:#eaf3ff;color:#0c5ccb;display:grid;place-items:center;font-size:17px;font-weight:800}
@@ -68,9 +68,9 @@
 .ea4b-quick {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
 .ea4b-quick a {display:flex;justify-content:space-between;align-items:center;gap:8px;border-radius:14px;padding:16px;background:#e9f2ff;border:1px solid #cce0fa;color:#134e97;font-size:13px;font-weight:800}
 .ea4b-quick a:hover {background:#dcecff}
-@media(max-width:1100px){.ea4b-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.ea4b-hero{align-items:flex-start;flex-direction:column}}
+@media(max-width:1100px){.ea4b-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.ea4b-hero{align-items:flex-start;flex-direction:column}}
 @media(max-width:760px){.ea4b-page{padding:22px 15px 65px}.ea4b-hero{padding:26px 22px;border-radius:18px}.ea4b-layout{grid-template-columns:1fr}.ea4b-section-intro{align-items:flex-start;flex-direction:column}.ea4b-badges{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:520px){.ea4b-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.ea4b-metric{padding:14px 12px}.ea4b-metric strong{font-size:25px}.ea4b-metric-symbol{width:31px;height:31px}.ea4b-panel{padding:17px}.ea4b-badges{grid-template-columns:1fr}.ea4b-quick{grid-template-columns:1fr}.ea4b-hero-actions{width:100%}.ea4b-hero-actions .ea4b-btn{flex:1}}
+@media(max-width:520px){.ea4b-metrics{grid-template-columns:1fr;gap:9px}.ea4b-metric{padding:14px 12px}.ea4b-metric strong{font-size:25px}.ea4b-metric-symbol{width:31px;height:31px}.ea4b-panel{padding:17px}.ea4b-quick{grid-template-columns:1fr}.ea4b-hero-actions{width:100%}.ea4b-hero-actions .ea4b-btn{flex:1}}
 @media(prefers-reduced-motion:reduce){.ea4b-btn{transition:none}}
 </style>
 {% endblock %}
@@ -90,7 +90,7 @@
 
   <div class="ea4b-eyebrow">
     <h2 id="journey-overview-heading">Your journey at a glance</h2>
-    <p class="ea4b-caption">Only your own Kabankalan records are displayed.</p>
+    <p class="ea4b-caption">Your saved places, plans, reviews, and visits.</p>
   </div>
   <section class="ea4b-metrics" aria-labelledby="journey-overview-heading">
     <a class="ea4b-metric" href="{% url 'places:saved_places' %}">
@@ -103,13 +103,7 @@
       <span class="ea4b-metric-symbol" aria-hidden="true">&#9733;</span><strong>{{ review_count }}</strong><span>My reviews</span>
     </a>
     <a class="ea4b-metric" href="{% url 'visits:list' %}">
-      <span class="ea4b-metric-symbol" aria-hidden="true">&#10003;</span><strong>{{ approved_visit_count }}</strong><span>Staff-approved visits</span>
-    </a>
-    <a class="ea4b-metric ea4b-metric-pending" href="{% url 'visits:list' %}">
-      <span class="ea4b-metric-symbol" aria-hidden="true">&#8987;</span><strong>{{ pending_visit_count }}</strong><span>Pending check-ins</span>
-    </a>
-    <a class="ea4b-metric" href="{% url 'visits:list' %}">
-      <span class="ea4b-metric-symbol" aria-hidden="true">&#9670;</span><strong>{{ visit_points }}</strong><span>Earned points</span>
+      <span class="ea4b-metric-symbol" aria-hidden="true">&#10003;</span><strong>{{ approved_visit_count }}</strong><span>Visited</span>
     </a>
   </section>
 
@@ -169,52 +163,21 @@
 
     <section class="ea4b-panel" aria-labelledby="ea4b-visits-heading">
       <div class="ea4b-panel-head"><h3 id="ea4b-visits-heading">My Visits</h3><a href="{% url 'visits:list' %}">View all &#8594;</a></div>
-      <p class="ea4b-panel-sub">Check-in reports and their real staff-review status.</p>
+      <p class="ea4b-panel-sub">Places you have visited.</p>
       {% if visits_preview %}
         <div class="ea4b-rows">
           {% for visit in visits_preview %}
-            <div class="ea4b-row"><div class="ea4b-row-main"><span>{{ visit.place.title }}</span><span>Visit date: {{ visit.visited_on|date:"M j, Y" }}</span></div>
-              {% if visit.status == 'approved' %}<span class="ea4b-row-meta ea4b-visit-approved">Approved</span>
+            <div class="ea4b-row"><div class="ea4b-row-main"><span>{{ visit.place.title }}</span><span>{{ visit.visited_on|date:"M j, Y" }}</span></div>
+              {% if visit.status == 'approved' %}<span class="ea4b-row-meta ea4b-visit-approved">Verified</span>
               {% elif visit.status == 'pending' %}<span class="ea4b-row-meta ea4b-visit-pending">Pending</span>
               {% else %}<span class="ea4b-row-meta ea4b-visit-rejected">{{ visit.get_status_display }}</span>{% endif %}
             </div>
           {% endfor %}
         </div>
       {% else %}
-        <div class="ea4b-empty"><strong>No visits reported yet</strong><p>Only staff-approved check-ins count toward points and badges.</p><a class="ea4b-btn ea4b-btn-soft" href="{% url 'places:attraction_carousel' %}?browse=all">Explore places &#8594;</a></div>
+        <div class="ea4b-empty"><strong>No visits recorded yet</strong><p>Log your visits to places you discover.</p><a class="ea4b-btn ea4b-btn-soft" href="{% url 'places:attraction_carousel' %}?browse=all">Find a place &#8594;</a></div>
       {% endif %}
-      <p class="ea4b-privacy">Viewing a place, following directions, or writing a review does not verify a physical visit. Staff approval requires independently corroborated evidence.</p>
       <div class="ea4b-bottom"><a class="ea4b-btn ea4b-btn-blue" href="{% url 'visits:list' %}">My Visit History</a></div>
     </section>
-
-    <section class="ea4b-panel" aria-labelledby="ea4b-badges-heading">
-      <div class="ea4b-panel-head"><h3 id="ea4b-badges-heading">Badges &amp; Rewards</h3><a href="{% url 'visits:list' %}">View achievements &#8594;</a></div>
-      <div class="ea4b-rewards"><strong>{{ visit_points }} points</strong><p>Calculated from your staff-approved Kabankalan destinations.</p></div>
-      <div class="ea4b-badges">
-        {% for badge in visit_badges %}
-          <div class="ea4b-badge{% if badge.earned %} earned{% endif %}"><span class="ea4b-badge-label">{% if badge.earned %}Earned{% else %}Locked{% endif %}</span><strong>{{ badge.name }}</strong><p>{{ badge.description }}</p></div>
-        {% empty %}
-          <p class="ea4b-panel-sub">No achievement definitions available yet.</p>
-        {% endfor %}
-      </div>
-      <p class="ea4b-privacy">Rewards are calculated from approved records, not from opening a destination page.</p>
-    </section>
-
-    <section class="ea4b-panel" aria-labelledby="ea4b-next-heading">
-      <div class="ea4b-panel-head"><h3 id="ea4b-next-heading">Your Next Adventure</h3></div>
-      <p class="ea4b-panel-sub">Pick up where you left off or discover something new around Kabankalan.</p>
-      <div class="ea4b-bottom">
-        <a class="ea4b-btn ea4b-btn-blue" href="{% url 'places:attraction_carousel' %}?browse=all">Find recommendations</a>
-        <a class="ea4b-btn ea4b-btn-soft" href="{% url 'places:saved_places' %}">Saved places</a>
-        <a class="ea4b-btn ea4b-btn-soft" href="{% url 'itineraries:list' %}">Your plans</a>
-      </div>
-      <p class="ea4b-privacy">ExploreAnywhere is focused exclusively on Kabankalan City, Negros Occidental.</p>
-    </section>
   </div>
-  <nav class="ea4b-quick" aria-label="Journey quick actions">
-    <a href="{% url 'places:attraction_carousel' %}?browse=all">Discover destinations <span aria-hidden="true">&#8599;</span></a>
-    <a href="{% url 'itineraries:create' %}">Build an itinerary <span aria-hidden="true">&#8599;</span></a>
-    <a href="{% url 'visits:list' %}">Check visit status <span aria-hidden="true">&#8599;</span></a>
-  </nav>
-</main>
 {% endblock %}

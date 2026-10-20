@@ -117,6 +117,14 @@ class Command(bulk.Command):
         agent = os.environ.get('EXPLOREANYWHERE_PHOTO_USER_AGENT', '').strip()
         if not agent or '@' not in agent or 'example.com' in agent or 'your-email' in agent:
             raise CommandError('Set EXPLOREANYWHERE_PHOTO_USER_AGENT with your real contact email.')
+        # Use the Windows/system trust store while retaining full TLS verification.
+        # Only this photo-discovery process is affected; the Django server is unchanged.
+        try:
+            import truststore
+        except ImportError as exc:
+            raise CommandError('Install truststore in the active venv: python -m pip install truststore') from exc
+        truststore.inject_into_ssl()
+        self.stdout.write('HTTPS verification: operating-system truststore enabled.')
         # Keep original review CSV and reviewer decisions. Do not reset prior leads.
         status = load_status()
         inventory = list(Place.objects.filter(city_id=CITY_ID).select_related('city').order_by('id'))

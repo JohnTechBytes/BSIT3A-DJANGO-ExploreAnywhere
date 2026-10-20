@@ -35,6 +35,171 @@
       "slug": "osm-node-4567944590",
       "result": "no_leads",
       "checked_utc": "2026-10-18T13:38:54.298150+00:00"
+    },
+    "7621": {
+      "slug": "osm-node-10904130587",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:32:38.559036+00:00"
+    },
+    "7622": {
+      "slug": "osm-node-12192549354",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:32:46.632009+00:00"
+    },
+    "7624": {
+      "slug": "osm-way-769589075",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:32:53.726026+00:00"
+    },
+    "7625": {
+      "slug": "osm-node-4567933294",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:38:04.501363+00:00"
+    },
+    "7626": {
+      "slug": "osm-node-12159153690",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:38:11.870643+00:00"
+    },
+    "7627": {
+      "slug": "osm-node-12233549233",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:38:19.963902+00:00"
+    },
+    "7628": {
+      "slug": "osm-node-4863002921",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:38:27.543430+00:00"
+    },
+    "7629": {
+      "slug": "osm-node-4579164597",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:38:34.767186+00:00"
+    },
+    "7630": {
+      "slug": "osm-node-4567931908",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:42:41.495221+00:00"
+    },
+    "7631": {
+      "slug": "osm-node-12137330729",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:42:49.587289+00:00"
+    },
+    "7632": {
+      "slug": "osm-node-12126333001",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:43:00.749106+00:00"
+    },
+    "7633": {
+      "slug": "osm-node-4567944690",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:43:09.137296+00:00"
+    },
+    "7634": {
+      "slug": "osm-node-4567883294",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:43:16.510359+00:00"
+    },
+    "7635": {
+      "slug": "osm-way-519017326",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:43:24.192591+00:00"
+    },
+    "7636": {
+      "slug": "osm-way-247293840",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:43:31.458645+00:00"
+    },
+    "7637": {
+      "slug": "osm-node-4567933303",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:43:39.036819+00:00"
+    },
+    "7638": {
+      "slug": "osm-node-3933405878",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:43:50.910574+00:00"
+    },
+    "7639": {
+      "slug": "osm-node-4567931891",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:43:59.356664+00:00"
+    },
+    "7640": {
+      "slug": "osm-node-6440009194",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:50:39.519779+00:00"
+    },
+    "7641": {
+      "slug": "osm-node-12126333101",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:50:46.785029+00:00"
+    },
+    "7642": {
+      "slug": "osm-way-247296676",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:50:54.092459+00:00"
+    },
+    "7643": {
+      "slug": "osm-node-4196577091",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:51:01.201857+00:00"
+    },
+    "7644": {
+      "slug": "osm-node-4982134423",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:51:09.170215+00:00"
+    },
+    "7645": {
+      "slug": "osm-node-5328932423",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:51:15.800227+00:00"
+    },
+    "7646": {
+      "slug": "osm-node-5719244321",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:51:22.950033+00:00"
+    },
+    "7647": {
+      "slug": "osm-node-4579156697",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:51:30.379135+00:00"
+    },
+    "7648": {
+      "slug": "osm-way-1374316232",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:51:37.576429+00:00"
+    },
+    "7649": {
+      "slug": "osm-way-283651062",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T14:51:44.730848+00:00"
+    },
+    "7650": {
+      "slug": "osm-node-7328653086",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T15:07:56.907423+00:00"
+    },
+    "7651": {
+      "slug": "osm-node-7328568585",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T15:08:04.992125+00:00"
+    },
+    "7652": {
+      "slug": "osm-node-4169108596",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T15:08:12.973660+00:00"
+    },
+    "7653": {
+      "slug": "osm-node-4567931191",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T15:08:19.262503+00:00"
+    },
+    "7654": {
+      "slug": "osm-way-1374319930",
+      "result": "no_leads",
+      "checked_utc": "2026-10-18T15:08:27.315124+00:00"
     }
   }
 }

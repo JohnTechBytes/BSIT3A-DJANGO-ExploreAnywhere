@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExploreAnywhere - Interactive Mockup (After Cleanup)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            color: #19283d;
+        }
+
+        /* Navigation */
+        nav {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav .logo {
+            font-size: 20px;
+            font-weight: bold;
+            margin-right: 40px;
+        }
+
+        nav .menu {
+            display: flex;
+            gap: 32px;
+            flex: 1;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: opacity 0.2s;
+            cursor: pointer;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        nav .user-menu {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        nav button {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+
+        nav button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Main container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            font-size: 13px;
+            color: #4d627b;
+            margin-bottom: 16px;
+        }
+
+        .breadcrumb a {
+            color: #1253b5;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Page title */
+        h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            color: #182b42;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #4d627b;
+            margin-bottom: 24px;
+        }
+
+        /* Search section */
+        .search-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #dae1ed;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #1253b5;
+            box-shadow: 0 0 0 3px rgba(18, 83, 181, 0.1);
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid #dae1ed;
+            border-radius: 6px;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .filter-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #4d627b;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #1253b5;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0d3b85;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(18, 83, 181, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e8edf4;
+            color: #19283d;
+        }
+
+        .btn-secondary:hover {
+            background: #dae1ed;
+        }
+
+        /* View toggles */
+        .view-toggles {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-btn {
+            padding: 8px 16px;
+            border: 1px solid #dae1ed;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn.active {
+            background: #1253b5;
+            color: white;
+            border-color: #1253b5;
+        }
+
+        /* Grid layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        /* Place card */
+        .place-card {
+            background: white;
+            border: 1px solid #dae1ed;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .place-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            transform: translateY(-4px);
+        }
+
+        .place-card-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #e8edf4 0%, #dae1ed 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .place-card-content {
+            padding: 16px;
+        }
+
+        .place-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #182b42;
+        }
+
+        .place-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .stars {
+            color: #ffc107;
+        }
+
+        .place-card-category {
+            font-size: 12px;
+            color: #4d627b;
+            margin-bottom: 12px;
+        }
+
+        .place-card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .place-card-actions button {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-primary {
+            background: #1253b5;
+            color: white;
+        }
+
+        .action-primary:hover {
+            background: #0d3b85;
+        }
+
+        .action-secondary {
+            background: #e8edf4;
+            color: #19283d;
+        }
+
+        .action-secondary:hover {
+            background: #dae1ed;
+        }
+
+        /* Page sections */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Dashboard grid */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #dae1ed;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1253b5;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #4d627b;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            background: white;
+            border-top: 1px solid #dae1ed;
+            padding: 24px;
+            text-align: center;
+            font-size: 12px;
+            color: #4d627b;
+            margin-top: 40px;
+        }
+
+        footer a {
+            color: #1253b5;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Tab buttons */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #dae1ed;
+        }
+
+        .tab-btn {
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            color: #4d627b;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            color: #1253b5;
+            border-bottom-color: #1253b5;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1253b5;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        /* Small text */
+        .small {
+            font-size: 12px;
+            color: #4d627b;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 24px;
+            margin-bottom: 12px;
+            color: #182b42;
+        }
+
+        .section {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #dae1ed;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">🗺️ ExploreAnywhere</div>
+        <div class="menu">
+            <a onclick="showPage('explore')">Explore</a>
+            <a onclick="showPage('saved')">Saved</a>
+            <a onclick="showPage('journey')">Journey</a>
+            <a href="#help">Help</a>
+        </div>
+        <div class="user-menu">
+            <button onclick="alert('Help & Support')">Help</button>
+            <button onclick="alert('User Menu')">👤 User ▼</button>
+        </div>
+    </nav>
+
+    <!-- Pages -->
+    <div class="container">
+        <!-- 1. EXPLORE PLACES (Primary) -->
+        <div id="explore-page" class="page active">
+            <div class="breadcrumb">
+                <a onclick="showPage('explore')">Home</a> > Explore Places
+            </div>
+            <h1>🔍 Discover Kabankalan</h1>
+            <p class="subtitle">Find verified destinations and businesses in Kabankalan City</p>
+
+            <div class="search-section">
+                <div class="search-bar">
+                    <input type="text" placeholder="What are you looking for?" value="Search places, cafés, restaurants...">
+                </div>
+
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Category:</label>
+                        <select>
+                            <option>All Categories</option>
+                            <option>Café & Food</option>
+                            <option>Nature & Outdoors</option>
+                            <option>Sports & Activities</option>
+                            <option>Culture & History</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Hobby:</label>
+                        <select>
+                            <option>All Hobbies</option>
+                            <option>Hiking</option>
+                            <option>Photography</option>
+                            <option>Food Trips</option>
+                            <option>Gaming</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Sort:</label>
+                        <select>
+                            <option>Recommended</option>
+                            <option>Highest Rated</option>
+                            <option>Most Visited</option>
+                            <option>Newest</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="alert('Showing places...')">Show Places</button>
+                    <button class="btn btn-secondary" onclick="alert('Filters cleared')">Clear Filters</button>
+                </div>
+            </div>
+
+            <div class="view-toggles">
+                <button class="toggle-btn active" onclick="alert('List view')">📋 List</button>
+                <button class="toggle-btn" onclick="alert('Map view')">🗺️ Map</button>
+            </div>
+
+            <div class="grid">
+                <div class="place-card">
+                    <div class="place-card-image">🏔️</div>
+                    <div class="place-card-content">
+                        <div class="place-card-title">Amyan Hill</div>
+                        <div class="place-card-meta">
+                            <span class="stars">★★★★★</span>
+                            <span>5.0</span>
+                        </div>
+                        <div class="place-card-category">Hiking • Nature</div>
+                        <div class="place-card-actions">
+                            <button class="action-primary" onclick="showPage('detail')">View Details</button>
+                            <button class="action-secondary" onclick="alert('Added to saved')">Save</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-card-image">☕</div>
+                    <div class="place-card-content">
+                        <div class="place-card-title">Coffee & Talk</div>
+                        <div class="place-card-meta">
+                            <span class="stars">★★★★★</span>
+                            <span>5.0</span>
+                        </div>
+                        <div class="place-card-category">Café • Hangout</div>
+                        <div class="place-card-actions">
+                            <button class="action-primary" onclick="showPage('detail')">View Details</button>
+                            <button class="action-secondary" onclick="alert('Added to saved')">Save</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-card-image">🏛️</div>
+                    <div class="place-card-content">
+                        <div class="place-card-title">CPSU Museum</div>
+                        <div class="place-card-meta">
+                            <span class="stars">★★★★★</span>
+                            <span>5.0</span>
+                        </div>
+                        <div class="place-card-category">Culture • History</div>
+                        <div class="place-card-actions">
+                            <button class="action-primary" onclick="showPage('detail')">View Details</button>
+                            <button class="action-secondary" onclick="alert('Added to saved')">Save</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-card-image">🏢</div>
+                    <div class="place-card-content">
+                        <div class="place-card-title">Kabankalan Plaza</div>
+                        <div class="place-card-meta">
+                            <span class="stars">★★★★</span>
+                            <span>4.0</span>
+                        </div>
+                        <div class="place-card-category">Shopping • Social</div>
+                        <div class="place-card-actions">
+                            <button class="action-primary" onclick="showPage('detail')">View Details</button>
+                            <button class="action-secondary" onclick="alert('Added to saved')">Save</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-card-image">💇</div>
+                    <div class="place-card-content">
+                        <div class="place-card-title">Beauty Salon</div>
+                        <div class="place-card-meta">
+                            <span class="stars">★★★★</span>
+                            <span>4.5</span>
+                        </div>
+                        <div class="place-card-category">Services</div>
+                        <div class="place-card-actions">
+                            <button class="action-primary" onclick="showPage('detail')">View Details</button>
+                            <button class="action-secondary" onclick="alert('Added to saved')">Save</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-card-image">💧</div>
+                    <div class="place-card-content">
+                        <div class="place-card-title">Mag Aso Falls</div>
+                        <div class="place-card-meta">
+                            <span class="stars">★★★★★</span>
+                            <span>5.0</span>
+                        </div>
+                        <div class="place-card-category">Nature • Waterfall</div>
+                        <div class="place-card-actions">
+                            <button class="action-primary" onclick="showPage('detail')">View Details</button>
+                            <button class="action-secondary" onclick="alert('Added to saved')">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. PLACE DETAIL -->
+        <div id="detail-page" class="page">
+            <div class="breadcrumb">
+                <a onclick="showPage('explore')">Explore</a> > <a onclick="showPage('explore')">Places</a> > Amyan Hill
+            </div>
+            <h1>🏔️ Amyan Hill</h1>
+            <p class="subtitle">Kabankalan, Negros Occidental</p>
+
+            <div class="section">
+                <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                    <button class="btn btn-primary" onclick="alert('Add to itinerary')">➕ Add to Itinerary</button>
+                    <button class="btn btn-secondary" onclick="alert('Write review')">💬 Write Review</button>
+                    <button class="btn btn-secondary" onclick="alert('Save place')">❤️ Save Place</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 style="font-size: 18px; margin-bottom: 12px;">⭐ 5.0 Rating</h2>
+                <p class="small">Based on 1 review</p>
+            </div>
+
+            <div class="section">
+                <h2 style="font-size: 18px; margin-bottom: 12px;">📍 Location & Information</h2>
+                <p><strong>Address:</strong> Amyan Hill, Kabankalan, Negros Occidental</p>
+                <p><strong>Phone:</strong> (034) 555-1234</p>
+                <p><strong>Hours:</strong> Open Daily 6:00 AM - 6:00 PM</p>
+                <p><strong>Category:</strong> Outdoor • Hiking • Nature</p>
+            </div>
+
+            <div class="section">
+                <h2 style="font-size: 18px; margin-bottom: 12px;">💬 Reviews (1)</h2>
+                <div style="padding: 12px; background: #f5f7fa; border-radius: 6px;">
+                    <p><strong>★★★★★ Amazing hiking spot!</strong></p>
+                    <p class="small">Posted by visitor on Oct 18, 2026</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 style="font-size: 18px; margin-bottom: 12px;">📝 Write a Review</h2>
+                <div style="margin-bottom: 12px;">
+                    <p style="margin-bottom: 8px;">Rating: <span class="stars">★★★★★</span></p>
+                    <textarea style="width: 100%; padding: 12px; border: 1px solid #dae1ed; border-radius: 6px;" placeholder="Share your experience..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="alert('Review submitted!')">Submit Review</button>
+            </div>
+
+            <button class="btn btn-secondary" onclick="showPage('explore')" style="margin-top: 16px;">← Back to Explore</button>
+        </div>
+
+        <!-- 3. SAVED PLACES -->
+        <div id="saved-page" class="page">
+            <h1>📌 Saved Places</h1>
+            <p class="subtitle">Your personal collection of favorite destinations</p>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab(event, 'saved-list')">My Saves</button>
+                <button class="tab-btn" onclick="switchTab(event, 'recommendations')">Recommendations</button>
+            </div>
+
+            <div id="saved-list" class="tab-content active">
+                <div class="grid">
+                    <div class="place-card">
+                        <div class="place-card-image">☕</div>
+                        <div class="place-card-content">
+                            <div class="place-card-title">Coffee & Talk</div>
+                            <div class="place-card-meta">
+                                <span class="stars">★★★★★</span>
+                                <span>5.0</span>
+                            </div>
+                            <div class="place-card-category">Café</div>
+                            <div class="place-card-actions">
+                                <button class="action-primary" onclick="showPage('detail')">View</button>
+                                <button class="action-secondary" onclick="alert('Removed from saved')">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="place-card">
+                        <div class="place-card-image">🏔️</div>
+                        <div class="place-card-content">
+                            <div class="place-card-title">Amyan Hill</div>
+                            <div class="place-card-meta">
+                                <span class="stars">★★★★★</span>
+                                <span>5.0</span>
+                            </div>
+                            <div class="place-card-category">Hiking</div>
+                            <div class="place-card-actions">
+                                <button class="action-primary" onclick="showPage('detail')">View</button>
+                                <button class="action-secondary" onclick="alert('Removed from saved')">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="recommendations" class="tab-content">
+                <p class="small">Recommendations will appear here based on your interests.</p>
+            </div>
+
+            <button class="btn btn-secondary" onclick="showPage('explore')" style="margin-top: 16px;">← Back to Explore</button>
+        </div>
+
+        <!-- 4. MY JOURNEY DASHBOARD -->
+        <div id="journey-page" class="page">
+            <h1>📊 My Journey</h1>
+            <p class="subtitle">Your personal exploration dashboard</p>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">📌 Saved Places</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">📋 Itineraries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1</div>
+                    <div class="stat-label">💬 Reviews</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1</div>
+                    <div class="stat-label">✅ Visits</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🎖️ Badges Earned</div>
+                <div class="badge">🥇 First Explorer</div>
+                <div class="badge">✨ Visitor</div>
+                <p onclick="showPage('explore')" style="cursor: pointer; color: #1253b5; margin-top: 12px; font-size: 13px;">View all badges →</p>
+            </div>
+
+            <div class="section">
+                <div class="section-title">💾 Saved Places (2)</div>
+                <p class="small">Coffee & Talk • Amyan Hill</p>
+                <button class="btn btn-secondary" onclick="showPage('saved')" style="margin-top: 12px;">View All →</button>
+            </div>
+
+            <div class="section">
+                <div class="section-title">📋 My Itineraries (3)</div>
+                <p class="small">Weekend Adventure (2 stops) • Food Tour (3 stops) • Nature Walk (4 stops)</p>
+                <button class="btn btn-secondary" style="margin-top: 12px;">View All →</button>
+            </div>
+
+            <div class="section">
+                <div class="section-title">💬 My Reviews (1)</div>
+                <p class="small">CPSU Museum: ★★★★★</p>
+                <button class="btn btn-secondary" style="margin-top: 12px;">View All →</button>
+            </div>
+
+            <div class="section">
+                <div class="section-title">✅ My Visits (1 Approved)</div>
+                <p class="small">Amyan Hill - Oct 18, 2026 ✓ Staff Approved</p>
+                <button class="btn btn-secondary" style="margin-top: 12px;">View History →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        © 2026 ExploreAnywhere |
+        <a href="#">Help</a> |
+        <a href="#">About</a> |
+        <a href="#">Privacy</a> |
+        <a href="#">Contact</a> |
+        <a href="#">Site Map</a>
+    </footer>
+
+    <script>
+        function showPage(pageName) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(p => p.classList.remove('active'));
+
+            // Show selected page
+            const page = document.getElementById(pageName + '-page');
+            if (page) {
+                page.classList.add('active');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function switchTab(event, tabName) {
+            // Remove active from all tabs and contents
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            // Add active to clicked tab and related content
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+    </script>
+</body>
+</html>

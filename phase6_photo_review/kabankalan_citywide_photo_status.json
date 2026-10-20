@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "queries": {
+    "commons:Kabankalan": "success",
+    "commons:Kabankalan Negros Occidental": "success",
+    "commons:Mag-aso Falls Kabankalan": "success",
+    "geo:9.992533:122.815352:5000": "success",
+    "openverse:Kabankalan Negros Occidental": "success",
+    "openverse:Mag-aso Falls Kabankalan": "success"
+  }
+}

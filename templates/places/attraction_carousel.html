@@ -9,6 +9,7 @@
 .ea-match-badge {
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     padding: 6px 12px;
     border-radius: 999px;
     background: #eaf3ff;
@@ -16,6 +17,51 @@
     font-size: 12px;
     font-weight: 800;
     white-space: nowrap;
+    position: relative;
+    cursor: help;
+}
+
+.ea-match-badge::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #102b53;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    margin-bottom: 8px;
+    z-index: 10;
+}
+
+.ea-match-badge::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #102b53;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.ea-match-badge:hover::after,
+.ea-match-badge:focus::after {
+    opacity: 1;
+}
+
+.ea-match-badge:hover::before,
+.ea-match-badge:focus::before {
+    opacity: 1;
 }
 
   
@@ -407,10 +453,12 @@
 
 .ea-view-switch {
     display: flex;
-    gap: 10px;
+    gap: 14px;
     align-items: center;
     flex-wrap: wrap;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #e8eef7;
 }
 
 .ea-view-button {
@@ -418,15 +466,70 @@
     border-radius: 11px;
     background: white;
     color: #183c6b;
-    padding: 12px 18px;
+    padding: 11px 18px;
     font-weight: 700;
+    font-size: 13px;
     cursor: pointer;
+    min-height: 44px;
 }
 
 .ea-view-button[aria-pressed="true"] {
     background: #0757d8;
     border-color: #0757d8;
     color: white;
+}
+
+.ea-view-button:focus-visible {
+    outline: 3px solid #82b5ff;
+    outline-offset: 2px;
+}
+
+.ea-view-sort-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.ea-view-sort-group label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #4d627b;
+    white-space: nowrap;
+}
+
+.ea-view-sort-group select {
+    border: 1px solid #d4dfed;
+    border-radius: 11px;
+    background: white;
+    color: #193656;
+    padding: 9px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    min-height: 44px;
+}
+
+.ea-view-sort-group select:focus-visible {
+    outline: 3px solid #82b5ff;
+    outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+    .ea-view-switch {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .ea-view-sort-group {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .ea-view-sort-group select {
+        flex: 1;
+    }
 }
 
 #ea-attraction-map {
@@ -509,15 +612,6 @@
 }
 
 /* exploreanywhere-phase4e-score-map-clarity-v1 */
-.ea-match-reason {
-  margin: -5px 0 12px;
-  color: #475e7b;
-  font-size: 12px;
-  line-height: 1.5;
-}
-@media (max-width: 700px) {
-  .ea-match-reason { font-size: 12px; }
-}
 /* exploreanywhere-phase5a-discovery-controls-v1: mobile-first filter tools */
 .ea-discovery-tools {
   padding: 20px; margin: 0 0 26px; background: #fff;
@@ -527,7 +621,8 @@
 .ea-tools-heading {display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:17px; flex-wrap:wrap;}
 .ea-tools-heading h2 {font-size:19px; font-weight:800; color:#102b53; margin:0 0 3px;}
 .ea-tools-heading p {font-size:13px; color:#64748b; margin:0; line-height:1.5;}
-.ea-tools-form {display:grid; grid-template-columns:minmax(210px,2fr) repeat(3,minmax(130px,1fr)); gap:14px; align-items:end;}
+.ea-tools-form {display:grid; grid-template-columns:1fr; gap:14px; align-items:end;}
+.ea-tools-form-row-filters {display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px;}
 .ea-tool-field {display:flex; flex-direction:column; gap:7px; min-width:0;}
 .ea-tool-field label {font-size:12px; font-weight:800; color:#1e3d66;}
 .ea-tool-field input, .ea-tool-field select {
@@ -539,24 +634,24 @@
 .ea-tools-actions a:focus-visible, .ea-tools-actions button:focus-visible {
   outline:3px solid #82b5ff; outline-offset:2px;
 }
-.ea-tools-actions {display:flex; align-items:center; gap:11px; flex-wrap:wrap; margin-top:16px;}
+.ea-tools-actions {display:flex; align-items:center; gap:11px; flex-wrap:wrap;}
 .ea-tools-actions button {background:#0757d8; border:1px solid #0757d8; color:#fff; border-radius:11px; min-height:44px; padding:10px 18px; font:inherit; font-size:13px; font-weight:800; cursor:pointer;}
 .ea-tools-actions button:hover {background:#064ab3;}
-.ea-tools-actions a {text-decoration:none; border:1px solid #ccd9eb; border-radius:11px; min-height:44px; padding:10px 16px; color:#164476; display:inline-flex; align-items:center; font-size:13px; font-weight:700;}
-.ea-tools-actions a:hover {background:#eff6ff;}
+.ea-tools-actions a {text-decoration:none; border:1px solid #ccd9eb; border-radius:11px; min-height:44px; padding:10px 16px; color:#164476; display:none; font-size:13px; font-weight:700;}
 .ea-tools-feedback {font-size:13px; color:#536a87; line-height:1.5; margin:0 0 18px;}
 .ea-discovery-count {font-size:12px; color:#456484; font-weight:700; white-space:nowrap;}
-@media(max-width:1000px) {.ea-tools-form {grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:1000px) {.ea-tools-form-row-filters {grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:560px) {
   .ea-discovery-tools {padding:16px; border-radius:16px;}
-  .ea-tools-form {grid-template-columns:minmax(0,1fr); gap:12px;}
-  .ea-tools-actions button, .ea-tools-actions a {flex:1; justify-content:center;}
+  .ea-tools-form {grid-template-columns:1fr; gap:12px;}
+  .ea-tools-form-row-filters {grid-template-columns:1fr;}
+  .ea-tools-actions button {flex:1; justify-content:center;}
 }
 
 /* exploreanywhere-phase5a2-discovery-clarity-v1: scores, filters, compact results */
 .ea-summary-summary {display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
 .ea-summary-note {color:#dce9ff;font-size:12px;margin-top:6px;}
-.ea-current-filters {margin-top:16px;padding-top:13px;border-top:1px solid #edf2f9;}
+.ea-current-filters {display:none;margin-top:16px;padding-top:13px;border-top:1px solid #edf2f9;}
 .ea-current-filters-title {display:block;font-size:12px;font-weight:800;color:#365373;margin:0 0 10px;}
 .ea-filter-chips {display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
 .ea-filter-chip {display:inline-flex;align-items:center;gap:9px;border:1px solid #bcd7ff;
@@ -575,9 +670,9 @@
   align-items:stretch;overflow:visible;scroll-snap-type:none;scroll-behavior:auto;gap:18px;}
 .ea-carousel--compact .ea-card {flex:none;width:100%;max-width:none;min-width:0;scroll-snap-align:unset;}
 .ea-carousel--single {display:block;max-width:890px;}
-.ea-carousel--single .ea-card {display:grid;grid-template-columns:minmax(240px,41%) minmax(0,1fr);width:100%;}
-.ea-carousel--single .ea-card-image {height:auto;min-height:275px;}
-.ea-carousel--single .ea-card-body {padding:24px;}
+.ea-carousel--single .ea-card {display:flex;flex-direction:column;width:100%;min-width:0;}
+.ea-carousel--single .ea-card-image {height:auto;min-height:220px;width:100%;}
+.ea-carousel--single .ea-card-body {padding:24px;flex:1;}
 .ea-carousel--single .ea-card h3 {font-size:22px;}
 @media(max-width:640px) {
   .ea-carousel--single .ea-card {display:flex;flex-direction:column;}
@@ -623,9 +718,23 @@
 }
 @media(prefers-reduced-motion:reduce) { .ea-card { transition:none; } }
 
-/* Phase 6O.6: source and license remain available on each photo card. */
-.ea-card-photo-attribution{font-size:11px;line-height:1.5;color:#61758e;margin:0 0 10px;overflow-wrap:anywhere}
-.ea-card-photo-attribution a{color:#0757d8;text-decoration:underline;text-underline-offset:2px}
+/* Phase 6O.6: source and license moved to detail page; card focuses on discovery */
+.ea-card-photo-attribution {
+    display: none;
+}
+
+.ea-match-reason {
+    display: none;
+    margin: -5px 0 12px;
+    color: #475e7b;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.ea-card:hover .ea-match-reason,
+.ea-card:focus-within .ea-match-reason {
+    display: block;
+}
 </style>
 {% endblock %}
 
@@ -714,39 +823,41 @@
     </div>
     <form class="ea-tools-form" method="get" action="{% url 'places:attraction_carousel' %}" role="search">
       <div class="ea-tool-field">
-        <label for="ea-search-query">Search destinations, cafés, restaurants or activities</label>
+        <label for="ea-search-query">Find places: search destinations, cafés, restaurants, activities</label>
         <input id="ea-search-query" name="q" type="search" maxlength="200"
-               value="{{ search_query }}" placeholder="e.g. Amyan Hill, coffee shop near me" autocomplete="off">
+               value="{{ search_query }}" placeholder="e.g. Amyan Hill, coffee shops, hiking" autocomplete="off">
       </div>
-      <div class="ea-tool-field">
-        <label for="ea-filter-category">Category</label>
-        <select id="ea-filter-category" name="category">
-          <option value="">All categories</option>
-          {% for option in category_options %}
-            <option value="{{ option.value }}" {% if selected_category == option.value %}selected{% endif %}>{{ option.label }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="ea-tool-field">
-        <label for="ea-filter-hobby">Explore by hobby</label>
-        <select id="ea-filter-hobby" name="hobby">
-          <option value="">All hobbies</option>
-          {% for option in hobby_options %}
-            <option value="{{ option.value }}" {% if selected_hobby == option.value %}selected{% endif %}>{{ option.label }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="ea-tool-field">
-        <label for="ea-filter-sort">Sort places</label>
-        <select id="ea-filter-sort" name="sort">
-          <option value="recommended" {% if selected_sort == 'recommended' %}selected{% endif %}>Recommended</option>
-          <option value="rating" {% if selected_sort == 'rating' %}selected{% endif %}>Highest rated</option>
-          <option value="name" {% if selected_sort == 'name' %}selected{% endif %}>Name A–Z</option>
-        </select>
+      <div class="ea-tools-form-row-filters">
+        <div class="ea-tool-field">
+          <label for="ea-filter-category">Category</label>
+          <select id="ea-filter-category" name="category">
+            <option value="">All categories</option>
+            {% for option in category_options %}
+              <option value="{{ option.value }}" {% if selected_category == option.value %}selected{% endif %}>{{ option.label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="ea-tool-field">
+          <label for="ea-filter-hobby">By hobby</label>
+          <select id="ea-filter-hobby" name="hobby">
+            <option value="">All hobbies</option>
+            {% for option in hobby_options %}
+              <option value="{{ option.value }}" {% if selected_hobby == option.value %}selected{% endif %}>{{ option.label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="ea-tool-field">
+          <label for="ea-filter-sort">Sort</label>
+          <select id="ea-filter-sort" name="sort">
+            <option value="recommended" {% if selected_sort == 'recommended' %}selected{% endif %}>Recommended</option>
+            <option value="rating" {% if selected_sort == 'rating' %}selected{% endif %}>Highest rated</option>
+            <option value="name" {% if selected_sort == 'name' %}selected{% endif %}>Name A–Z</option>
+          </select>
+        </div>
       </div>
       <div class="ea-tools-actions">
-        <button type="submit">Show places &#8594;</button>
-        <a href="{% url 'places:attraction_carousel' %}?browse=all">Clear filters / Browse all</a>
+        <button type="submit">Find places</button>
+        <a href="{% url 'places:attraction_carousel' %}?browse=all">Clear</a>
       </div>
     </form>
     {% if active_filter_chips %}
@@ -800,27 +911,28 @@
         </div>{% endif %}
       </div>
 
-      
-<div class="ea-view-switch" role="group"
-     aria-label="Results display mode">
+      <div class="ea-view-switch" role="group" aria-label="Results display mode">
+        <button type="button" id="ea-list-button"
+                class="ea-view-button"
+                aria-pressed="true">
+            📋 List
+        </button>
 
-    <button type="button" id="ea-list-button"
-            class="ea-view-button"
-            aria-pressed="true">
-        List / Carousel
-    </button>
+        <button type="button" id="ea-map-button"
+                class="ea-view-button"
+                aria-pressed="false">
+            🗺️ Map
+        </button>
 
-    <button type="button" id="ea-map-button"
-            class="ea-view-button"
-            aria-pressed="false">
-        Map View
-    </button>
-
-    <a class="ea-change-city"
-       href="#ea-search-query">
-        Change Search
-    </a>
-</div>
+        <div class="ea-view-sort-group">
+            <label for="ea-inline-sort">Sort:</label>
+            <select id="ea-inline-sort" name="inline_sort" onchange="document.getElementById('ea-filter-sort').value = this.value; document.forms[0].submit();">
+                <option value="recommended" {% if selected_sort == 'recommended' %}selected{% endif %}>Recommended</option>
+                <option value="rating" {% if selected_sort == 'rating' %}selected{% endif %}>Highest rated</option>
+                <option value="name" {% if selected_sort == 'name' %}selected{% endif %}>Name A–Z</option>
+            </select>
+        </div>
+      </div>
 
 <p class="ea-score-guidance" id="ea-score-guidance">Finding a destination with search or filters does not mean it matches your personal hobbies. Personalized relevance is calculated using selected hobbies and available ratings, normalized over available signals. A lower percentage is not a destination-quality rating. No GPS distance is scored. Gray map markers mean there is not enough personalization information; colored map markers use the displayed score.</p>
 
@@ -890,30 +1002,25 @@
               </span>
 
               <h3>{{ place.title }}</h3>
-              {% if place.cover_image or place.cover_image_url %}
-                {% if place.photo_credit or place.photo_source_url or place.photo_license %}
-                  <p class="ea-card-photo-attribution">
-                    Photo{% if place.photo_credit %} by {{ place.photo_credit }}{% endif %}{% if place.photo_source_url %} · <a href="{{ place.photo_source_url }}" target="_blank" rel="noopener noreferrer">Source</a>{% endif %}{% if place.photo_license %} · {% if place.photo_license_url %}<a href="{{ place.photo_license_url }}" target="_blank" rel="noopener noreferrer">{{ place.photo_license }}</a>{% else %}{{ place.photo_license }}{% endif %}{% endif %}
-                  </p>
-                {% endif %}
-              {% endif %}
               {% if search_query %}
                 <p class="ea-search-relevance">Search result for "{{ search_query }}"</p>
               {% endif %}
               {% if selected_hobbies or place.avg_rating %}
-                <span class="ea-match-badge" title="Personalized relevance is based on selected hobbies and/or available ratings; not on search relevance or destination quality.">
-                  {{ place.match_percent }}% Personalized Relevance
+                <span class="ea-match-badge" data-tooltip="Based on your selected hobbies{% if place.avg_rating %} and visitor ratings{% endif %}">
+                  🎯 {{ place.match_percent }}% Match
                 </span>
                 {% if place.has_hobby_match %}
-                  <p class="ea-match-reason">Matching selected hobbies: {{ place.matched_hobbies|join:", " }}.</p>
+                  <p class="ea-match-reason">↳ Matches: {{ place.matched_hobbies|join:", " }}</p>
                 {% elif place.avg_rating %}
-                  <p class="ea-match-reason">No selected hobby match. Available visitor ratings contribute to this score.</p>
+                  <p class="ea-match-reason">↳ Based on visitor ratings</p>
                 {% else %}
-                  <p class="ea-match-reason">No selected hobby match or rating signal. This is not a quality rating.</p>
+                  <p class="ea-match-reason">↳ Score calculated from available signals</p>
                 {% endif %}
               {% else %}
-                <span class="ea-match-badge ea-match-badge--unscored">Not scored yet</span>
-                <p class="ea-match-reason">No selected hobbies or visitor ratings are available. Choose hobbies to personalize results.</p>
+                <span class="ea-match-badge ea-match-badge--unscored" data-tooltip="Select a hobby above to see personalized scores">
+                  ○ Not scored
+                </span>
+                <p class="ea-match-reason">↳ Choose hobbies to personalize</p>
               {% endif %}
 
               <p class="ea-card-location">
@@ -989,24 +1096,27 @@
   {% else %}
 
     <section class="ea-empty">
-      <div class="ea-empty-icon">&#127759;</div>
+      {% if search_query or selected_category or selected_hobby %}
+        <div class="ea-empty-icon">🔍</div>
+        <h2>No matching places found</h2>
+        <p>No published Kabankalan places matched the current search and filters. Try a different term or remove a filter.</p>
+      {% else %}
+        <div class="ea-empty-icon">🎯</div>
+        <h2>Get personalized recommendations</h2>
+        <p>Select a hobby above to see places that match your interests.</p>
+        <div class="ea-empty-suggestions">
+          <p style="font-size: 12px; color: #536a87; margin-bottom: 12px;">Popular hobbies:</p>
+          <div class="ea-empty-hobby-list">
+            <a href="{% url 'places:smart_search' %}?hobby=hiking" class="ea-empty-hobby-link">🥾 Hiking</a>
+            <a href="{% url 'places:smart_search' %}?hobby=cafes" class="ea-empty-hobby-link">☕ Café Hopping</a>
+            <a href="{% url 'places:smart_search' %}?hobby=photography" class="ea-empty-hobby-link">📸 Photography</a>
+            <a href="{% url 'places:smart_search' %}?hobby=food" class="ea-empty-hobby-link">🍽️ Food Trips</a>
+          </div>
+        </div>
+      {% endif %}
 
-      <h2>{% if search_query or selected_category or selected_hobby %}No matching places found{% else %}No published places yet{% endif %}</h2>
-
-      <p>
-  {% if search_query or selected_category or selected_hobby %}
-    No published Kabankalan places matched the current search and filters.
-    Try a different term or remove a filter, or browse all destinations.
-  {% else %}
-    Destinations for {{ selected_city.name }} are still being reviewed.
-  {% endif %}
-</p>
-
-      <a
-        href="{% url 'places:attraction_carousel' %}?browse=all"
-        class="ea-change-city"
-      >
-        Browse All Places
+      <a href="{% url 'places:attraction_carousel' %}?browse=all" class="ea-empty-browse-btn">
+        Browse all {{ published_total }} places →
       </a>
     </section>
 

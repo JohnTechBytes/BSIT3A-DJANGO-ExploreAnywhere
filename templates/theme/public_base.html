@@ -30,6 +30,17 @@
             font-family: Inter, "Segoe UI", Arial, sans-serif;
         }
 
+        /* Consistent spacing between header and page content on all pages */
+        .ea-page-content {
+            padding-top: 32px;
+        }
+
+        @media (max-width: 760px) {
+            .ea-page-content {
+                padding-top: 20px;
+            }
+        }
+
         .ea-site-header {
             background: var(--ea-navy);
             position: relative;
@@ -325,7 +336,9 @@
     </nav>
 </header>
 
+<div class="ea-page-content">
 {% block content %}{% endblock %}
+</div>
 
 <footer class="ea-site-footer">
     <div class="ea-footer-inner">
