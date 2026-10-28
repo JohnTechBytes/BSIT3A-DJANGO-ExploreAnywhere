@@ -140,6 +140,7 @@
     #0b171f;
   color: #b8ccc9;
   font: inherit;
+  text-decoration: none;
   cursor: pointer;
 }
 .detail-page .pd-map-load:hover { color: #e7fffb; }
@@ -147,7 +148,6 @@
 .detail-page .pd-map-load span:last-child { color: #8fa6a5; font-size: 11px; letter-spacing: .2px; }
 .detail-page .pd-map-pin { display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: 3px; border-radius: 999px; border: 1px solid #2f6b62; background: #102b2a; color: #21d9c6; }
 .detail-page .pd-map-pin svg { width: 19px; height: 19px; }
-.detail-page .pd-map-frame.is-loaded { border-color: #2d3b45; }
 .detail-page .pd-map-link { display: block; padding: 14px; color: #9fe3d9; font-size: 12px; text-align: center; }
 .detail-page .pd-reviews { align-items: start; }
 .detail-page .pd-card h2 { color: #eef3f0 !important; }

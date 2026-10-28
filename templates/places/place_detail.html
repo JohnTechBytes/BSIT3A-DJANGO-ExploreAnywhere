@@ -269,13 +269,12 @@
       <section class="pd-card" id="place-location">
         <h2>Location &amp; directions</h2>
         {% if place.latitude != None and place.longitude != None %}
-          <div class="pd-map-frame" data-map-lat="{{ place.latitude }}" data-map-lng="{{ place.longitude }}">
-            <button type="button" class="pd-map-load" data-map-src="https://maps.google.com/maps?q={{ place.latitude }},{{ place.longitude }}&amp;z=14&amp;output=embed">
+          <div class="pd-map-frame">
+            <a class="pd-map-load" href="https://maps.google.com/maps?q={{ place.latitude }},{{ place.longitude }}" target="_blank" rel="noopener noreferrer">
               <span class="pd-map-pin" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" fill="currentColor"/></svg></span>
-              <strong>Show the map</strong>
-              <span>{{ place.latitude }}, {{ place.longitude }} · loads Google Maps on request</span>
-            </button>
-            <noscript><a class="pd-map-link" href="https://maps.google.com/maps?q={{ place.latitude }},{{ place.longitude }}" target="_blank" rel="noopener noreferrer">Open the map in Google Maps ↗</a></noscript>
+              <strong>Open the map in Google Maps ↗</strong>
+              <span>{{ place.latitude }}, {{ place.longitude }} · opens in a new tab</span>
+            </a>
           </div>
           <p class="pd-coordinates">Destination coordinates: {{ place.latitude }}, {{ place.longitude }}</p>
           <a class="pd-cta" href="https://www.google.com/maps/dir/?api=1&amp;destination={{ place.latitude }},{{ place.longitude }}" target="_blank" rel="noopener noreferrer">Get directions ↗</a>
@@ -377,22 +376,6 @@
     if (event.target === dialog) dialog.close();
   });
   dialog.addEventListener("close", function () { image.removeAttribute("src"); });
-})();
-(function () {
-  var load = document.querySelector(".pd-map-load");
-  if (!load) return;
-  var frame = load.closest(".pd-map-frame");
-  load.addEventListener("click", function () {
-    var iframe = document.createElement("iframe");
-    iframe.className = "pd-map";
-    iframe.title = "Map of " + (document.querySelector(".pd-title") ? document.querySelector(".pd-title").textContent.trim() : "this destination");
-    iframe.loading = "lazy";
-    iframe.referrerPolicy = "no-referrer-when-downgrade";
-    iframe.src = load.dataset.mapSrc;
-    frame.classList.add("is-loaded");
-    frame.appendChild(iframe);
-    load.remove();
-  });
 })();
 </script>
 {% endblock %}
