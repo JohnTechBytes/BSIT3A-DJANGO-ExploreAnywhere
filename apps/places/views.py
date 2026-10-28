@@ -8,6 +8,7 @@ from django.shortcuts import redirect, render
 
 from apps.cities.models import City
 from .models import Place, SavedPlace, Review
+from .sample_images import sample_image_for
 
 
 # Search intent -> possible words in attraction records.
@@ -307,6 +308,9 @@ def attraction_carousel(request):
 
     paginator = Paginator(attractions, 12)
     page = paginator.get_page(request.GET.get("page"))
+    # Real photos remain authoritative; illustrative samples fill genuine gaps.
+    for place in page:
+        place.sample_image = sample_image_for(place) if not (place.cover_image or place.cover_image_url) else ""
 
     # exploreanywhere-phase5a2-discovery-clarity-v1
     # Remove-one controls retain the other active filters and clear q from the

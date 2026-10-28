@@ -114,7 +114,7 @@ class HomepageTests(TestCase):
         self.place.category = None
         for title, expected in [
             ('Local Waterfalls', 'nature'), ('Local Inasal Grill', 'food'),
-            ('City Plaza', 'city'), ('Billiards Hall', ''),
+            ('City Plaza', 'city'), ('Billiards Hall', 'billiards'), ('Book Shop', ''),
         ]:
             self.place.title = title
             self.assertEqual(sample_image_for(self.place),

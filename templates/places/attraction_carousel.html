@@ -1,6 +1,15 @@
 
 {% extends "theme/public_base.html" %}
-{% load attraction_photos %}
+{% load attraction_photos static %}
+{% block title %}Explore Places · ExploreKabankalan{% endblock %}
+{% block body_class %}browse-page{% endblock %}
+{% block skip_link %}<a class="browse-skip" href="#browse-main">Skip to content</a>{% endblock %}
+{% block brand_content %}
+  <span class="browse-brand-icon" aria-hidden="true">✺</span>
+  <span class="browse-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
+{% endblock %}
+{% block footer_brand %}ExploreKabankalan{% endblock %}
+{% block footer_tagline %}Local places. Your adventure.{% endblock %}
 
 {% block extra_css %}
 
@@ -736,6 +745,7 @@
     display: block;
 }
 </style>
+<link rel="stylesheet" href="{% static 'css/browse.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -760,21 +770,19 @@
 }
 </style>
 
-<main class="ea-attractions">
+<main class="ea-attractions" id="browse-main">
 
   <header class="ea-attractions-header">
     <div>
-      <span class="ea-eyebrow">
-        EXPLOREANYWHERE · KABANKALAN ONLY
-      </span>
+      <span class="ea-eyebrow"><span aria-hidden="true">✦</span> YOUR LOCAL GUIDE TO KABANKALAN</span>
 
       <h1>
-        Discover {{ selected_city.name }}
+        Discover <span>{{ selected_city.name }}</span><b>.</b>
       </h1>
 
       <p class="ea-subtitle">
-        Find verified destinations and businesses in Kabankalan City. Explore
-        by hobbies, search for local services, or check nearby places.
+        Find verified destinations and local businesses, follow your interests,
+        and discover what’s around the corner.
       </p>
     </div>
 
@@ -782,7 +790,7 @@
       href="#ea-filter-hobby"
       class="ea-change-city"
     >
-      Filter by hobby &#8595;
+      Filter your search <span aria-hidden="true">↓</span>
     </a>
   </header>
 
@@ -915,13 +923,13 @@
         <button type="button" id="ea-list-button"
                 class="ea-view-button"
                 aria-pressed="true">
-            📋 List
+            <svg class="ea-view-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg> List
         </button>
 
         <button type="button" id="ea-map-button"
                 class="ea-view-button"
                 aria-pressed="false">
-            🗺️ Map
+            <svg class="ea-view-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-2 6 2 6-2v14l-6 2-6-2-6 2V6Zm6-2v14m6-12v14"/></svg> Map
         </button>
 
         <div class="ea-view-sort-group">
@@ -982,10 +990,21 @@
                   height="360"
                 >
 
+              {% elif place.sample_image %}
+                <img
+                  src="{% static place.sample_image %}"
+                  alt="Illustrative category sample, not an actual photo of {{ place.title }}"
+                  loading="lazy"
+                  decoding="async"
+                  width="640"
+                  height="360"
+                >
+                <span class="ea-card-sample">AI-generated category sample</span>
+
               {% else %}
                 <div class="ea-photo-empty" role="img" aria-label="No verified photo available for {{ place.title }}">
-                  <span class="ea-photo-empty-icon" aria-hidden="true">&#128247;</span>
-                  <span>Destination photo coming soon</span>
+                  <span class="ea-photo-empty-icon" aria-hidden="true">&#8982;</span>
+                  <span>PHOTO NOT YET AVAILABLE</span>
                 </div>
               {% endif %}
 
@@ -1007,7 +1026,7 @@
               {% endif %}
               {% if selected_hobbies or place.avg_rating %}
                 <span class="ea-match-badge" data-tooltip="Based on your selected hobbies{% if place.avg_rating %} and visitor ratings{% endif %}">
-                  🎯 {{ place.match_percent }}% Match
+                  ✦ {{ place.match_percent }}% match
                 </span>
                 {% if place.has_hobby_match %}
                   <p class="ea-match-reason">↳ Matches: {{ place.matched_hobbies|join:", " }}</p>
@@ -1024,7 +1043,7 @@
               {% endif %}
 
               <p class="ea-card-location">
-                &#128205; {{ selected_city.name }}
+                <svg class="ea-pin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg> {{ selected_city.name }}
               </p>
 
               <p class="ea-card-description">
@@ -1037,7 +1056,7 @@
               </p>
 
               <div class="ea-card-footer">
-                <a class="ea-map-link ea6n-primary" href="{% url 'places:place_detail' place.pk %}">View Details →</a>
+                <a class="ea-map-link ea6n-primary" href="{% url 'places:place_detail' place.pk %}">View details ↗</a>
                 {% if place.latitude != None and place.longitude != None %}
                   <a class="ea-map-link" href="https://www.google.com/maps/dir/?api=1&amp;destination={{ place.latitude }},{{ place.longitude }}" target="_blank" rel="noopener noreferrer" aria-label="Directions to {{ place.title }} (opens Google Maps)">Directions ↗</a>
                 {% else %}

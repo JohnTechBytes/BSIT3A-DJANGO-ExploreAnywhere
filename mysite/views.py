@@ -6,20 +6,7 @@ from django.shortcuts import render
 from apps.cities.locking import LOCKED_CITY_PK
 from apps.core.models import Category
 from apps.places.models import Place
-
-
-def sample_image_for(place):
-    """Illustrative category artwork, never presented as a destination photo."""
-    category = place.category.name if place.category else ""
-    words = f"{place.title} {category}".casefold()
-    if re.search(r"\b(waterfalls?|falls|nature|forest|mountains?|hiking|trails?|river|spring|outdoors?)\b", words):
-        return "img/samples/nature.jpg"
-    if re.search(r"\b(restaurants?|food|inasal|grill|barbecue|eatery|dining)\b", words):
-        return "img/samples/food.jpg"
-    # Do not imply a plaza is a photo of an unrelated venue (e.g. a sports hall).
-    if re.search(r"\b(plaza|parks?|city|heritage|culture|cultural|landmarks?|monuments?)\b", words):
-        return "img/samples/city.jpg"
-    return ""
+from apps.places.sample_images import sample_image_for
 
 
 def home(request):

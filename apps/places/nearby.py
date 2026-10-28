@@ -12,6 +12,7 @@ from django.views.decorators.http import require_GET
 from apps.cities.models import City
 from .models import Place
 from .nearby_intent import SERVICE_CATEGORIES, detect_service_intent, matches_service
+from .sample_images import sample_image_for
 
 
 @login_required
@@ -90,6 +91,8 @@ def nearby_places(request, *, unified=False):
         if len(results) >= MAX_RESULTS:
             limit_reached = True
             break
+        # Real uploaded or sourced photos always win; samples are illustrative.
+        place.sample_image = sample_image_for(place) if not (place.cover_image or place.cover_image_url) else ""
         results.append(place)
 
     # Suggestions are real, publicly approved listings, never imported candidates.
