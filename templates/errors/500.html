@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#080d14">
+    <title>Something went wrong | ExploreKabankalan</title>
+    <link rel="stylesheet" href="{% static 'css/error.css' %}">
+</head>
+<body>
+<div class="error-shell">
+
+    <a class="error-brand" href="{% url 'home' %}">
+        <span class="error-brand-mark" aria-hidden="true">✺</span>
+        <span><b>Explore<span>Kabankalan</span></b><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
+    </a>
+
+    <main class="error-main">
+        <p class="error-eyebrow">ERROR 500</p>
+        <p class="error-code" aria-hidden="true">500</p>
+        <h1 class="error-title">The map needs a moment.</h1>
+        <p class="error-copy">
+            Something went wrong on our side while loading this page. Nothing you saved has been lost.
+            Try again in a moment, or continue browsing from the homepage.
+        </p>
+        <div class="error-actions">
+            <a class="error-btn primary" href="{% url 'home' %}">Back to homepage</a>
+            <a class="error-btn" href="{% url 'places:attraction_carousel' %}?browse=all">Explore places</a>
+        </div>
+    </main>
+
+    <p class="error-foot">ExploreKabankalan · Kabankalan City, Negros Occidental</p>
+
+</div>
+</body>
+</html>

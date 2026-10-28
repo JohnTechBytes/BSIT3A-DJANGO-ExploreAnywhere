@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from .models import Place, Review, SavedPlace
+from .sample_images import sample_image_for
 
 KABANKALAN_CITY_ID = 2
 
@@ -47,6 +48,11 @@ def saved_places(request):
                 place__is_active=True, place__is_verified=True)
         .select_related("place", "place__category", "place__city")
         .order_by("-created_at"))
+    entries = list(entries)
+    for entry in entries:
+        place = entry.place
+        place.sample_image = (sample_image_for(place)
+                              if not (place.cover_image or place.cover_image_url) else "")
     return render(request, "places/saved_places.html", {
         "entries": entries,
     })

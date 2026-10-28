@@ -1,4 +1,4 @@
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.contrib.auth.models import AnonymousUser
 
 from apps.cities.models import City
@@ -119,3 +119,26 @@ class HomepageTests(TestCase):
             self.place.title = title
             self.assertEqual(sample_image_for(self.place),
                              f'img/samples/{expected}.jpg' if expected else '')
+
+
+class ErrorPageTests(SimpleTestCase):
+    """The custom 404/500 handlers must render the dark error screens."""
+
+    def test_error_page_views_use_the_shared_design(self):
+        from .views import error_404, error_500
+
+        not_found = error_404(RequestFactory().get("/missing/"))
+        self.assertEqual(not_found.status_code, 404)
+        self.assertIn(b"ERROR 404", not_found.content)
+        self.assertIn(b"css/error.css", not_found.content)
+
+        server_error = error_500(RequestFactory().get("/boom/"))
+        self.assertEqual(server_error.status_code, 500)
+        self.assertIn(b"ERROR 500", server_error.content)
+        self.assertIn(b"ExploreKabankalan", server_error.content)
+
+    def test_custom_handlers_are_wired(self):
+        from mysite import urls
+
+        self.assertEqual(urls.handler404, "mysite.views.error_404")
+        self.assertEqual(urls.handler500, "mysite.views.error_500")

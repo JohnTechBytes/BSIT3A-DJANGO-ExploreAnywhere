@@ -409,6 +409,8 @@ def place_detail(request, pk):
         .order_by("-avg_rating", "title")[:4]
     )
 
+    place.sample_image = sample_image_for(place) if not (place.cover_image or place.cover_image_url) else ""
+
     return render(
         request,
         "places/place_detail.html",

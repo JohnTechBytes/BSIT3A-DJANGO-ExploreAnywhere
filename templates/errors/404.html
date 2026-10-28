@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#080d14">
+    <title>Page not found | ExploreKabankalan</title>
+    <link rel="stylesheet" href="{% static 'css/error.css' %}">
+</head>
+<body>
+<div class="error-shell">
+
+    <a class="error-brand" href="{% url 'home' %}">
+        <span class="error-brand-mark" aria-hidden="true">✺</span>
+        <span><b>Explore<span>Kabankalan</span></b><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
+    </a>
+
+    <main class="error-main">
+        <p class="error-eyebrow">ERROR 404</p>
+        <p class="error-code" aria-hidden="true">404</p>
+        <h1 class="error-title">This trail doesn't lead anywhere.</h1>
+        <p class="error-copy">
+            The page you were looking for may have been moved, renamed, or never published.
+            Head back to the homepage, or browse the Kabankalan destinations that are live right now.
+        </p>
+        <div class="error-actions">
+            <a class="error-btn primary" href="{% url 'home' %}">Back to homepage</a>
+            <a class="error-btn" href="{% url 'places:attraction_carousel' %}?browse=all">Explore places</a>
+        </div>
+    </main>
+
+    <p class="error-foot">ExploreKabankalan · Kabankalan City, Negros Occidental</p>
+
+</div>
+</body>
+</html>

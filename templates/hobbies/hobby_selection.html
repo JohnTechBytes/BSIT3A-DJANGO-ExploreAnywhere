@@ -1,5 +1,6 @@
 
 {% extends "theme/public_base.html" %}
+{% load static %}
 
 {% block extra_css %}
 <style>
@@ -243,8 +244,19 @@
 </style>
 {% endblock %}
 
+{% block title %}Choose your interests · ExploreKabankalan{% endblock %}
+{% block body_class %}site-dark{% endblock %}
+{% block skip_link %}<a class="sd-skip" href="#main-content">Skip to content</a>{% endblock %}
+{% block brand_content %}
+  <span class="sd-brand-icon" aria-hidden="true">✺</span>
+  <span class="sd-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
+{% endblock %}
+{% block footer_brand %}ExploreKabankalan{% endblock %}
+{% block footer_tagline %}Local places. Your adventure.{% endblock %}
+{% block extra_css_after %}<link rel="stylesheet" href="{% static 'css/site-dark.css' %}">{% endblock %}
+
 {% block content %}
-<main class="ea-hobbies">
+<main class="ea-hobbies" id="main-content">
   <div class="eyebrow">
     EXPLOREANYWHERE Â· STEP 2 OF 4
   </div>

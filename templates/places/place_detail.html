@@ -1,4 +1,5 @@
 {% extends "theme/public_base.html" %}
+{% load static %}
 
 {% block extra_css %}
 <style>
@@ -104,8 +105,19 @@
 </style>
 {% endblock %}
 
+{% block title %}{{ place.title }} · ExploreKabankalan{% endblock %}
+{% block body_class %}site-dark detail-page{% endblock %}
+{% block skip_link %}<a class="sd-skip" href="#main-content">Skip to content</a>{% endblock %}
+{% block brand_content %}
+  <span class="sd-brand-icon" aria-hidden="true">✺</span>
+  <span class="sd-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
+{% endblock %}
+{% block footer_brand %}ExploreKabankalan{% endblock %}
+{% block footer_tagline %}Local places. Your adventure.{% endblock %}
+{% block extra_css_after %}<link rel="stylesheet" href="{% static 'css/site-dark.css' %}"><link rel="stylesheet" href="{% static 'css/place-detail-dark.css' %}">{% endblock %}
+
 {% block content %}
-<main class="ea-place-v2">
+<main class="ea-place-v2" id="main-content">
   <nav class="pd-breadcrumb" aria-label="Breadcrumb">
     <a href="{% url 'places:attraction_carousel' %}">← Explore Places</a>
     <span aria-hidden="true">/</span>
@@ -118,8 +130,8 @@
         <span class="pd-pill">{{ place.category.name|default:"Tourist Destination" }}</span>
         <span class="pd-pill pd-published">Published Kabankalan destination</span>
       </div>
-      <h1>{{ place.title }}</h1>
-      <p class="pd-subtitle">📍 {{ place.city.name }}{% if place.city.province %}, {{ place.city.province }}{% endif %}</p>
+      <h1 class="pd-title">{{ place.title }}</h1>
+      <p class="pd-subtitle"><svg class="pd-pin" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" fill="currentColor"/></svg>{{ place.city.name }}{% if place.city.province %}, {{ place.city.province }}{% endif %}</p>
       {% with hobbies=place.hobbies.all %}
       {% if hobbies %}
       <div class="pd-hobbies" aria-label="Destination hobbies">
@@ -173,6 +185,9 @@
               <img src="{{ place.cover_image_url }}" alt="{{ place.title }} destination photograph" fetchpriority="high">
               <span class="pd-photo-expand">⤢ View photo</span>
             </a>
+          {% elif place.sample_image %}
+            <img src="{% static place.sample_image %}" alt="Illustrative category sample, not an actual photo of {{ place.title }}" fetchpriority="high">
+            <span class="pd-sample-note">AI-generated category sample · not an actual photo of this place</span>
           {% else %}
             <div class="pd-no-photo">
               <span class="pd-no-photo-icon" aria-hidden="true">▣</span>
@@ -197,7 +212,7 @@
         {% endif %}
 
         {% if photos %}
-          <div class="pd-card-heading"><h2 style="font-size:16px;margin:0;color:#12345b">Photo gallery</h2><span class="pd-small">Select a photo to enlarge</span></div>
+          <div class="pd-card-heading"><h2 style="font-size:16px;margin:0">Photo gallery</h2><span class="pd-small">Select a photo to enlarge</span></div>
           <div class="pd-gallery" aria-label="Destination photo gallery">
             {% for photo in photos %}
               {% if photo.image %}
@@ -239,7 +254,7 @@
           <div class="pd-info-row"><strong>Opening hours status</strong><span>{% if opening_hours %}See the weekly schedule below{% else %}Not yet provided{% endif %}</span></div>
         </div>
         {% if opening_hours %}
-          <h3 style="font-size:15px;color:#12345b;margin:23px 0 9px;font-weight:800">Weekly opening hours</h3>
+          <h3 style="font-size:15px;margin:23px 0 9px;font-weight:800">Weekly opening hours</h3>
           <ul class="pd-hours">
             {% for hours in opening_hours %}
               <li><span class="pd-hours-day">{{ hours.get_weekday_display }}</span><span>{% if hours.is_closed %}Closed{% elif hours.open_time and hours.close_time %}{{ hours.open_time|time:"g:i A" }} – {{ hours.close_time|time:"g:i A" }}{% else %}Hours not specified{% endif %}</span></li>
@@ -254,7 +269,14 @@
       <section class="pd-card" id="place-location">
         <h2>Location &amp; directions</h2>
         {% if place.latitude != None and place.longitude != None %}
-          <iframe class="pd-map" title="Map of {{ place.title }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q={{ place.latitude }},{{ place.longitude }}&amp;z=14&amp;output=embed"></iframe>
+          <div class="pd-map-frame" data-map-lat="{{ place.latitude }}" data-map-lng="{{ place.longitude }}">
+            <button type="button" class="pd-map-load" data-map-src="https://maps.google.com/maps?q={{ place.latitude }},{{ place.longitude }}&amp;z=14&amp;output=embed">
+              <span class="pd-map-pin" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" fill="currentColor"/></svg></span>
+              <strong>Show the map</strong>
+              <span>{{ place.latitude }}, {{ place.longitude }} · loads Google Maps on request</span>
+            </button>
+            <noscript><a class="pd-map-link" href="https://maps.google.com/maps?q={{ place.latitude }},{{ place.longitude }}" target="_blank" rel="noopener noreferrer">Open the map in Google Maps ↗</a></noscript>
+          </div>
           <p class="pd-coordinates">Destination coordinates: {{ place.latitude }}, {{ place.longitude }}</p>
           <a class="pd-cta" href="https://www.google.com/maps/dir/?api=1&amp;destination={{ place.latitude }},{{ place.longitude }}" target="_blank" rel="noopener noreferrer">Get directions ↗</a>
         {% else %}
@@ -355,6 +377,22 @@
     if (event.target === dialog) dialog.close();
   });
   dialog.addEventListener("close", function () { image.removeAttribute("src"); });
+})();
+(function () {
+  var load = document.querySelector(".pd-map-load");
+  if (!load) return;
+  var frame = load.closest(".pd-map-frame");
+  load.addEventListener("click", function () {
+    var iframe = document.createElement("iframe");
+    iframe.className = "pd-map";
+    iframe.title = "Map of " + (document.querySelector(".pd-title") ? document.querySelector(".pd-title").textContent.trim() : "this destination");
+    iframe.loading = "lazy";
+    iframe.referrerPolicy = "no-referrer-when-downgrade";
+    iframe.src = load.dataset.mapSrc;
+    frame.classList.add("is-loaded");
+    frame.appendChild(iframe);
+    load.remove();
+  });
 })();
 </script>
 {% endblock %}

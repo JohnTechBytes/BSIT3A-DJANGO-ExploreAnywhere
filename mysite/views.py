@@ -56,3 +56,13 @@ def home(request):
         "published_count": published.count(),
         "osm_count": published.filter(slug__startswith="osm-").count(),
     })
+
+
+def error_404(request, exception=None):
+    """Dark editorial 404 page; used when DEBUG is off."""
+    return render(request, "errors/404.html", status=404)
+
+
+def error_500(request):
+    """Dark editorial 500 page; used when DEBUG is off."""
+    return render(request, "errors/500.html", status=500)

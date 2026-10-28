@@ -1,4 +1,5 @@
 {% extends "theme/public_base.html" %}
+{% load static %}
 {% block extra_css %}
 <style>
 .ea-saved {max-width:1080px;margin:auto;padding:40px 20px 90px;color:#142e50}
@@ -88,8 +89,19 @@
 .ea-saved-photo-attribution a{color:#0757d8;text-decoration:underline;text-underline-offset:2px}
 </style>
 {% endblock %}
+{% block title %}Saved Places · ExploreKabankalan{% endblock %}
+{% block body_class %}site-dark{% endblock %}
+{% block skip_link %}<a class="sd-skip" href="#main-content">Skip to content</a>{% endblock %}
+{% block brand_content %}
+  <span class="sd-brand-icon" aria-hidden="true">✺</span>
+  <span class="sd-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
+{% endblock %}
+{% block footer_brand %}ExploreKabankalan{% endblock %}
+{% block footer_tagline %}Local places. Your adventure.{% endblock %}
+{% block extra_css_after %}<link rel="stylesheet" href="{% static 'css/site-dark.css' %}">{% endblock %}
+
 {% block content %}
-<main class="ea-saved">
+<main class="ea-saved" id="main-content">
   <header class="ea-c-page-hero">
     <p class="ea-c-eyebrow">MY KABANKALAN JOURNEY</p>
     <h1>Saved Places</h1>
@@ -109,6 +121,9 @@
           <img src="{{ entry.place.cover_image.url }}" alt="{{ entry.place.title }}" loading="lazy" decoding="async">
         {% elif entry.place.cover_image_url %}
           <img src="{{ entry.place.cover_image_url }}" alt="{{ entry.place.title }}" loading="lazy" decoding="async">
+        {% elif entry.place.sample_image %}
+          <img src="{% static entry.place.sample_image %}" alt="Illustrative category sample, not an actual photo of {{ entry.place.title }}" loading="lazy" decoding="async">
+          <span class="ea-saved-sample">AI-generated category sample</span>
         {% else %}
           <div class="ea-c-photo-empty"><span class="ea-c-photo-icon" aria-hidden="true">&#128205;</span><span>No destination photo available</span></div>
         {% endif %}

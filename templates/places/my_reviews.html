@@ -1,4 +1,5 @@
 {% extends "theme/public_base.html" %}
+{% load static %}
 {% block extra_css %}
 <style>
 .ea-myreviews{max-width:960px;padding:44px 20px 90px;margin:0 auto;color:#173454}
@@ -73,8 +74,19 @@
 
 </style>
 {% endblock %}
+{% block title %}My Reviews · ExploreKabankalan{% endblock %}
+{% block body_class %}site-dark{% endblock %}
+{% block skip_link %}<a class="sd-skip" href="#main-content">Skip to content</a>{% endblock %}
+{% block brand_content %}
+  <span class="sd-brand-icon" aria-hidden="true">✺</span>
+  <span class="sd-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
+{% endblock %}
+{% block footer_brand %}ExploreKabankalan{% endblock %}
+{% block footer_tagline %}Local places. Your adventure.{% endblock %}
+{% block extra_css_after %}<link rel="stylesheet" href="{% static 'css/site-dark.css' %}">{% endblock %}
+
 {% block content %}
-<main class="ea-myreviews">
+<main class="ea-myreviews" id="main-content">
   <header class="ea-c-page-hero">
     <p class="ea-c-eyebrow">MY KABANKALAN JOURNEY</p>
     <h1>My Reviews</h1>

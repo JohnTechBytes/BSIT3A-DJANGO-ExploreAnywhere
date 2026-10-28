@@ -37,6 +37,9 @@ urlpatterns = [
     path('info/', include('apps.info.urls')),
 ]
 
+handler404 = "mysite.views.error_404"
+handler500 = "mysite.views.error_500"
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
