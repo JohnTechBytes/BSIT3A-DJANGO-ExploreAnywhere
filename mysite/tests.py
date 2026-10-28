@@ -94,3 +94,28 @@ class HomepageTests(TestCase):
         self.assertContains(response, photo.cover_image_url)
         self.assertLess(response.content.index(b'OSM with photo'),
                         response.content.index(b'OSM without photo'))
+
+    def test_missing_nature_photo_uses_labeled_sample(self):
+        response = self.render_home()
+        self.assertContains(response, 'img/samples/nature.jpg')
+        self.assertContains(response, 'AI-generated category sample')
+        self.assertContains(response, 'not an actual photo of Existing local place')
+
+    def test_real_photo_always_takes_priority_over_sample(self):
+        self.place.cover_image_url = 'https://example.com/real-photo.jpg'
+        self.place.save()
+        response = self.render_home()
+        self.assertContains(response, self.place.cover_image_url)
+        self.assertNotContains(response, 'img/samples/nature.jpg')
+        self.assertNotContains(response, 'AI-generated category sample')
+
+    def test_samples_match_category_and_do_not_guess_unknown_venues(self):
+        from .views import sample_image_for
+        self.place.category = None
+        for title, expected in [
+            ('Local Waterfalls', 'nature'), ('Local Inasal Grill', 'food'),
+            ('City Plaza', 'city'), ('Billiards Hall', ''),
+        ]:
+            self.place.title = title
+            self.assertEqual(sample_image_for(self.place),
+                             f'img/samples/{expected}.jpg' if expected else '')

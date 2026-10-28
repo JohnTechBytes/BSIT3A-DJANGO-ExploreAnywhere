@@ -8,6 +8,20 @@ from apps.core.models import Category
 from apps.places.models import Place
 
 
+def sample_image_for(place):
+    """Illustrative category artwork, never presented as a destination photo."""
+    category = place.category.name if place.category else ""
+    words = f"{place.title} {category}".casefold()
+    if re.search(r"\b(waterfalls?|falls|nature|forest|mountains?|hiking|trails?|river|spring|outdoors?)\b", words):
+        return "img/samples/nature.jpg"
+    if re.search(r"\b(restaurants?|food|inasal|grill|barbecue|eatery|dining)\b", words):
+        return "img/samples/food.jpg"
+    # Do not imply a plaza is a photo of an unrelated venue (e.g. a sports hall).
+    if re.search(r"\b(plaza|parks?|city|heritage|culture|cultural|landmarks?|monuments?)\b", words):
+        return "img/samples/city.jpg"
+    return ""
+
+
 def home(request):
     """Feature published local records, prioritizing the existing OSM imports."""
     published = Place.objects.filter(
@@ -36,6 +50,7 @@ def home(request):
     )
     featured_places = list(places[:9])
     for place in featured_places:
+        place.sample_image = sample_image_for(place) if not (place.cover_image or place.cover_image_url) else ""
         # The importer's osm-type-id slug is the existing provenance identifier.
         match = re.fullmatch(r"osm-(node|way|relation)-(\d+)", place.slug)
         place.osm_source_url = (
