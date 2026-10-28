@@ -303,6 +303,10 @@
 .browse-page .ea-card-map-hint svg { width: 12px; height: 12px; }
 .browse-page .ea-card:hover .ea-card-map-hint,
 .browse-page .ea-card:focus-visible .ea-card-map-hint { opacity: 1; transform: none; }
+/* Touch screens have no hover, so keep the affordance on show. */
+@media (hover: none) {
+  .browse-page .ea-card-map-hint { opacity: 1; transform: none; }
+}
 
 /* Voice search. */
 .browse-page .ea-search-input-wrap { position: relative; }
