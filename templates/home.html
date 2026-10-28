@@ -3,399 +3,58 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Explore Kabankalan City with ExploreKabankalan. Discover places for your hobbies, save favorites, and plan a trip that fits you.">
-    <meta name="theme-color" content="#091b34">
-    <title>ExploreKabankalan | Explore Kabankalan Your Way</title>
-
-    <link rel="preload" as="image" href="{% static 'img/landing-background.webp' %}" type="image/webp" fetchpriority="high">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-
-    <style>
-        :root {
-            --ea-navy: #0a1c36;
-            --ea-navy-2: #102849;
-            --ea-blue: #286dff;
-            --ea-blue-dark: #175ae0;
-            --ea-sky: #eaf2ff;
-            --ea-ink: #152743;
-            --ea-muted: #64748b;
-            --ea-line: #e2eaf5;
-            --ea-page: #f7f9fd;
-            --ea-radius: 20px;
-        }
-        *, *::before, *::after { box-sizing: border-box; }
-        html { scroll-behavior: smooth; scroll-padding-top: 90px; }
-        body { margin: 0; color: var(--ea-ink); background: #fff; font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
-        a { text-decoration: none; }
-        a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid #8eb7ff !important; outline-offset: 3px; }
-        .ea-container { width: min(1160px, calc(100% - 40px)); margin-inline: auto; }
-        .ea-kicker { display: inline-flex; align-items: center; gap: 9px; font-weight: 800; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #2b69d3; }
-        .ea-kicker .ea-kicker-dot { width: 7px; height: 7px; border-radius: 50%; background: #3b82f6; }
-        .ea-heading { font-size: clamp(28px, 3.3vw, 42px); letter-spacing: -.055em; line-height: 1.18; font-weight: 800; margin: 14px 0 13px; }
-        .ea-lead { color: var(--ea-muted); font-size: 15px; line-height: 1.8; max-width: 570px; }
-        .ea-btn { display: inline-flex; justify-content: center; align-items: center; gap: 10px; min-height: 47px; padding: 11px 19px; border-radius: 12px; border: 1px solid transparent; font-weight: 800; font-size: 13px; transition: background .18s, transform .18s, border-color .18s, box-shadow .18s; text-align: center; }
-        .ea-btn:hover { transform: translateY(-2px); }
-        .ea-btn-primary { color: white; background: var(--ea-blue); box-shadow: 0 9px 24px rgba(40,109,255,.20); }
-        .ea-btn-primary:hover { color: white; background: var(--ea-blue-dark); }
-        .ea-btn-white { color: var(--ea-ink); background: white; border-color: #dae5f6; }
-        .ea-btn-white:hover { color: #1559d9; border-color: #9ec0ff; }
-        .ea-btn-ghost { color: #e9f2ff; border-color: rgba(218,234,255,.34); background: rgba(255,255,255,.08); }
-        .ea-btn-ghost:hover { color: white; background: rgba(255,255,255,.16); }
-        .ea-arrow-link { display: inline-flex; gap: 9px; align-items: center; font-size: 13px; font-weight: 800; color: #2065e9; }
-        .ea-arrow-link:hover { color: #124fc0; }
-
-        /* Navigation — keep the project's established URL names and auth controls. */
-        .ea-nav { background: rgba(9, 27, 52, .98); box-shadow: 0 2px 20px rgba(3,13,31,.17); min-height: 70px; z-index: 1050; }
-        .ea-nav .ea-container { min-height: 70px; }
-        .ea-brand { display: inline-flex; align-items: center; gap: 10px; color: #fff; font-size: 20px; font-weight: 800; letter-spacing: -.055em; white-space: nowrap; }
-        .ea-brand:hover { color: #fff; }
-        .ea-brand-icon { display: grid; place-items: center; width: 35px; height: 35px; border-radius: 11px; background: var(--ea-blue); color: #fff; font-size: 18px; }
-        .ea-brand-accent { color: #68a5ff; }
-        .ea-nav .nav-link { color: #c9d6eb; font-size: 12px; font-weight: 700; padding: 10px 12px !important; }
-        .ea-nav .nav-link:hover, .ea-nav .nav-link:focus, .ea-nav .nav-link.active { color: #fff; }
-        .ea-nav .navbar-toggler { padding: 7px 10px; border: 1px solid rgba(255,255,255,.28); box-shadow: none; color: white; }
-        .ea-nav .navbar-toggler i { font-size: 21px; }
-        .ea-nav .ea-nav-btn { padding: 9px 13px; min-height: 37px; border-radius: 9px; font-size: 11px; }
-        .ea-nav .dropdown-menu { border: 1px solid #dfe7f4; border-radius: 12px; box-shadow: 0 15px 35px rgba(15,30,55,.18); padding: 8px; }
-        .ea-nav .dropdown-item { padding: 10px 12px; font-size: 12px; border-radius: 8px; color: #233855; font-weight: 700; }
-        .ea-nav .dropdown-item:hover { background: #eff5ff; }
-        .ea-nav .ea-logout { margin: 0; }
-        .ea-nav .ea-logout button { cursor: pointer; }
-
-        /* Hero uses the project's existing locally hosted background asset. */
-        .ea-hero { position: relative; isolation: isolate; overflow: hidden; color: white; background: #091b34; }
-        .ea-hero::before { content: ''; position: absolute; z-index: -2; inset: 0; background: linear-gradient(92deg, rgba(7,23,45,.98) 0%,rgba(8,28,55,.94) 44%,rgba(9,31,60,.74) 100%), url("{% static 'img/landing-background.webp' %}") center / cover no-repeat; }
-        .ea-hero::after { content: ''; position: absolute; z-index: -1; inset: 0; background: radial-gradient(ellipse at 86% 27%, rgba(38,112,233,.23), transparent 45%), radial-gradient(ellipse at 15% 100%, rgba(20,153,184,.13), transparent 40%); pointer-events: none; }
-        .ea-hero-inner { min-height: 520px; display: grid; grid-template-columns: minmax(0,1.07fr) minmax(0,.93fr); gap: clamp(34px,5vw,76px); align-items: center; padding-top: 56px; padding-bottom: 56px; }
-        .ea-hero-eyebrow { display: inline-flex; align-items: center; gap: 9px; color: #c4dcff; border: 1px solid rgba(147,197,253,.24); background: rgba(50,110,198,.14); padding: 9px 13px; border-radius: 999px; font-size: 10px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
-        .ea-hero-eyebrow i { color: #75b8ff; }
-        .ea-hero h1 { font-weight: 800; font-size: clamp(43px,5vw,66px); letter-spacing: -.065em; line-height: 1.09; margin: 22px 0 20px; }
-        .ea-hero h1 .ea-highlight { color: #85baff; }
-        .ea-hero-copy { max-width: 525px; color: #ccd9ec; font-size: 15px; line-height: 1.9; margin: 0 0 25px; }
-        .ea-search { display: flex; align-items: center; max-width: 570px; padding: 7px; gap: 8px; border: 1px solid rgba(255,255,255,.18); background: #fff; border-radius: 15px; box-shadow: 0 20px 60px rgba(0,0,0,.16); }
-        .ea-search i { color: #63809d; font-size: 19px; padding-left: 12px; }
-        .ea-search input { min-width: 0; flex: 1; border: 0; color: #1c304e; background: transparent; outline: none; padding: 10px 2px; font-size: 13px; }
-        .ea-search input::placeholder { color: #8594a8; }
-        .ea-search button { border: 0; white-space: nowrap; min-height: 43px; padding-inline: 17px; }
-        .ea-hero-popular { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-top: 17px; font-size: 11px; color: #afc2dc; }
-        .ea-hero-popular a { padding: 6px 10px; color: #e4efff; border: 1px solid rgba(202,223,255,.18); border-radius: 999px; background: rgba(255,255,255,.055); }
-        .ea-hero-popular a:hover { background: rgba(255,255,255,.15); }
-        .ea-hero-btns { display: flex; gap: 11px; flex-wrap: wrap; margin-top: 23px; }
-
-        /* Explains the application flow rather than showing a fake live map. */
-        .ea-journey-preview { position: relative; max-width: 435px; margin-left: auto; padding: 24px; background: rgba(255,255,255,.97); border: 1px solid rgba(255,255,255,.75); border-radius: 22px; box-shadow: 0 30px 95px rgba(0,0,0,.24); color: var(--ea-ink); }
-        .ea-preview-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 17px; border-bottom: 1px solid var(--ea-line); }
-        .ea-preview-heading strong { display: block; font-weight: 800; font-size: 16px; letter-spacing: -.035em; }
-        .ea-preview-heading small { display: block; margin-top: 5px; color: var(--ea-muted); font-size: 11px; }
-        .ea-preview-heading .ea-preview-compass { display: grid; place-items: center; width: 43px; height: 43px; background: #edf4ff; border-radius: 13px; font-size: 23px; color: var(--ea-blue); }
-        .ea-preview-flow { position: relative; display: grid; gap: 13px; padding: 21px 0 12px; }
-        .ea-preview-flow::before { content: ''; position: absolute; top: 42px; bottom: 44px; left: 21px; border-left: 2px dashed #ccd9ed; }
-        .ea-preview-step { display: flex; align-items: center; gap: 13px; position: relative; }
-        .ea-preview-step-icon { display: grid; place-items: center; flex: 0 0 44px; height: 44px; border-radius: 13px; color: #2466db; background: #eaf2ff; font-size: 17px; border: 3px solid #fff; box-shadow: 0 2px 10px rgba(14,45,91,.09); }
-        .ea-preview-step:nth-child(2) .ea-preview-step-icon { color: #10846c; background: #e5f8f1; }
-        .ea-preview-step:nth-child(3) .ea-preview-step-icon { color: #bb6b18; background: #fff2df; }
-        .ea-preview-step strong { display: block; font-size: 13px; font-weight: 800; }
-        .ea-preview-step small { display: block; font-size: 11px; color: var(--ea-muted); margin-top: 5px; line-height: 1.5; }
-        .ea-preview-bottom { margin-top: 13px; padding: 15px; border-radius: 13px; background: #f0f5fd; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
-        .ea-preview-bottom span { display: block; font-size: 11px; line-height: 1.6; color: #5d7089; }
-        .ea-preview-bottom strong { display: block; font-size: 12px; font-weight: 800; }
-        .ea-preview-bottom a { font-size: 12px; font-weight: 800; color: #1d5fdf; white-space: nowrap; }
-        .ea-preview-decor { position: absolute; width: 68px; height: 68px; border-radius: 22px; right: -19px; top: -22px; z-index: -1; background: #4186fa; transform: rotate(18deg); opacity: .35; }
-
-        .ea-benefit-bar { background: white; border-bottom: 1px solid #e9eef7; }
-        .ea-benefit-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); padding: 27px 0; }
-        .ea-benefit { display: flex; align-items: center; gap: 12px; padding: 4px 22px; border-right: 1px solid #e8edf5; }
-        .ea-benefit:first-child { padding-left: 0; }
-        .ea-benefit:last-child { border-right: 0; padding-right: 0; }
-        .ea-benefit i { font-size: 21px; color: #2c70e9; }
-        .ea-benefit strong { display: block; font-size: 12px; font-weight: 800; }
-        .ea-benefit small { display: block; font-size: 10px; color: #748397; margin-top: 4px; }
-
-        .ea-section { padding: 64px 0; content-visibility: auto; contain-intrinsic-size: auto 480px; }
-        .ea-section-muted { background: var(--ea-page); }
-        .ea-section-head { display: flex; justify-content: space-between; align-items: end; gap: 25px; margin-bottom: 31px; }
-        .ea-section-head .ea-lead { margin-bottom: 0; }
-        .ea-hobby-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 16px; }
-        .ea-hobby-card { display: flex; flex-direction: column; min-height: 201px; height: 100%; padding: 22px; border: 1px solid var(--ea-line); border-radius: 17px; color: var(--ea-ink); background: white; transition: border-color .18s, box-shadow .18s, transform .18s; }
-        .ea-hobby-card:hover { color: var(--ea-ink); border-color: #a3c4fd; box-shadow: 0 13px 35px rgba(24,60,110,.095); transform: translateY(-4px); }
-        .ea-hobby-icon { width: 47px; height: 47px; display: grid; place-items: center; border-radius: 13px; background: #eaf2ff; color: #286deb; font-size: 21px; margin-bottom: 18px; }
-        .ea-hobby-card:nth-child(2) .ea-hobby-icon, .ea-hobby-card:nth-child(8) .ea-hobby-icon { background: #e7f6f0; color: #0d956f; }
-        .ea-hobby-card:nth-child(3) .ea-hobby-icon, .ea-hobby-card:nth-child(7) .ea-hobby-icon { background: #fff1e5; color: #d17a26; }
-        .ea-hobby-card:nth-child(5) .ea-hobby-icon { background: #f0edff; color: #7553d5; }
-        .ea-hobby-card h3 { font-size: 14px; font-weight: 800; margin: 0 0 7px; letter-spacing: -.015em; }
-        .ea-hobby-card p { margin: 0; font-size: 11px; line-height: 1.7; color: #758399; flex: 1; }
-        .ea-hobby-card .ea-card-arrow { margin-top: 16px; font-size: 12px; font-weight: 800; color: #2470e8; }
-
-        .ea-workflow-section { position: relative; overflow: hidden; }
-        .ea-workflow-section::before { position: absolute; content: ''; top: 0; right: -140px; width: 360px; height: 360px; border-radius: 50%; background: #e8f2ff; opacity: .65; }
-        .ea-workflow-heading { text-align: center; margin: 0 auto 45px; max-width: 630px; position: relative; }
-        .ea-workflow-heading .ea-lead { margin-inline: auto; }
-        .ea-workflow-grid { position: relative; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 15px; }
-        .ea-workflow-card { position: relative; padding: 27px 23px; border: 1px solid var(--ea-line); border-radius: 17px; background: #fff; }
-        .ea-workflow-number { display: inline-block; color: #abc2e6; font-size: 11px; font-weight: 800; letter-spacing: .14em; }
-        .ea-workflow-icon { margin: 22px 0 21px; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 15px; background: #eaf2ff; color: #286be9; font-size: 24px; }
-        .ea-workflow-card h3 { font-weight: 800; font-size: 15px; margin: 0 0 10px; }
-        .ea-workflow-card p { font-size: 12px; line-height: 1.8; color: var(--ea-muted); margin: 0; }
-        .ea-workflow-card:not(:last-child)::after { content: '\F138'; font-family: bootstrap-icons; font-size: 23px; color: #92b2e7; position: absolute; top: 50%; right: -20px; z-index: 2; transform: translateY(-50%); }
-
-        .ea-cta-wrap { background: var(--ea-page); padding: 16px 0 85px; }
-        .ea-cta { position: relative; overflow: hidden; padding: clamp(30px,5vw,62px); background: linear-gradient(115deg, #0b2040 0%, #103c79 100%); border-radius: 23px; color: white; display: flex; justify-content: space-between; gap: 32px; align-items: center; }
-        .ea-cta::after { content: ''; position: absolute; width: 300px; height: 300px; border: 60px solid rgba(100,166,255,.12); border-radius: 50%; right: 90px; top: -220px; }
-        .ea-cta-content { position: relative; z-index: 1; }
-        .ea-cta h2 { font-size: clamp(25px,3vw,37px); line-height: 1.2; font-weight: 800; letter-spacing: -.05em; max-width: 560px; margin: 11px 0 11px; }
-        .ea-cta p { color: #c6d9f4; font-size: 13px; line-height: 1.8; max-width: 510px; margin: 0; }
-        .ea-cta .ea-btn { position: relative; z-index: 1; flex: 0 0 auto; }
-        .ea-footer { border-top: 1px solid #e4ebf4; background: white; padding: 37px 0; }
-        .ea-footer-grid { display: flex; justify-content: space-between; align-items: center; gap: 25px; }
-        .ea-footer p { color: #8190a4; margin: 9px 0 0; font-size: 11px; }
-        .ea-footer-links { display: flex; gap: 22px; flex-wrap: wrap; }
-        .ea-footer-links a { color: #61748e; font-size: 12px; font-weight: 700; }
-        .ea-footer-links a:hover { color: #286dff; }
-        .ea-footer .ea-brand { color: #142743; font-size: 16px; }
-        .ea-footer .ea-brand-icon { height: 29px; width: 29px; border-radius: 9px; font-size: 15px; }
-        .ea-footer .ea-brand-accent { color: #246ae6; }
-
-        @media (max-width: 1100px) {
-            .ea-benefit { padding-inline: 14px; }
-            .ea-hero-inner { gap: 32px; }
-            .ea-hobby-grid { grid-template-columns: repeat(4,minmax(0,1fr)); }
-            .ea-hobby-card { padding: 18px; }
-        }
-        @media (max-width: 991px) {
-            .ea-nav .navbar-collapse { padding: 13px 0 21px; }
-            .ea-nav .nav-link { padding: 10px 0 !important; }
-            .ea-nav .ea-nav-btn, .ea-nav .ea-logout, .ea-nav .ea-logout button { width: 100%; }
-            .ea-nav .navbar-nav { align-items: stretch !important; }
-            .ea-nav .dropdown-menu { position: static !important; }
-            .ea-hero-inner { grid-template-columns: minmax(0,1fr); padding-block: 72px; }
-            .ea-journey-preview { margin: 10px auto 0; width: 100%; max-width: 620px; }
-            .ea-hero h1 { max-width: 700px; }
-            .ea-benefit-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 15px 0; }
-            .ea-benefit:nth-child(2) { border-right: 0; }
-            .ea-benefit:nth-child(3) { padding-left: 0; }
-            .ea-hobby-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
-            .ea-workflow-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
-            .ea-workflow-card:nth-child(2)::after { display: none; }
-        }
-        @media (max-width: 575px) {
-            .ea-container { width: min(100% - 32px, 1160px); }
-            .ea-brand { font-size: 18px; }
-            .ea-hero-inner { padding-block: 57px 65px; }
-            .ea-hero h1 { font-size: clamp(39px,10vw,53px); letter-spacing: -.055em; }
-            .ea-hero-copy { font-size: 13px; }
-            .ea-hero-eyebrow { font-size: 9px; }
-            .ea-search { flex-wrap: wrap; }
-            .ea-search input { width: calc(100% - 56px); flex: 1; }
-            .ea-search button { width: 100%; }
-            .ea-hero-btns .ea-btn { flex: 1; }
-            .ea-journey-preview { padding: 18px; }
-            .ea-preview-decor { display: none; }
-            .ea-benefit-grid { padding-block: 18px; gap: 18px 0; }
-            .ea-benefit { gap: 8px; padding-inline: 9px; }
-            .ea-benefit i { font-size: 17px; }
-            .ea-benefit strong { font-size: 10px; }
-            .ea-benefit small { font-size: 9px; }
-            .ea-section { padding: 65px 0; }
-            .ea-section-head { display: block; }
-            .ea-section-head .ea-arrow-link { margin-top: 19px; }
-            .ea-hobby-grid { gap: 11px; }
-            .ea-hobby-card { min-height: 203px; padding: 16px 13px; }
-            .ea-hobby-icon { width: 42px; height: 42px; font-size: 18px; margin-bottom: 13px; }
-            .ea-hobby-card h3 { font-size: 12px; }
-            .ea-hobby-card p { font-size: 10px; }
-            .ea-hobby-card .ea-card-arrow { font-size: 10px; }
-            .ea-workflow-grid { grid-template-columns: 1fr; }
-            .ea-workflow-card::after { display: none !important; }
-            .ea-cta { display: block; }
-            .ea-cta .ea-btn { margin-top: 24px; width: 100%; }
-            .ea-cta-wrap { padding-bottom: 60px; }
-            .ea-footer-grid { display: block; }
-            .ea-footer-links { margin-top: 21px; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            html { scroll-behavior: auto; }
-            *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Discover Kabankalan places for your hobbies, save favorites, and plan your next local adventure.">
+    <meta name="theme-color" content="#080d14">
+    <title>ExploreKabankalan | Discover your next adventure</title>
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg ea-nav sticky-top" aria-label="Main navigation">
-        <div class="ea-container d-flex flex-wrap align-items-center">
-            <a class="ea-brand" href="{% url 'home' %}" aria-label="ExploreKabankalan home">
-                <span class="ea-brand-icon"><i class="bi bi-compass-fill" aria-hidden="true"></i></span>
-                <span>Explore<span class="ea-brand-accent">Anywhere</span></span>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header wrap">
+    <a class="brand" href="{% url 'home' %}" aria-label="ExploreKabankalan home"><span class="brand-icon" aria-hidden="true">✺</span><span>Explore<span class="teal">Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span></a>
+    <nav aria-label="Main navigation"><a href="#discover">Discover</a><a href="#hobbies">Interests</a><a href="#how-it-works">How it works</a></nav>
+    <div class="account-actions">{% if user.is_authenticated %}<a class="button quiet" href="{% url 'places:journey_dashboard' %}">My Journey ↗</a><a class="button primary" href="{% url 'places:saved_places' %}">Saved places</a>{% else %}<a class="button quiet" href="{% url 'login' %}">Log in</a><a class="button primary" href="{% url 'register' %}">Get started ↗</a>{% endif %}</div>
+</header>
+<main id="main">
+    <section class="hero wrap" aria-labelledby="hero-title">
+        <div class="hero-copy">
+            <span class="eyebrow pill"><span aria-hidden="true">⌖</span> YOUR NEXT ADVENTURE IS CLOSER THAN YOU THINK</span>
+            <h1 id="hero-title"><span class="teal">Discover</span> the heart<br>of Kabankalan</h1>
+            <p>Find places around Kabankalan that fit what you love to do. Explore local spots, save your favorites, and turn your discoveries into a trip of your own.</p>
+            <form class="search" action="{% url 'places:smart_search' %}" method="get" role="search"><span aria-hidden="true">⌕</span><input name="q" type="search" aria-label="Search Kabankalan places and activities" placeholder="Coffee shops, hiking spots, food trips…" required><button class="button primary" type="submit">Explore <span aria-hidden="true">↗</span></button></form>
+            <div class="suggestions"><span>TRY</span><a href="{% url 'places:smart_search' %}?q=coffee%20shops">Coffee shops ↗</a><a href="{% url 'places:smart_search' %}?q=hiking">Hiking ↗</a><a href="{% url 'places:smart_search' %}?q=food%20trips">Food trips ↗</a></div>
+            <div class="hero-interests" id="hobbies"><span class="tiny-label">YOUR INTERESTS. YOUR KIND OF PLACE.</span><div class="chips"><a href="{% url 'places:smart_search' %}?q=billiards">◉ Billiards ↗</a><a href="{% url 'places:smart_search' %}?q=basketball">◇ Basketball ↗</a><a href="{% url 'places:smart_search' %}?q=cafes">♧ Café hopping ↗</a><a href="{% url 'places:smart_search' %}?q=photography">▣ Photography ↗</a><a href="{% url 'places:smart_search' %}?q=gaming">✧ Gaming ↗</a><a href="{% url 'places:smart_search' %}?q=nature">♧ Nature & outdoors ↗</a></div></div>
+        </div>
+        <div class="hero-visual">
+            <a class="hero-photo" href="{% if hero_place %}{% url 'places:place_detail' hero_place.pk %}{% else %}{% url 'places:attraction_carousel' %}?browse=all{% endif %}">
+                {% if hero_place.cover_image %}<img src="{{ hero_place.cover_image.url }}" alt="{{ hero_place.title }}" fetchpriority="high">{% elif hero_place.cover_image_url %}<img src="{{ hero_place.cover_image_url }}" alt="{{ hero_place.title }}" fetchpriority="high">{% else %}<img src="{% static 'img/landing-background.webp' %}" alt="Explore Kabankalan" fetchpriority="high">{% endif %}
+                <span class="photo-location">⌖ KABANKALAN, NEGROS OCCIDENTAL</span>
+                <div class="photo-caption"><span class="location-icon" aria-hidden="true">⌖</span><div><small>YOUR NEXT LOCAL DISCOVERY</small><strong>{% if hero_place %}{{ hero_place.title }}{% else %}Find your kind of adventure{% endif %}</strong></div><span aria-hidden="true">↗</span></div>
             </a>
-            <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#eaMainNav"
-                    aria-controls="eaMainNav" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="bi bi-list" aria-hidden="true"></i>
-            </button>
-            <div class="collapse navbar-collapse" id="eaMainNav">
-                <div class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
-                    <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
-                    <a class="nav-link" href="{% url 'places:attraction_carousel' %}?browse=all">Explore Places</a>
-                    <a class="nav-link" href="#hobbies">Hobbies</a>
-                    <a class="nav-link" href="#how-it-works">How It Works</a>
-                    {% if user.is_authenticated %}
-                        <a class="nav-link" href="{% url 'places:saved_places' %}">Saved</a>
-                        <a class="nav-link" href="{% url 'places:journey_dashboard' %}">My Journey</a>
-                        <div class="dropdown">
-                            <button class="nav-link dropdown-toggle btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">More</button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{% url 'itineraries:list' %}">My Itineraries</a></li>
-                                <li><a class="dropdown-item" href="{% url 'places:my_reviews' %}">My Reviews</a></li>
-                                <li><a class="dropdown-item" href="{% url 'visits:list' %}">My Visits</a></li>
-                            </ul>
-                        </div>
-                        {% if user.is_staff %}
-                            <a class="ea-btn ea-btn-ghost ea-nav-btn" href="{% url 'admin:index' %}">Staff Dashboard</a>
-                        {% endif %}
-                        <form method="post" action="{% url 'logout' %}" class="ea-logout ms-lg-1">
-                            {% csrf_token %}
-                            <button class="ea-btn ea-btn-primary ea-nav-btn" type="submit">Logout</button>
-                        </form>
-                    {% else %}
-                        <a class="nav-link" href="{% url 'login' %}">Login</a>
-                        <a class="ea-btn ea-btn-primary ea-nav-btn ms-lg-1" href="{% url 'register' %}">Get Started <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
-                    {% endif %}
-                </div>
-            </div>
+            <div class="floating-note"><span class="note-icon" aria-hidden="true">✧</span><div><strong>One city. Endless possibilities.</strong><small>Your interests lead the way.</small></div></div>
+            <span class="visual-coordinate">10.00° N &nbsp; 122.82° E &nbsp; / &nbsp; EXPLORE LOCAL</span>
         </div>
-    </nav>
-
-    <main>
-        <section class="ea-hero" aria-labelledby="ea-hero-title">
-            <div class="ea-container ea-hero-inner">
-                <div>
-                    <span class="ea-hero-eyebrow"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i> MADE FOR KABANKALAN CITY</span>
-                    <h1 id="ea-hero-title">Your hobbies.<br>Your city.<br><span class="ea-highlight">Your next adventure.</span></h1>
-                    <p class="ea-hero-copy">Discover places around Kabankalan that fit what you love to do. Explore local spots, save your favorites, and turn your discoveries into a trip of your own.</p>
-                    <form class="ea-search" action="{% url 'places:smart_search' %}" method="get" role="search">
-                        <i class="bi bi-search" aria-hidden="true"></i>
-                        <input type="search" name="q" aria-label="Search Kabankalan places and activities" placeholder="Try 'coffee shops' or 'hiking spots'" required>
-                        <button class="ea-btn ea-btn-primary" type="submit">Find Places <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
-                    </form>
-                    <div class="ea-hero-popular">
-                        <span>Try searching:</span>
-                        <a href="{% url 'places:smart_search' %}?q=coffee%20shops">Coffee shops</a>
-                        <a href="{% url 'places:smart_search' %}?q=hiking">Hiking</a>
-                        <a href="{% url 'places:smart_search' %}?q=food%20trips">Food trips</a>
-                    </div>
-                    <div class="ea-hero-btns">
-                        <a class="ea-btn ea-btn-primary" href="{% url 'places:attraction_carousel' %}?browse=all"><i class="bi bi-compass" aria-hidden="true"></i> Explore Kabankalan</a>
-                        {% if user.is_authenticated %}
-                            <a class="ea-btn ea-btn-ghost" href="{% url 'itineraries:list' %}"><i class="bi bi-signpost-split" aria-hidden="true"></i> My Itineraries</a>
-                        {% else %}
-                            <a class="ea-btn ea-btn-ghost" href="#how-it-works"><i class="bi bi-play-circle" aria-hidden="true"></i> How It Works</a>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="ea-journey-preview" aria-label="ExploreKabankalan discovery and planning workflow">
-                    <span class="ea-preview-decor" aria-hidden="true"></span>
-                    <div class="ea-preview-heading">
-                        <div>
-                            <strong>Find your kind of adventure</strong>
-                            <small>One city. Your interests. Your itinerary.</small>
-                        </div>
-                        <span class="ea-preview-compass"><i class="bi bi-compass" aria-hidden="true"></i></span>
-                    </div>
-                    <div class="ea-preview-flow">
-                        <div class="ea-preview-step"><span class="ea-preview-step-icon"><i class="bi bi-stars" aria-hidden="true"></i></span><div><strong>Discover what you love</strong><small>Browse Kabankalan places by hobby or interest.</small></div></div>
-                        <div class="ea-preview-step"><span class="ea-preview-step-icon"><i class="bi bi-bookmark-heart" aria-hidden="true"></i></span><div><strong>Save places worth visiting</strong><small>Keep interesting spots in one place.</small></div></div>
-                        <div class="ea-preview-step"><span class="ea-preview-step-icon"><i class="bi bi-signpost-split" aria-hidden="true"></i></span><div><strong>Make your own itinerary</strong><small>Turn saved ideas into a personal trip plan.</small></div></div>
-                    </div>
-                    <div class="ea-preview-bottom">
-                        <div><strong>Ready to explore?</strong><span>Your next Kabankalan stop starts here.</span></div>
-                        <a href="{% url 'places:attraction_carousel' %}?browse=all">Browse places <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <div class="ea-benefit-bar" aria-label="ExploreKabankalan features">
-            <div class="ea-container ea-benefit-grid">
-                <div class="ea-benefit"><i class="bi bi-geo-alt" aria-hidden="true"></i><div><strong>Kabankalan-focused</strong><small>Explore your city</small></div></div>
-                <div class="ea-benefit"><i class="bi bi-heart" aria-hidden="true"></i><div><strong>Interest-led discovery</strong><small>Find what you enjoy</small></div></div>
-                <div class="ea-benefit"><i class="bi bi-map" aria-hidden="true"></i><div><strong>Place information</strong><small>Explore local locations</small></div></div>
-                <div class="ea-benefit"><i class="bi bi-calendar2-check" aria-hidden="true"></i><div><strong>Personal itineraries</strong><small>Plan your adventure</small></div></div>
-            </div>
+    </section>
+    <div class="feature-strip"><div class="wrap"><span>✦ &nbsp; DISCOVER LOCAL PLACES</span><span>✦ &nbsp; FOLLOW YOUR INTERESTS</span><span>✦ &nbsp; SAVE YOUR FAVORITES</span><span>✦ &nbsp; PLAN YOUR OWN ADVENTURE</span></div></div>
+    <section class="discover wrap" id="discover" aria-labelledby="discover-title">
+        <div class="section-heading"><div><span class="eyebrow">⌖ A LITTLE CLOSER. A LOT TO DISCOVER.</span><h2 id="discover-title">Places worth the detour</h2><p>Local favorites. New discoveries. Find your next stop in Kabankalan<br class="desktop-break"> and make it part of your own adventure.</p></div><a class="button quiet" href="{% url 'places:attraction_carousel' %}?browse=all">All places ↗</a></div>
+        <nav class="filters chips" aria-label="Filter places by category"><a href="{% url 'home' %}#discover" {% if not selected_category %}class="selected" aria-current="true"{% endif %}>✧ All places</a>{% for category in categories %}<a href="?category={{ category.slug|urlencode }}#discover" {% if selected_category == category.slug %}class="selected" aria-current="true"{% endif %}>{{ category.name }}</a>{% endfor %}</nav>
+        <p class="results-label">{% if featured_places %}A few places to get you started{% else %}Your next discovery starts here{% endif %}</p>
+        <div class="places-grid">
+        {% for place in featured_places %}
+            <article class="place-card">
+                <a class="card-image" href="{% url 'places:place_detail' place.pk %}" aria-label="Explore {{ place.title }}">{% if place.cover_image %}<img src="{{ place.cover_image.url }}" alt="{{ place.title }}" loading="lazy">{% elif place.cover_image_url %}<img src="{{ place.cover_image_url }}" alt="{{ place.title }}" loading="lazy">{% else %}<div class="image-placeholder"><span aria-hidden="true">⌖</span><small>KABANKALAN CITY</small></div>{% endif %}{% if place.category %}<span class="category-badge">{{ place.category.name }}</span>{% endif %}{% if place.review_count %}<span class="rating">★ {{ place.avg_rating|floatformat:1 }} <span>({{ place.review_count }})</span></span>{% endif %}</a>
+                <div class="card-body"><h3><a href="{% url 'places:place_detail' place.pk %}">{{ place.title }}</a></h3><p class="address">⌖ {% if place.barangay %}{{ place.barangay }}{% else %}{{ place.address|default:'Kabankalan City' }}{% endif %}</p><p class="description">{{ place.description|default:'Discover this local spot and make it part of your Kabankalan adventure.'|truncatewords:20 }}</p><div class="place-tags">{% for hobby in place.hobbies.all|slice:':3' %}<span>{{ hobby.name }}</span>{% endfor %}</div><div class="card-bottom"><a class="save-link" href="{% url 'places:place_detail' place.pk %}" aria-label="View {{ place.title }} to save it">♡</a><a class="button quiet" href="{% url 'places:place_detail' place.pk %}">View details ↗</a></div></div>
+            </article>
+        {% empty %}
+            <div class="empty-state"><span aria-hidden="true">✧</span><h3>{% if selected_category %}No places in this category yet.{% else %}Find your kind of local adventure.{% endif %}</h3><p>Try searching by interest, or browse Kabankalan’s places.</p><a class="button primary" href="{% url 'places:attraction_carousel' %}?browse=all">Explore Kabankalan ↗</a></div>
+        {% endfor %}
         </div>
-
-        <section class="ea-section" id="hobbies" aria-labelledby="ea-hobbies-title">
-            <div class="ea-container">
-                <div class="ea-section-head">
-                    <div>
-                        <span class="ea-kicker"><span class="ea-kicker-dot"></span> DISCOVER BY INTEREST</span>
-                        <h2 class="ea-heading" id="ea-hobbies-title">What do you love doing?</h2>
-                        <p class="ea-lead">Whatever you're into, start with a hobby and discover places in Kabankalan that could be your next favorite spot.</p>
-                    </div>
-                    <a class="ea-arrow-link" href="{% url 'places:attraction_carousel' %}?browse=all">Browse all places <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
-                </div>
-                <div class="ea-hobby-grid">
-                    <a class="ea-hobby-card" href="{% url 'places:smart_search' %}?q=billiards"><span class="ea-hobby-icon"><i class="bi bi-bullseye" aria-hidden="true"></i></span><h3>Billiards</h3><p>Discover pool halls and recreation spots.</p><span class="ea-card-arrow">Explore billiards <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></a>
-                    <a class="ea-hobby-card" href="{% url 'places:smart_search' %}?q=basketball"><span class="ea-hobby-icon"><i class="bi bi-dribbble" aria-hidden="true"></i></span><h3>Basketball</h3><p>Look for courts, games, and sports venues.</p><span class="ea-card-arrow">Explore sports <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></a>
-                    <a class="ea-hobby-card" href="{% url 'places:smart_search' %}?q=cafes"><span class="ea-hobby-icon"><i class="bi bi-cup-hot" aria-hidden="true"></i></span><h3>Café Hopping</h3><p>Find cafés and places to unwind.</p><span class="ea-card-arrow">Explore cafés <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></a>
-                    <a class="ea-hobby-card" href="{% url 'places:smart_search' %}?q=hiking"><span class="ea-hobby-icon"><i class="bi bi-signpost" aria-hidden="true"></i></span><h3>Hiking</h3><p>Search for trails, hills, and outdoor escapes.</p><span class="ea-card-arrow">Explore trails <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></a>
-                    <a class="ea-hobby-card" href="{% url 'places:smart_search' %}?q=gaming"><span class="ea-hobby-icon"><i class="bi bi-controller" aria-hidden="true"></i></span><h3>Gaming</h3><p>Look for gaming and entertainment spots.</p><span class="ea-card-arrow">Explore gaming <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></a>
-                    <a class="ea-hobby-card" href="{% url 'places:smart_search' %}?q=photography"><span class="ea-hobby-icon"><i class="bi bi-camera" aria-hidden="true"></i></span><h3>Photography</h3><p>Discover scenic locations for your next shot.</p><span class="ea-card-arrow">Explore spots <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></a>
-                    <a class="ea-hobby-card" href="{% url 'places:smart_search' %}?q=restaurants"><span class="ea-hobby-icon"><i class="bi bi-egg-fried" aria-hidden="true"></i></span><h3>Food Trips</h3><p>Search restaurants and local food stops.</p><span class="ea-card-arrow">Explore food <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></a>
-                    <a class="ea-hobby-card" href="{% url 'places:smart_search' %}?q=nature"><span class="ea-hobby-icon"><i class="bi bi-tree" aria-hidden="true"></i></span><h3>Nature & Outdoors</h3><p>Look for waterfalls, gardens, and green spaces.</p><span class="ea-card-arrow">Explore nature <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></a>
-                </div>
-            </div>
-        </section>
-
-        <section class="ea-section ea-section-muted ea-workflow-section" id="how-it-works" aria-labelledby="ea-workflow-title">
-            <div class="ea-container">
-                <div class="ea-workflow-heading">
-                    <span class="ea-kicker"><span class="ea-kicker-dot"></span> HOW EXPLOREANYWHERE WORKS</span>
-                    <h2 class="ea-heading" id="ea-workflow-title">From an interest to an itinerary.</h2>
-                    <p class="ea-lead">Just a few steps from finding something you like to planning your day around it.</p>
-                </div>
-                <div class="ea-workflow-grid">
-                    <div class="ea-workflow-card"><span class="ea-workflow-number">STEP 01</span><span class="ea-workflow-icon"><i class="bi bi-search" aria-hidden="true"></i></span><h3>Search your interests</h3><p>Choose a hobby or describe the kind of place you want to visit.</p></div>
-                    <div class="ea-workflow-card"><span class="ea-workflow-number">STEP 02</span><span class="ea-workflow-icon"><i class="bi bi-geo-alt" aria-hidden="true"></i></span><h3>Discover places</h3><p>Browse matching Kabankalan spots and check available details.</p></div>
-                    <div class="ea-workflow-card"><span class="ea-workflow-number">STEP 03</span><span class="ea-workflow-icon"><i class="bi bi-bookmark-heart" aria-hidden="true"></i></span><h3>Save favorites</h3><p>Keep places you want to explore in your personal saved list.</p></div>
-                    <div class="ea-workflow-card"><span class="ea-workflow-number">STEP 04</span><span class="ea-workflow-icon"><i class="bi bi-signpost-split" aria-hidden="true"></i></span><h3>Plan your itinerary</h3><p>Organize your chosen stops into an adventure that fits your time.</p></div>
-                </div>
-            </div>
-        </section>
-
-        <section class="ea-cta-wrap" aria-labelledby="ea-cta-title">
-            <div class="ea-container">
-                <div class="ea-cta">
-                    <div class="ea-cta-content">
-                        <span class="ea-kicker" style="color:#9fcbff"><span class="ea-kicker-dot"></span> YOUR CITY IS WAITING</span>
-                        <h2 id="ea-cta-title">Ready to explore Kabankalan your way?</h2>
-                        <p>Start with a place, follow your interests, and make more of your time around the city.</p>
-                    </div>
-                    {% if user.is_authenticated %}
-                        <a class="ea-btn ea-btn-white" href="{% url 'itineraries:list' %}">My Itineraries <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
-                    {% else %}
-                        <a class="ea-btn ea-btn-white" href="{% url 'places:attraction_carousel' %}?browse=all">Start Exploring <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
-                    {% endif %}
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="ea-footer">
-        <div class="ea-container ea-footer-grid">
-            <div>
-                <a href="{% url 'home' %}" class="ea-brand"><span class="ea-brand-icon"><i class="bi bi-compass-fill" aria-hidden="true"></i></span><span>Explore<span class="ea-brand-accent">Anywhere</span></span></a>
-                <p>© {% now "Y" %} ExploreKabankalan. Discover Kabankalan your way.</p>
-            </div>
-            <div class="ea-footer-links">
-                <a href="{% url 'places:attraction_carousel' %}?browse=all">Explore Places</a>
-                <a href="#hobbies">Hobbies</a>
-                <a href="#how-it-works">How It Works</a>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'places:saved_places' %}">Saved Places</a>
-                {% endif %}
-            </div>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+        <div class="browse-more"><a class="button quiet" href="{% url 'places:attraction_carousel' %}?browse=all">Keep exploring Kabankalan <span aria-hidden="true">↗</span></a></div>
+    </section>
+    <section class="workflow wrap" id="how-it-works" aria-labelledby="workflow-title"><span class="eyebrow">A LITTLE INSPIRATION. A PLAN OF YOUR OWN.</span><h2 id="workflow-title">From an interest to an itinerary.</h2><div class="steps"><div><span>01 / DISCOVER</span><h3>Follow your interests</h3><p>Choose a hobby or describe the kind of place you want to visit.</p></div><div><span>02 / SAVE</span><h3>Keep your favorites close</h3><p>Save the places you want to explore in your personal list.</p></div><div><span>03 / GO</span><h3>Make it your adventure</h3><p>Organize your chosen stops into an itinerary that fits your time.</p></div></div><a class="button primary" href="{% url 'itineraries:list' %}">Plan your itinerary ↗</a></section>
+</main>
+<footer class="wrap"><a class="brand" href="{% url 'home' %}">Explore<span class="teal">Kabankalan</span></a><p>© {% now 'Y' %} ExploreKabankalan. Discover your city, your way.</p><a href="#main">Back to top ↑</a></footer>
 </body>
 </html>
