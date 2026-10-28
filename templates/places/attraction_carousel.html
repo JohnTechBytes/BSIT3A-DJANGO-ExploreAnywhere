@@ -15,64 +15,6 @@
 
 <style>
   
-.ea-match-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: #eaf3ff;
-    color: #155bc7;
-    font-size: 12px;
-    font-weight: 800;
-    white-space: nowrap;
-    position: relative;
-    cursor: help;
-}
-
-.ea-match-badge::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #102b53;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 600;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-    margin-bottom: 8px;
-    z-index: 10;
-}
-
-.ea-match-badge::before {
-    content: '';
-    position: absolute;
-    bottom: calc(100% + 2px);
-    left: 50%;
-    transform: translateX(-50%);
-    border: 4px solid transparent;
-    border-top-color: #102b53;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-}
-
-.ea-match-badge:hover::after,
-.ea-match-badge:focus::after {
-    opacity: 1;
-}
-
-.ea-match-badge:hover::before,
-.ea-match-badge:focus::before {
-    opacity: 1;
-}
-
   
 /* ExploreAnywhere enhanced map */
 .ea-map-layout {
@@ -551,12 +493,6 @@
 }
 .ea-card-body { display: flex; flex-direction: column; flex: 1; padding: 20px; min-width: 0; }
 .ea-card-image { height: 180px; }
-.ea-card .ea-match-badge {
-  align-self: flex-start;
-  margin: 0 0 12px;
-  white-space: normal;
-  line-height: 1.35;
-}
 .ea-card-description { min-height: 0; }
 .ea-card-footer {
   margin-top: auto;
@@ -581,9 +517,6 @@
   text-align: center; font-size: 12px; font-weight: 700;
 }
 .ea-photo-empty-icon { font-size: 32px; line-height: 1; }
-.ea-match-explainer {
-  margin: 0 0 14px; color: #526781; font-size: 12px; line-height: 1.5;
-}
 .ea-map-details .ea-detail-button + .ea-detail-button {
   color: #075ee4 !important; background: #eef5ff;
   border: 1px solid #cde1ff;
@@ -648,8 +581,6 @@
 .ea-filter-reset:focus-visible {outline:3px solid #82b5ff;outline-offset:2px;}
 .ea-search-relevance {font-size:12px;font-weight:750;line-height:1.4;
   margin:0 0 10px;color:#0c704d;}
-.ea-match-badge--unscored {background:#f1f5f9;color:#334155;white-space:normal;}
-.ea-score-guidance {margin:0 0 14px;color:#546882;font-size:13px;line-height:1.6;}
 .ea-carousel--compact {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));
   align-items:stretch;overflow:visible;scroll-snap-type:none;scroll-behavior:auto;gap:18px;}
 .ea-carousel--compact .ea-card {flex:none;width:100%;max-width:none;min-width:0;scroll-snap-align:unset;}
@@ -707,18 +638,6 @@
     display: none;
 }
 
-.ea-match-reason {
-    display: none;
-    margin: -5px 0 12px;
-    color: #475e7b;
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-.ea-card:hover .ea-match-reason,
-.ea-card:focus-within .ea-match-reason {
-    display: block;
-}
 </style>
 <link rel="stylesheet" href="{% static 'css/browse.css' %}">
 {% endblock %}
@@ -945,8 +864,6 @@
         </div>
       </div>
 
-<p class="ea-score-guidance" id="ea-score-guidance">Finding a destination with search or filters does not mean it matches your personal hobbies. Personalized relevance is calculated using selected hobbies and available ratings, normalized over available signals. A lower percentage is not a destination-quality rating. No GPS distance is scored. Gray map markers mean there is not enough personalization information; colored map markers use the displayed score.</p>
-
 <div id="ea-list-panel">
 
 <div
@@ -963,11 +880,6 @@
           <article class="ea-card"
           
           data-detail-url="{% url 'places:place_detail' place.pk %}"
-          data-match="{{ place.match_percent|default_if_none:'0' }}"
-          data-score-available="{% if selected_hobbies or place.avg_rating %}true{% else %}false{% endif %}"
-          data-rating-available="{% if place.avg_rating %}true{% else %}false{% endif %}"
-          data-hobby-match="{{ place.has_hobby_match|yesno:'true,false' }}"
-          data-matched-hobbies="{{ place.matched_hobbies|join:', ' }}"
         {% if place.latitude != None and place.longitude != None %}
         data-lat="{{ place.latitude }}"
         data-lng="{{ place.longitude }}"
@@ -1034,24 +946,6 @@
               {% if search_query %}
                 <p class="ea-search-relevance">Search result for "{{ search_query }}"</p>
               {% endif %}
-              {% if selected_hobbies or place.avg_rating %}
-                <span class="ea-match-badge" data-tooltip="Based on your selected hobbies{% if place.avg_rating %} and visitor ratings{% endif %}">
-                  ✦ {{ place.match_percent }}% match
-                </span>
-                {% if place.has_hobby_match %}
-                  <p class="ea-match-reason">↳ Matches: {{ place.matched_hobbies|join:", " }}</p>
-                {% elif place.avg_rating %}
-                  <p class="ea-match-reason">↳ Based on visitor ratings</p>
-                {% else %}
-                  <p class="ea-match-reason">↳ Score calculated from available signals</p>
-                {% endif %}
-              {% else %}
-                <span class="ea-match-badge ea-match-badge--unscored" data-tooltip="Select a hobby above to see personalized scores">
-                  ○ Not scored
-                </span>
-                <p class="ea-match-reason">↳ Choose hobbies to personalize</p>
-              {% endif %}
-
               <p class="ea-card-location">
                 <svg class="ea-pin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg> {{ selected_city.name }}
               </p>
@@ -1540,11 +1434,6 @@
 
         const attraction = {
             card,
-            matchPercent: Number(card.dataset.match || 0),
-            scoreAvailable: card.dataset.scoreAvailable === "true",
-            ratingAvailable: card.dataset.ratingAvailable === "true",
-            hobbyMatch: card.dataset.hobbyMatch === "true",
-            matchedHobbies: card.dataset.matchedHobbies || "",
             lat,
             lng,
             title: card.querySelector("h3")
@@ -1576,11 +1465,6 @@
         const description = document.createElement("p");
         description.textContent = attraction.description;
 
-        const relevance = document.createElement("p");
-        relevance.textContent = attraction.scoreAvailable
-            ? attraction.matchPercent + "% personalized relevance (not a quality rating)"
-            : "Personalized relevance not scored yet";
-
         const coordinates = document.createElement("p");
         coordinates.textContent =
             "Coordinates: " +
@@ -1609,7 +1493,6 @@
             category,
             title,
             description,
-            relevance,
             coordinates,
             directions,
             detailLink
@@ -1699,40 +1582,9 @@
 
         const coordinates = [];
 
-        // ea-hobby-match-legend-v1: color thresholds match markerColor below.
-
-        const hobbyLegend = L.control({ position: "bottomleft" });
-
-        hobbyLegend.onAdd = function () {
-
-          const el = L.DomUtil.create("div", "ea-hobby-match-legend");
-
-          el.setAttribute("role", "note");
-
-          el.setAttribute("aria-label", "Recommendation match marker legend");
-
-          el.style.cssText = "background:rgba(255,255,255,.96);padding:9px 11px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.14);font:12px/1.6 Arial,sans-serif;color:#17304f;max-width:160px;";
-
-          el.innerHTML = '<strong>Personalized relevance</strong><div><span style="color:#16a34a">●</span> 80–100% Strong</div><div><span style="color:#f59e0b">●</span> 50–79% Moderate</div><div><span style="color:#dc2626">●</span> 0–49% Limited</div><div><span style="color:#64748b">●</span> Not scored</div><small>Scores are not quality ratings</small>';
-
-          L.DomEvent.disableClickPropagation(el);
-
-          return el;
-
-        };
-
-        hobbyLegend.addTo(map);
 
 
         attractions.forEach((attraction, index) => {
-        
-const score = Number(attraction.matchPercent ?? 0);
-
-const markerColor = !attraction.scoreAvailable ? "#64748b" :
-    score >= 80 ? "#16a34a" :
-    score >= 50 ? "#f59e0b" :
-                  "#dc2626";
-
 
             const marker = L.circleMarker(
     [attraction.lat, attraction.lng],
@@ -1740,7 +1592,7 @@ const markerColor = !attraction.scoreAvailable ? "#64748b" :
         radius: 9,
         color: "#ffffff",
         weight: 3,
-        fillColor: markerColor,
+        fillColor: "#21d9c6",
         fillOpacity: 1
     }
 ).addTo(map);
@@ -1754,24 +1606,7 @@ const markerColor = !attraction.scoreAvailable ? "#64748b" :
             const popupCategory = document.createElement("p");
             popupCategory.textContent = attraction.category;
 
-            
-const popupMatch = document.createElement("p");
-popupMatch.style.fontWeight = "700";
-popupMatch.style.color = markerColor;
-popupMatch.textContent = attraction.scoreAvailable
-    ? attraction.matchPercent + "% Personalized Relevance"
-    : "Not scored yet";
-
-const popupReason = document.createElement("p");
-                popupReason.textContent = !attraction.scoreAvailable
-                    ? "Choose hobbies to personalize results; there are no visitor rating signals yet."
-                    : attraction.hobbyMatch
-                        ? "Matching hobbies: " + attraction.matchedHobbies
-                        : attraction.ratingAvailable
-                            ? "No selected hobby match; available visitor ratings contribute. Not a quality rating."
-                            : "No selected hobby match or visitor ratings. Not a quality rating.";
-
-                popup.append(popupTitle, popupCategory, popupMatch, popupReason);
+            popup.append(popupTitle, popupCategory);
 
 
             marker.bindPopup(popup);

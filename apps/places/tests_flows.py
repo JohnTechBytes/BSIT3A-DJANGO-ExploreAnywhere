@@ -325,6 +325,42 @@ class NearbyPageTests(FlowFixture):
         self.assertContains(response, "ea6-card-map-hint")
         self.assertContains(response, 'aria-label="Fly to Published Falls on the map"')
 
+class ScoringDisplayTests(FlowFixture):
+    """Percentages and "not scored" labels are no longer shown to visitors."""
+
+    def setUp(self):
+        self.login()
+        self.url = reverse("places:attraction_carousel")
+
+    def test_cards_and_map_show_no_match_percentage(self):
+        # A hobby is selected, so the old markup would have shown a score.
+        response = self.client.get(self.url, {"browse": "all", "hobby": "hiking"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Published Falls")
+        for fragment in ("% match", "Not scored", "Personalized Relevance",
+                         "personalized relevance", "ea-match-badge"):
+            with self.subTest(fragment=fragment):
+                self.assertNotContains(response, fragment)
+
+    def test_scoring_explainer_paragraph_is_gone(self):
+        response = self.client.get(self.url, {"browse": "all"})
+        self.assertNotContains(response, "ea-score-guidance")
+        self.assertNotContains(response, "normalized over available signals")
+        self.assertNotContains(response, "hobby-match-legend")
+
+    def test_map_markers_use_one_neutral_colour(self):
+        response = self.client.get(self.url, {"browse": "all"})
+        self.assertNotContains(response, "#16a34a")
+        self.assertNotContains(response, "#dc2626")
+        self.assertContains(response, "#21d9c6")
+
+    def test_recommended_sorting_still_works_without_the_badge(self):
+        response = self.client.get(self.url, {"browse": "all", "sort": "recommended"})
+        self.assertEqual(response.status_code, 200)
+        titles = [place.title for place in response.context["attractions"]]
+        self.assertIn("Published Falls", titles)
+        self.assertIn("Published Cafe", titles)
+
 
 class SavedPlacesFlowTests(FlowFixture):
     def setUp(self):
