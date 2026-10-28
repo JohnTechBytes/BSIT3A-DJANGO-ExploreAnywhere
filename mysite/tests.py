@@ -1,3 +1,6 @@
+from copy import copy
+
+from django.template.context import Context, RequestContext
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.contrib.auth.models import AnonymousUser
 
@@ -119,6 +122,66 @@ class HomepageTests(TestCase):
             self.place.title = title
             self.assertEqual(sample_image_for(self.place),
                              f'img/samples/{expected}.jpg' if expected else '')
+
+
+class AdminContextCopyTests(TestCase):
+    """Regression guard for the "/admin/places/place/" AttributeError.
+
+    Django < 5.1 copies a context with ``copy(super())``, which returns the
+    ``super`` object on Python 3.13+ and then fails on ``duplicate.dicts``.
+    Every inclusion tag copies the context, so the Destinations changelist was
+    the first page to break.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        City.objects.create(pk=2, name="Kabankalan", slug="kabankalan")
+        category = Category.objects.create(name="Nature", slug="nature")
+        Place.objects.create(
+            city=City.objects.get(pk=2), title="Amyan Hill", address="Kabankalan",
+            category=category, is_verified=True, is_active=True,
+        )
+        from django.contrib.auth import get_user_model
+
+        cls.staff = get_user_model().objects.create_superuser(
+            username="admin_probe", email="admin@example.test", password="probe-pass-123",
+        )
+
+    def test_copying_a_context_keeps_its_dictionaries(self):
+        context = Context({"a": 1})
+        clone = copy(context)
+        self.assertIsInstance(clone, Context)
+        self.assertEqual(clone.dicts, context.dicts)
+        self.assertIsNot(clone.dicts, context.dicts)
+        self.assertEqual(clone["a"], 1)
+
+    def test_copying_a_request_context_stays_a_request_context(self):
+        request = RequestFactory().get("/admin/places/place/")
+        context = RequestContext(request, {"a": 1})
+        clone = copy(context)
+        self.assertIsInstance(clone, RequestContext)
+        self.assertEqual(clone["a"], 1)
+
+    def test_the_installed_django_no_longer_has_the_bug(self):
+        from . import compat
+
+        self.assertFalse(
+            compat._context_copy_is_broken(),
+            "copying a template context is broken again: upgrade Django "
+            "(see mysite/compat.py).",
+        )
+
+    def test_admin_pages_render_for_a_staff_account(self):
+        self.assertTrue(self.client.login(username="admin_probe", password="probe-pass-123"))
+        for url in ("/admin/", "/admin/places/place/", "/admin/places/place/1/change/"):
+            with self.subTest(url=url):
+                self.assertEqual(self.client.get(url).status_code, 200)
+
+    def test_destinations_changelist_lists_published_places(self):
+        self.client.login(username="admin_probe", password="probe-pass-123")
+        response = self.client.get("/admin/places/place/")
+        self.assertContains(response, "Destination management")
+        self.assertContains(response, "Amyan Hill")
 
 
 class ErrorPageTests(SimpleTestCase):
