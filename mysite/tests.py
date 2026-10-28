@@ -59,3 +59,38 @@ class HomepageTests(TestCase):
         response = self.render_home()
         self.assertNotContains(response, '<script>alert("test")</script>')
         self.assertContains(response, "&lt;script&gt;")
+
+    def test_published_osm_records_are_prioritized_and_attributed(self):
+        osm = Place.objects.create(
+            city=self.city, title="Published OSM discovery", slug="osm-node-12345",
+            address="Kabankalan", is_verified=True, is_active=True,
+        )
+        response = self.render_home()
+        self.assertContains(response, osm.title)
+        self.assertContains(response, "https://www.openstreetmap.org/node/12345")
+        self.assertContains(response, "OpenStreetMap contributors")
+        self.assertLess(response.content.index(osm.title.encode()),
+                        response.content.index(self.place.title.encode()))
+
+    def test_unpublished_osm_record_is_not_exposed(self):
+        Place.objects.create(city=self.city, title="Private OSM record",
+                             slug="osm-way-123", address="Local", is_verified=False)
+        self.assertNotContains(self.render_home(), "Private OSM record")
+        self.assertNotContains(self.render_home(), "openstreetmap.org/way/123")
+
+    def test_invalid_osm_slug_never_becomes_source_link(self):
+        self.place.slug = 'osm-node-123/invalid'
+        self.place.save()
+        self.assertNotContains(self.render_home(), 'openstreetmap.org/node/123')
+
+    def test_photographed_osm_record_is_featured_first(self):
+        Place.objects.create(city=self.city, title="OSM without photo", slug="osm-node-1",
+                             address="Local", is_verified=True, avg_rating=5)
+        photo = Place.objects.create(
+            city=self.city, title="OSM with photo", slug="osm-way-2", address="Local",
+            is_verified=True, cover_image_url="https://example.com/place.jpg",
+        )
+        response = self.render_home()
+        self.assertContains(response, photo.cover_image_url)
+        self.assertLess(response.content.index(b'OSM with photo'),
+                        response.content.index(b'OSM without photo'))

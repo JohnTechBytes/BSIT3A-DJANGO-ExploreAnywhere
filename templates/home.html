@@ -8,6 +8,7 @@
     <meta name="theme-color" content="#080d14">
     <title>ExploreKabankalan | Discover your next adventure</title>
     <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+    <script src="{% static 'js/landing.js' %}" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -27,6 +28,7 @@
             <div class="hero-interests" id="hobbies"><span class="tiny-label">YOUR INTERESTS. YOUR KIND OF PLACE.</span><div class="chips"><a href="{% url 'places:smart_search' %}?q=billiards">◉ Billiards ↗</a><a href="{% url 'places:smart_search' %}?q=basketball">◇ Basketball ↗</a><a href="{% url 'places:smart_search' %}?q=cafes">♧ Café hopping ↗</a><a href="{% url 'places:smart_search' %}?q=photography">▣ Photography ↗</a><a href="{% url 'places:smart_search' %}?q=gaming">✧ Gaming ↗</a><a href="{% url 'places:smart_search' %}?q=nature">♧ Nature & outdoors ↗</a></div></div>
         </div>
         <div class="hero-visual">
+            <span class="hero-orbit" aria-hidden="true"></span>
             <a class="hero-photo" href="{% if hero_place %}{% url 'places:place_detail' hero_place.pk %}{% else %}{% url 'places:attraction_carousel' %}?browse=all{% endif %}">
                 {% if hero_place.cover_image %}<img src="{{ hero_place.cover_image.url }}" alt="{{ hero_place.title }}" fetchpriority="high">{% elif hero_place.cover_image_url %}<img src="{{ hero_place.cover_image_url }}" alt="{{ hero_place.title }}" fetchpriority="high">{% else %}<img src="{% static 'img/landing-background.webp' %}" alt="Explore Kabankalan" fetchpriority="high">{% endif %}
                 <span class="photo-location">⌖ KABANKALAN, NEGROS OCCIDENTAL</span>
@@ -36,21 +38,27 @@
             <span class="visual-coordinate">10.00° N &nbsp; 122.82° E &nbsp; / &nbsp; EXPLORE LOCAL</span>
         </div>
     </section>
+    <section class="discovery-stats wrap" aria-label="Published local discoveries">
+        <div><strong>{{ published_count }}</strong><span>published local places</span></div>
+        <div><strong>{{ osm_count }}</strong><span>OpenStreetMap discoveries</span></div>
+        <p><span class="live-dot" aria-hidden="true"></span> Real places. Local stories. Your next adventure.</p>
+    </section>
     <div class="feature-strip"><div class="wrap"><span>✦ &nbsp; DISCOVER LOCAL PLACES</span><span>✦ &nbsp; FOLLOW YOUR INTERESTS</span><span>✦ &nbsp; SAVE YOUR FAVORITES</span><span>✦ &nbsp; PLAN YOUR OWN ADVENTURE</span></div></div>
     <section class="discover wrap" id="discover" aria-labelledby="discover-title">
         <div class="section-heading"><div><span class="eyebrow">⌖ A LITTLE CLOSER. A LOT TO DISCOVER.</span><h2 id="discover-title">Places worth the detour</h2><p>Local favorites. New discoveries. Find your next stop in Kabankalan<br class="desktop-break"> and make it part of your own adventure.</p></div><a class="button quiet" href="{% url 'places:attraction_carousel' %}?browse=all">All places ↗</a></div>
         <nav class="filters chips" aria-label="Filter places by category"><a href="{% url 'home' %}#discover" {% if not selected_category %}class="selected" aria-current="true"{% endif %}>✧ All places</a>{% for category in categories %}<a href="?category={{ category.slug|urlencode }}#discover" {% if selected_category == category.slug %}class="selected" aria-current="true"{% endif %}>{{ category.name }}</a>{% endfor %}</nav>
-        <p class="results-label">{% if featured_places %}A few places to get you started{% else %}Your next discovery starts here{% endif %}</p>
+        <p class="results-label">{% if featured_places %}Handpicked from your published local records · OpenStreetMap discoveries first{% else %}Your next discovery starts here{% endif %}</p>
         <div class="places-grid">
         {% for place in featured_places %}
             <article class="place-card">
                 <a class="card-image" href="{% url 'places:place_detail' place.pk %}" aria-label="Explore {{ place.title }}">{% if place.cover_image %}<img src="{{ place.cover_image.url }}" alt="{{ place.title }}" loading="lazy">{% elif place.cover_image_url %}<img src="{{ place.cover_image_url }}" alt="{{ place.title }}" loading="lazy">{% else %}<div class="image-placeholder"><span aria-hidden="true">⌖</span><small>KABANKALAN CITY</small></div>{% endif %}{% if place.category %}<span class="category-badge">{{ place.category.name }}</span>{% endif %}{% if place.review_count %}<span class="rating">★ {{ place.avg_rating|floatformat:1 }} <span>({{ place.review_count }})</span></span>{% endif %}</a>
-                <div class="card-body"><h3><a href="{% url 'places:place_detail' place.pk %}">{{ place.title }}</a></h3><p class="address">⌖ {% if place.barangay %}{{ place.barangay }}{% else %}{{ place.address|default:'Kabankalan City' }}{% endif %}</p><p class="description">{{ place.description|default:'Discover this local spot and make it part of your Kabankalan adventure.'|truncatewords:20 }}</p><div class="place-tags">{% for hobby in place.hobbies.all|slice:':3' %}<span>{{ hobby.name }}</span>{% endfor %}</div><div class="card-bottom"><a class="save-link" href="{% url 'places:place_detail' place.pk %}" aria-label="View {{ place.title }} to save it">♡</a><a class="button quiet" href="{% url 'places:place_detail' place.pk %}">View details ↗</a></div></div>
+                <div class="card-body"><h3><a href="{% url 'places:place_detail' place.pk %}">{{ place.title }}</a></h3><p class="address">⌖ {% if place.barangay %}{{ place.barangay }}{% else %}{{ place.address|default:'Kabankalan City' }}{% endif %}</p><p class="description">{{ place.description|default:'Discover this local spot and make it part of your Kabankalan adventure.'|truncatewords:20 }}</p><div class="place-tags">{% for hobby in place.hobbies.all|slice:':3' %}<span>{{ hobby.name }}</span>{% endfor %}</div>{% if place.osm_source_url %}<a class="osm-source" href="{{ place.osm_source_url }}" target="_blank" rel="noopener noreferrer">⌖ OpenStreetMap record ↗</a>{% endif %}<div class="card-bottom"><a class="save-link" href="{% url 'places:place_detail' place.pk %}" aria-label="View {{ place.title }} to save it">♡</a><a class="button quiet" href="{% url 'places:place_detail' place.pk %}">View details ↗</a></div></div>
             </article>
         {% empty %}
             <div class="empty-state"><span aria-hidden="true">✧</span><h3>{% if selected_category %}No places in this category yet.{% else %}Find your kind of local adventure.{% endif %}</h3><p>Try searching by interest, or browse Kabankalan’s places.</p><a class="button primary" href="{% url 'places:attraction_carousel' %}?browse=all">Explore Kabankalan ↗</a></div>
         {% endfor %}
         </div>
+        {% if osm_count %}<p class="map-attribution">Map records © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>. Only active, verified places are shown.</p>{% endif %}
         <div class="browse-more"><a class="button quiet" href="{% url 'places:attraction_carousel' %}?browse=all">Keep exploring Kabankalan <span aria-hidden="true">↗</span></a></div>
     </section>
     <section class="workflow wrap" id="how-it-works" aria-labelledby="workflow-title"><span class="eyebrow">A LITTLE INSPIRATION. A PLAN OF YOUR OWN.</span><h2 id="workflow-title">From an interest to an itinerary.</h2><div class="steps"><div><span>01 / DISCOVER</span><h3>Follow your interests</h3><p>Choose a hobby or describe the kind of place you want to visit.</p></div><div><span>02 / SAVE</span><h3>Keep your favorites close</h3><p>Save the places you want to explore in your personal list.</p></div><div><span>03 / GO</span><h3>Make it your adventure</h3><p>Organize your chosen stops into an itinerary that fits your time.</p></div></div><a class="button primary" href="{% url 'itineraries:list' %}">Plan your itinerary ↗</a></section>

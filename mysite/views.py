@@ -1,3 +1,6 @@
+import re
+
+from django.db.models import Case, IntegerField, Q, Value, When
 from django.shortcuts import render
 
 from apps.cities.locking import LOCKED_CITY_PK
@@ -6,18 +9,48 @@ from apps.places.models import Place
 
 
 def home(request):
-    """Show real, published Kabankalan content on the public landing page."""
-    places = Place.objects.filter(
+    """Feature published local records, prioritizing the existing OSM imports."""
+    published = Place.objects.filter(
         city_id=LOCKED_CITY_PK, is_active=True, is_verified=True,
-    ).select_related("category").prefetch_related("hobbies")
-    categories = Category.objects.filter(places__in=places).distinct().order_by("name")
+    )
+    categories = Category.objects.filter(places__in=published).distinct().order_by("name")
     selected_category = request.GET.get("category", "")
+    places = published
     if selected_category:
         places = places.filter(category__slug=selected_category)
-    featured_places = list(places.order_by("-avg_rating", "-review_count", "title")[:6])
+    places = places.annotate(
+        osm_priority=Case(
+            When(slug__startswith="osm-", then=Value(1)),
+            default=Value(0), output_field=IntegerField(),
+        ),
+        photo_priority=Case(
+            When(
+                (Q(cover_image__isnull=False) & ~Q(cover_image=""))
+                | (Q(cover_image_url__isnull=False) & ~Q(cover_image_url="")),
+                then=Value(1),
+            ),
+            default=Value(0), output_field=IntegerField(),
+        ),
+    ).select_related("category").prefetch_related("hobbies").order_by(
+        "-osm_priority", "-photo_priority", "-avg_rating", "-review_count", "title", "pk",
+    )
+    featured_places = list(places[:9])
+    for place in featured_places:
+        # The importer's osm-type-id slug is the existing provenance identifier.
+        match = re.fullmatch(r"osm-(node|way|relation)-(\d+)", place.slug)
+        place.osm_source_url = (
+            f"https://www.openstreetmap.org/{match[1]}/{match[2]}" if match else ""
+        )
+    # Prefer a real photo for the hero even when the first OSM record has none.
+    hero_place = next(
+        (place for place in featured_places if place.cover_image or place.cover_image_url),
+        featured_places[0] if featured_places else None,
+    )
     return render(request, "home.html", {
         "featured_places": featured_places,
-        "hero_place": featured_places[0] if featured_places else None,
+        "hero_place": hero_place,
         "categories": categories,
         "selected_category": selected_category,
+        "published_count": published.count(),
+        "osm_count": published.filter(slug__startswith="osm-").count(),
     })
