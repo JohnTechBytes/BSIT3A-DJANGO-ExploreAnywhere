@@ -1,0 +1,490 @@
+"""End-to-end functional checks for the flows the redesign touched.
+
+Every test drives the real views with the real templates, so a broken form
+field name, missing URL name, or changed redirect is caught here rather than
+in the browser.
+"""
+from datetime import date, timedelta
+
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+from django.urls import reverse
+
+from apps.cities.models import City
+from apps.core.models import Category, Hobby
+from apps.itineraries.models import Itinerary, ItineraryStop
+from apps.visits.models import VisitCheckIn
+
+from .models import Place, Review, SavedPlace
+
+User = get_user_model()
+PASSWORD = "test-pass-123"
+
+
+class FlowFixture(TestCase):
+    """One published, one unpublished and one foreign-city destination."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.city = City.objects.create(
+            pk=2, name="Kabankalan", slug="kabankalan",
+            province="Negros Occidental",
+        )
+        cls.other_city = City.objects.create(
+            name="Bago", slug="bago", province="Negros Occidental",
+        )
+        cls.nature = Category.objects.create(name="Nature & mountains", slug="nature-mountains")
+        cls.food = Category.objects.create(name="Food", slug="food")
+        cls.hiking = Hobby.objects.create(name="Hiking", slug="hiking")
+
+        cls.place = Place.objects.create(
+            city=cls.city, title="Published Falls", slug="published-falls",
+            address="Kabankalan", category=cls.nature,
+            description="A real published destination.",
+            is_active=True, is_verified=True,
+            latitude="9.876392", longitude="122.840476",
+        )
+        cls.place.hobbies.add(cls.hiking)
+        cls.cafe = Place.objects.create(
+            city=cls.city, title="Published Cafe", slug="published-cafe",
+            address="Kabankalan", category=cls.food,
+            is_active=True, is_verified=True,
+        )
+        cls.hidden = Place.objects.create(
+            city=cls.city, title="Unpublished Draft Place", slug="unpublished-draft",
+            address="Kabankalan", category=cls.nature,
+            is_active=True, is_verified=False,
+        )
+        cls.other_town = Place.objects.create(
+            city=cls.other_city, title="Other City Landmark", slug="other-city-landmark",
+            address="Bago", is_active=True, is_verified=True,
+        )
+
+        cls.user = User.objects.create_user(username="flow_user", password=PASSWORD)
+        cls.other_user = User.objects.create_user(username="other_user", password=PASSWORD)
+
+    def login(self, user=None):
+        self.assertTrue(self.client.login(
+            username=(user or self.user).username, password=PASSWORD))
+        return user or self.user
+
+
+class AuthFlowTests(FlowFixture):
+    def test_login_page_uses_the_redesigned_template(self):
+        response = self.client.get("/accounts/login/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "auth-card")
+        self.assertContains(response, "Welcome back")
+
+    def test_login_and_logout_round_trip(self):
+        response = self.client.post(
+            "/accounts/login/", {"username": self.user.username, "password": PASSWORD})
+        self.assertRedirects(response, "/hobbies/", fetch_redirect_response=False)
+        self.assertEqual(int(self.client.session["_auth_user_id"]), self.user.pk)
+
+        response = self.client.post("/accounts/logout/")
+        self.assertEqual(response.status_code, 302)
+        self.assertNotIn("_auth_user_id", self.client.session)
+
+    def test_legacy_users_login_route_still_works(self):
+        response = self.client.get("/users/login/")
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post(
+            "/users/login/", {"username": self.user.username, "password": PASSWORD})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(int(self.client.session["_auth_user_id"]), self.user.pk)
+
+    def test_login_keeps_the_existing_hobbies_landing_redirect(self):
+        """ExploreLoginView always lands on the hobbies step (which now opens
+        Explore Places), even when a ?next= parameter is present. Pinned here
+        so a future redesign does not change the sign-in destination silently.
+        """
+        response = self.client.post(
+            "/accounts/login/?next=" + reverse("places:saved_places"),
+            {"username": self.user.username, "password": PASSWORD})
+        self.assertRedirects(response, "/hobbies/", fetch_redirect_response=False)
+
+    def test_bad_credentials_keep_visitor_signed_out(self):
+        response = self.client.post(
+            reverse("login"), {"username": self.user.username, "password": "wrong"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "auth-card")
+        self.assertNotIn("_auth_user_id", self.client.session)
+
+    def test_registration_creates_and_signs_in_user(self):
+        response = self.client.post(reverse("register"), {
+            "username": "brand_new", "email": "brand_new@example.com",
+            "password1": "sup3r-secret-pass", "password2": "sup3r-secret-pass",
+        })
+        self.assertRedirects(response, "/hobbies/", fetch_redirect_response=False)
+        created = User.objects.get(username="brand_new")
+        self.assertEqual(created.email, "brand_new@example.com")
+        self.assertEqual(int(self.client.session["_auth_user_id"]), created.pk)
+
+    def test_duplicate_email_is_rejected(self):
+        User.objects.create_user(
+            username="taken_email", email="dup@example.com", password=PASSWORD)
+        response = self.client.post(reverse("register"), {
+            "username": "another", "email": "dup@example.com",
+            "password1": "sup3r-secret-pass", "password2": "sup3r-secret-pass",
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(User.objects.filter(username="another").exists())
+
+    def test_anonymous_visitors_are_sent_to_login_for_private_pages(self):
+        for name, kwargs in [
+            ("places:saved_places", {}),
+            ("places:my_reviews", {}),
+            ("places:journey_dashboard", {}),
+            ("itineraries:list", {}),
+            ("visits:list", {}),
+            ("places:place_detail", {"pk": self.place.pk}),
+            ("places:attraction_carousel", {}),
+        ]:
+            with self.subTest(url=name):
+                response = self.client.get(reverse(name, kwargs=kwargs))
+                self.assertEqual(response.status_code, 302)
+                self.assertIn("/accounts/login/", response["Location"])
+
+
+class DiscoveryFlowTests(FlowFixture):
+    def setUp(self):
+        self.login()
+        self.url = reverse("places:attraction_carousel")
+
+    def test_browse_lists_only_published_kabankalan_places(self):
+        response = self.client.get(self.url, {"browse": "all"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Published Falls")
+        self.assertContains(response, "Published Cafe")
+        self.assertNotContains(response, "Unpublished Draft Place")
+        self.assertNotContains(response, "Other City Landmark")
+
+    def test_category_filter_narrows_results(self):
+        response = self.client.get(self.url, {"category": str(self.food.pk)})
+        self.assertContains(response, "Published Cafe")
+        self.assertNotContains(response, "Published Falls")
+
+    def test_hobby_filter_narrows_results(self):
+        response = self.client.get(self.url, {"hobby": "hiking"})
+        self.assertContains(response, "Published Falls")
+        self.assertNotContains(response, "Published Cafe")
+
+    def test_free_text_search_matches_place_names(self):
+        response = self.client.get(self.url, {"q": "Published Falls"})
+        self.assertContains(response, "Published Falls")
+        self.assertNotContains(response, "Published Cafe")
+
+    def test_sort_options_render(self):
+        for sort in ("recommended", "rating", "name"):
+            with self.subTest(sort=sort):
+                self.assertEqual(
+                    self.client.get(self.url, {"sort": sort}).status_code, 200)
+
+    def test_smart_search_redirects_into_discovery(self):
+        response = self.client.get(reverse("places:smart_search"), {"q": "falls"})
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("places:attraction_carousel"), response["Location"])
+        self.assertIn("q=falls", response["Location"])
+
+    def test_empty_smart_search_falls_back_to_browse(self):
+        response = self.client.get(reverse("places:smart_search"), {"q": "   "})
+        self.assertRedirects(
+            response, reverse("places:attraction_carousel"),
+            fetch_redirect_response=False)
+
+    def test_nearby_search_filters_and_keeps_privacy_notice(self):
+        response = self.client.get(self.url, {"mode": "nearby"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Published Falls")
+        self.assertNotContains(response, "Unpublished Draft Place")
+
+    def test_legacy_nearby_url_still_redirects(self):
+        response = self.client.get(reverse("places:nearby_places"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("mode=nearby", response["Location"])
+
+    def test_place_detail_hides_unpublished_and_other_cities(self):
+        self.assertEqual(
+            self.client.get(reverse("places:place_detail", args=[self.place.pk])).status_code, 200)
+        self.assertEqual(
+            self.client.get(reverse("places:place_detail", args=[self.hidden.pk])).status_code, 404)
+        self.assertEqual(
+            self.client.get(reverse("places:place_detail", args=[self.other_town.pk])).status_code, 404)
+
+    def test_place_detail_shows_map_link_and_coordinates(self):
+        response = self.client.get(reverse("places:place_detail", args=[self.place.pk]))
+        self.assertContains(response, "Open the map in Google Maps")
+        self.assertContains(response, "9.876392")
+
+
+class SavedPlacesFlowTests(FlowFixture):
+    def setUp(self):
+        self.login()
+        self.detail = reverse("places:place_detail", args=[self.place.pk])
+
+    def test_save_then_unsave(self):
+        response = self.client.post(reverse("places:save_place", args=[self.place.pk]))
+        self.assertRedirects(response, self.detail, fetch_redirect_response=False)
+        self.assertTrue(SavedPlace.objects.filter(user=self.user, place=self.place).exists())
+
+        response = self.client.post(reverse("places:unsave_place", args=[self.place.pk]))
+        self.assertRedirects(response, self.detail, fetch_redirect_response=False)
+        self.assertFalse(SavedPlace.objects.filter(user=self.user, place=self.place).exists())
+
+    def test_saving_twice_is_idempotent(self):
+        for _ in range(2):
+            self.client.post(reverse("places:save_place", args=[self.place.pk]))
+        self.assertEqual(
+            SavedPlace.objects.filter(user=self.user, place=self.place).count(), 1)
+
+    def test_save_requires_post(self):
+        self.assertEqual(
+            self.client.get(reverse("places:save_place", args=[self.place.pk])).status_code, 405)
+
+    def test_cannot_save_unpublished_place(self):
+        self.assertEqual(
+            self.client.post(reverse("places:save_place", args=[self.hidden.pk])).status_code, 404)
+
+    def test_saved_page_lists_and_scopes_to_user(self):
+        SavedPlace.objects.create(user=self.other_user, place=self.cafe)
+        SavedPlace.objects.create(user=self.user, place=self.place)
+        response = self.client.get(reverse("places:saved_places"))
+        self.assertContains(response, "Published Falls")
+        self.assertNotContains(response, "Published Cafe")
+
+    def test_journey_dashboard_counts_reflect_saved_itinerary_and_review(self):
+        SavedPlace.objects.create(user=self.user, place=self.place)
+        Review.objects.create(user=self.user, place=self.place, rating=4, comment="Good")
+        Itinerary.objects.create(user=self.user, city=self.city, title="Day trip")
+        response = self.client.get(reverse("places:journey_dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["saved_count"], 1)
+        self.assertEqual(response.context["itinerary_count"], 1)
+        self.assertEqual(response.context["review_count"], 1)
+
+
+class ReviewFlowTests(FlowFixture):
+    def setUp(self):
+        self.login()
+        self.submit = reverse("places:submit_review", args=[self.place.pk])
+
+    def test_submit_creates_review_and_updates_place_rating(self):
+        response = self.client.post(self.submit, {"rating": "4", "comment": "Lovely trail"})
+        self.assertRedirects(
+            response, reverse("places:place_detail", args=[self.place.pk]),
+            fetch_redirect_response=False)
+        # The detail page renders the confirmation banner after the redirect.
+        self.assertContains(
+            self.client.get(reverse("places:place_detail", args=[self.place.pk])),
+            "Your review was submitted.")
+        review = Review.objects.get(user=self.user, place=self.place)
+        self.assertEqual(review.rating, 4)
+        self.place.refresh_from_db()
+        self.assertEqual(self.place.review_count, 1)
+        self.assertEqual(str(self.place.avg_rating), "4.00")
+
+    def test_submitting_again_updates_the_same_review(self):
+        self.client.post(self.submit, {"rating": "4", "comment": "First"})
+        self.client.post(self.submit, {"rating": "5", "comment": "Second"})
+        reviews = Review.objects.filter(user=self.user, place=self.place)
+        self.assertEqual(reviews.count(), 1)
+        self.assertEqual(reviews.first().rating, 5)
+        self.place.refresh_from_db()
+        self.assertEqual(str(self.place.avg_rating), "5.00")
+
+    def test_invalid_rating_is_rejected_without_touching_records(self):
+        self.client.post(self.submit, {"rating": "9", "comment": "Nope"})
+        self.assertFalse(Review.objects.filter(user=self.user, place=self.place).exists())
+
+    def test_overlong_comment_is_rejected(self):
+        self.client.post(self.submit, {"rating": "5", "comment": "x" * 1501})
+        self.assertFalse(Review.objects.filter(user=self.user, place=self.place).exists())
+
+    def test_delete_review_resets_rating(self):
+        Review.objects.create(user=self.user, place=self.place, rating=5, comment="Nice")
+        self.place.review_count = 1
+        self.place.avg_rating = 5
+        self.place.save()
+        response = self.client.post(
+            reverse("places:delete_review", args=[self.place.pk]))
+        self.assertRedirects(
+            response, reverse("places:place_detail", args=[self.place.pk]),
+            fetch_redirect_response=False)
+        self.assertFalse(Review.objects.filter(user=self.user, place=self.place).exists())
+        self.place.refresh_from_db()
+        self.assertEqual(self.place.review_count, 0)
+        self.assertEqual(str(self.place.avg_rating), "0.00")
+
+    def test_my_reviews_lists_only_my_reviews(self):
+        Review.objects.create(user=self.user, place=self.place, rating=5, comment="Mine")
+        Review.objects.create(user=self.other_user, place=self.cafe, rating=3, comment="Theirs")
+        response = self.client.get(reverse("places:my_reviews"))
+        self.assertContains(response, "Published Falls")
+        self.assertNotContains(response, "Published Cafe")
+
+    def test_unpublished_place_review_is_rejected(self):
+        self.assertEqual(self.client.post(
+            reverse("places:submit_review", args=[self.hidden.pk]),
+            {"rating": "5", "comment": "Ghost"}).status_code, 404)
+
+
+class ItineraryFlowTests(FlowFixture):
+    def setUp(self):
+        self.login()
+
+    def test_create_update_add_reorder_and_delete(self):
+        response = self.client.post(reverse("itineraries:create"), {
+            "title": "Weekend plan", "day_number": "2", "initial_place": "",
+        })
+        trip = Itinerary.objects.get(user=self.user)
+        self.assertRedirects(
+            response, reverse("itineraries:builder", args=[trip.pk]),
+            fetch_redirect_response=False)
+        self.assertEqual(trip.title, "Weekend plan")
+        self.assertEqual(trip.day_number, 2)
+
+        # Rename the trip.
+        self.client.post(reverse("itineraries:update", args=[trip.pk]), {
+            "title": "Renamed plan", "day_number": "1",
+        })
+        trip.refresh_from_db()
+        self.assertEqual(trip.title, "Renamed plan")
+        self.assertEqual(trip.day_number, 1)
+
+        # Add two stops.
+        for place, when in ((self.place, "09:00"), (self.cafe, "11:30")):
+            self.client.post(reverse("itineraries:add_stop", args=[trip.pk]), {
+                "place_id": str(place.pk), "start_time": when, "notes": "Visit",
+            })
+        stops = list(ItineraryStop.objects.filter(itinerary=trip).order_by("stop_order"))
+        self.assertEqual([s.place for s in stops], [self.place, self.cafe])
+        self.assertEqual([s.stop_order for s in stops], [1, 2])
+
+        # Move the second stop above the first.
+        response = self.client.post(
+            reverse("itineraries:move_stop", args=[trip.pk, stops[1].pk]),
+            {"direction": "up"})
+        self.assertEqual(response.status_code, 302)
+        stops = list(ItineraryStop.objects.filter(itinerary=trip).order_by("stop_order"))
+        self.assertEqual([s.place for s in stops], [self.cafe, self.place])
+
+        # Remove one stop.
+        self.client.post(
+            reverse("itineraries:remove_stop", args=[trip.pk, stops[0].pk]))
+        self.assertEqual(
+            ItineraryStop.objects.filter(itinerary=trip).count(), 1)
+
+        # Delete the itinerary.
+        response = self.client.post(reverse("itineraries:delete", args=[trip.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Itinerary.objects.filter(pk=trip.pk).exists())
+
+    def test_create_rejects_blank_title(self):
+        response = self.client.post(reverse("itineraries:create"), {
+            "title": "", "day_number": "1",
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Itinerary.objects.filter(user=self.user).exists())
+
+    def test_choose_for_place_adds_a_stop_to_an_existing_trip(self):
+        trip = Itinerary.objects.create(user=self.user, city=self.city, title="Existing")
+        response = self.client.post(
+            reverse("itineraries:choose_for_place", args=[self.place.pk]), {
+                "itinerary_id": str(trip.pk), "start_time": "14:00", "notes": "Afternoon",
+            })
+        self.assertRedirects(
+            response, reverse("itineraries:builder", args=[trip.pk]),
+            fetch_redirect_response=False)
+        self.assertTrue(ItineraryStop.objects.filter(
+            itinerary=trip, place=self.place, notes="Afternoon").exists())
+
+    def test_other_users_cannot_open_or_change_my_trip(self):
+        trip = Itinerary.objects.create(user=self.other_user, city=self.city, title="Theirs")
+        self.assertEqual(
+            self.client.get(reverse("itineraries:builder", args=[trip.pk])).status_code, 404)
+        self.assertEqual(self.client.post(
+            reverse("itineraries:delete", args=[trip.pk])).status_code, 404)
+        self.assertTrue(Itinerary.objects.filter(pk=trip.pk).exists())
+
+    def test_my_itineraries_lists_only_my_trips(self):
+        Itinerary.objects.create(user=self.user, city=self.city, title="Mine to keep")
+        Itinerary.objects.create(user=self.other_user, city=self.city, title="Not mine")
+        response = self.client.get(reverse("itineraries:list"))
+        self.assertContains(response, "Mine to keep")
+        self.assertNotContains(response, "Not mine")
+
+
+class VisitFlowTests(FlowFixture):
+    def setUp(self):
+        self.login()
+        self.today = date.today()
+
+    def test_check_in_page_renders_for_published_place(self):
+        response = self.client.get(reverse("visits:check_in", args=[self.place.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Submit your check-in")
+
+    def test_unpublished_place_check_in_is_hidden(self):
+        self.assertEqual(self.client.get(
+            reverse("visits:check_in", args=[self.hidden.pk])).status_code, 404)
+
+    def test_valid_check_in_is_pending_and_listed(self):
+        response = self.client.post(reverse("visits:check_in", args=[self.place.pk]), {
+            "visited_on": self.today.isoformat(),
+            "visit_note": "Walked the trail with my family and took photos at the ridge.",
+        })
+        self.assertRedirects(
+            response, reverse("visits:list"), fetch_redirect_response=False)
+        checkin = VisitCheckIn.objects.get(user=self.user, place=self.place)
+        self.assertEqual(checkin.status, VisitCheckIn.Status.PENDING)
+        listing = self.client.get(reverse("visits:list"))
+        self.assertContains(listing, "Published Falls")
+        self.assertContains(listing, "Check-in submitted for staff review.")
+
+    def test_duplicate_check_in_does_not_create_a_second_record(self):
+        payload = {
+            "visited_on": self.today.isoformat(),
+            "visit_note": "Walked the trail with my family and took photos at the ridge.",
+        }
+        self.client.post(reverse("visits:check_in", args=[self.place.pk]), payload)
+        self.client.post(reverse("visits:check_in", args=[self.place.pk]), payload)
+        self.assertEqual(
+            VisitCheckIn.objects.filter(user=self.user, place=self.place).count(), 1)
+
+    def test_short_note_and_future_date_are_rejected(self):
+        for payload in (
+            {"visited_on": self.today.isoformat(), "visit_note": "too short"},
+            {"visited_on": (self.today + timedelta(days=3)).isoformat(),
+             "visit_note": "Walked the trail with my family and took photos at the ridge."},
+        ):
+            with self.subTest(payload=payload):
+                self.client.post(
+                    reverse("visits:check_in", args=[self.place.pk]), payload)
+                self.assertFalse(VisitCheckIn.objects.filter(
+                    user=self.user, place=self.place).exists())
+
+
+class LegacyRouteTests(FlowFixture):
+    def setUp(self):
+        self.login()
+
+    def test_retired_hobby_routes_redirect_to_discovery(self):
+        response = self.client.get(reverse("hobbies:select"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("places:attraction_carousel"), response["Location"])
+
+        response = self.client.get(reverse("hobbies:search"), {"q": "hiking"})
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("q=hiking", response["Location"])
+
+    def test_city_selection_redirect_is_preserved(self):
+        response = self.client.get(reverse("city_selection"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/hobbies/", response["Location"])
+
+    def test_home_page_still_renders_public_content(self):
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Published Falls")
+        self.assertNotContains(response, "Unpublished Draft Place")

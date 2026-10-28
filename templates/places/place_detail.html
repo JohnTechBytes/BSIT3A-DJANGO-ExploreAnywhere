@@ -171,6 +171,12 @@
     <p class="pd-actions-note">Visit reports require staff review before rewards are granted.</p>
   </nav>
 
+  {% if messages %}
+  <div class="sd-flash" role="status" aria-live="polite">
+    {% for message in messages %}<p class="sd-flash-item {{ message.tags }}">{{ message }}</p>{% endfor %}
+  </div>
+  {% endif %}
+
   <div class="pd-layout">
     <div class="pd-main">
       <section aria-label="Destination photographs">

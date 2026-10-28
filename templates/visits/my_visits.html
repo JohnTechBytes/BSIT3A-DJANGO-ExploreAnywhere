@@ -111,6 +111,12 @@
     <p>Only staff-approved destination check-ins earn points and badges. A visit report, saved place, map view, or submitted review does not verify physical presence.</p>
   </header>
   <nav class="ea-visits-nav"><a class="ea-visits-link" href="{% url 'places:journey_dashboard' %}">My Journey</a><a class="ea-visits-link alt" href="{% url 'places:attraction_carousel' %}">Explore Places</a></nav>
+  {% if messages %}
+  <div class="sd-flash" role="status" aria-live="polite">
+    {% for message in messages %}<p class="sd-flash-item {{ message.tags }}">{{ message }}</p>{% endfor %}
+  </div>
+  {% endif %}
+
   <section class="ea-visits-stats" aria-label="Visit statistics">
     <div class="ea-visits-stat"><strong>{{ approved_count }}</strong><span>Staff-approved destinations</span></div>
     <div class="ea-visits-stat"><strong>{{ pending_count }}</strong><span>Pending check-ins</span></div>

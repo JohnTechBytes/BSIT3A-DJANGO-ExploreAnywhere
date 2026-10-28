@@ -593,3 +593,20 @@ html:has(body.site-dark) { background: #080d14; }
 /* Destructive secondary action on saved places. */
 .site-dark .ea-saved-item .ea-unsave { border: 1px solid #6f3540; background: transparent; color: #ffb9c4; font-weight: 700; }
 .site-dark .ea-saved-item .ea-unsave:hover { background: #3a1f24; border-color: #9c4a58; color: #ffdee3; }
+
+/* Feedback banners for saved places, reviews and check-ins. */
+.site-dark .sd-flash { display: grid; gap: 8px; margin: 0 0 22px; }
+.site-dark .sd-flash-item {
+  margin: 0;
+  padding: 12px 15px;
+  border: 1px solid #2f5a53;
+  border-left: 3px solid var(--sd-teal);
+  border-radius: 9px;
+  background: #0e2224;
+  color: #c9f2ea;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.site-dark .sd-flash-item.error { border-color: #6f3540; border-left-color: #e8788c; background: #241318; color: #ffc2cb; }
+.site-dark .sd-flash-item.warning { border-color: #6b5a2f; border-left-color: #e8c978; background: #221d0f; color: #ffe6b3; }
+.detail-page .sd-flash { margin: -8px 0 22px; }

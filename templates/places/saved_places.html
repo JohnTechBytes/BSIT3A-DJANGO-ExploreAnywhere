@@ -113,7 +113,13 @@
     <a class="ea-action ea-action-secondary" href="{% url 'places:attraction_carousel' %}">Explore Recommendations</a>
   </nav>
   {% if entries %}
-  <section class="ea-saved-grid" aria-label="Your saved destinations">
+{% if messages %}
+  <div class="sd-flash" role="status" aria-live="polite">
+    {% for message in messages %}<p class="sd-flash-item {{ message.tags }}">{{ message }}</p>{% endfor %}
+  </div>
+  {% endif %}
+
+    <section class="ea-saved-grid" aria-label="Your saved destinations">
     {% for entry in entries %}
     <article class="ea-saved-item">
       <div class="ea-c-place-media">
