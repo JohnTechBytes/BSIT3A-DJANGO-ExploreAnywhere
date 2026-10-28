@@ -35,7 +35,15 @@
         <label for="ea6-query">What are you looking for?</label>
         <input id="ea6-query" name="q" value="{{ query }}" maxlength="160" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ea6-suggestions" placeholder="e.g. Coffee &amp; Talk or coffee shop near me">
         <input type="hidden" name="place" id="ea6-place-id" value="">
+        <button type="button" class="ea6-voice-button" id="ea6-voice" aria-pressed="false" aria-label="Search by voice" hidden>
+          <svg class="ea6-voice-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.5a2.8 2.8 0 0 0-2.8 2.8v5.4a2.8 2.8 0 0 0 5.6 0V6.3A2.8 2.8 0 0 0 12 3.5Z"/>
+            <path d="M5.5 11.2a6.5 6.5 0 0 0 13 0M12 17.7v3M9 20.7h6"/>
+          </svg>
+          <span class="ea6-voice-text">Speak</span>
+        </button>
         <div id="ea6-suggestions" class="ea6-autocomplete" role="listbox" aria-label="Suggested verified Kabankalan places" hidden></div>
+        <p class="ea6-voice-status" id="ea6-voice-status" role="status" aria-live="polite"></p>
       </div>
       <div class="ea6-field">
         <label for="ea6-service">Place type</label>
@@ -61,8 +69,8 @@
     <div class="ea6k-location-top">
       <div class="ea6-location-title">
         <span class="ea6-location-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
-        <div><span class="ea6-panel-eyebrow">02 / EXPLORE NEARBY</span><h2 id="ea6-nearby-title">Find places near you</h2>
-        <p>Use your location to sort places by distance.</p></div>
+        <div><span class="ea6-panel-eyebrow">NEAR ME</span><h2 id="ea6-nearby-title">Find places near you</h2>
+        <p>Optional: sort these results by distance from your location.</p></div>
       </div>
       <button id="ea6-use-gps" class="ea6-btn ea6-location-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg> Use my location</button>
     </div>
@@ -87,7 +95,7 @@
       <p>There are currently no mapped, verified reference landmarks available. You can still browse verified Kabankalan places and use GPS when supported.</p>
       {% endif %}
     </details>
-    <div class="ea6h-radius" aria-label="Filter results by distance">
+    <div class="ea6h-radius" id="ea6h-radius" aria-label="Filter results by distance" hidden>
       <div class="ea6-field">
         <label for="ea6h-distance">Show places within</label>
         <select id="ea6h-distance" disabled aria-describedby="ea6h-distance-help">
@@ -103,7 +111,7 @@
       <span id="ea6h-distance-help" class="ea6h-help" role="status" aria-live="polite">Choose a landmark or enable location permission to filter by distance. This does not use driving routes.</span>
     </div>
     <p id="ea6-location-status" class="ea6-status" role="status" aria-live="polite">{% if selected_origin %}Distances are estimated from {{ selected_origin.title }}. This is a landmark reference, not your live GPS position.{% else %}Use GPS for distance sorting, or expand the optional Kabankalan landmark selector if GPS is unavailable. Without a reference, results are alphabetical.{% endif %}</p>
-    <p class="ea6-warning">Your precise GPS coordinates are used only inside this browser page; they are not sent to ExploreKabankalan. GPS generally needs HTTPS on Android (localhost is an exception). Distances are straight-line estimates, not driving times. Places shown are Kabankalan listings; location permission does not independently verify city boundaries.</p>
+    <p class="ea6-fineprint">Your location stays in this browser tab; distances are straight-line estimates, not driving times.</p>
   </section>
   <div class="ea6-heading">
     <div><span class="ea6-panel-eyebrow">PLACES TO EXPLORE</span>
@@ -125,11 +133,12 @@
     <div class="ea6-list" id="ea6-results"{% if selected_origin %} data-origin-lat="{{ selected_origin.latitude }}" data-origin-lng="{{ selected_origin.longitude }}" data-origin-name="{{ selected_origin.title }}"{% endif %}>
       {% for place in results %}
         <article class="ea6-card" data-place-id="{{ place.pk }}" data-title="{{ place.title }}" data-category="{% if place.category %}{{ place.category.name }}{% else %}Kabankalan place{% endif %}" data-detail-url="{% url 'places:place_detail' place.pk %}" {% if place.latitude != None and place.longitude != None %}data-lat="{{ place.latitude }}" data-lng="{{ place.longitude }}" data-directions-url="https://www.google.com/maps/dir/?api=1&amp;destination={{ place.latitude }},{{ place.longitude }}"{% endif %}>
-          <div class="ea6-cover">
+          <div class="ea6-cover" role="button" tabindex="0" aria-label="Fly to {{ place.title }} on the map">
             {% if place.cover_image %}<img loading="lazy" decoding="async" width="640" height="360" alt="{{ place.title }}" src="{{ place.cover_image.url }}">
-            {% elif place.cover_image_url %}<img loading="lazy" decoding="async" width="640" height="360" alt="{{ place.title }}" src="{{ place.cover_image_url }}">
+            {% elif place.cover_image_url %}<img loading="lazy" decoding="async" width="640" height="360" alt="{{ place.title }}" src="{{ place.cover_image_url }}" onerror="this.closest('.ea6-cover').classList.add('ea6-photo-failed'); this.remove();">
             {% elif place.sample_image %}<img loading="lazy" decoding="async" width="640" height="360" alt="Illustrative category sample, not an actual photo of {{ place.title }}" src="{% static place.sample_image %}"><span class="ea6-sample-badge">AI-generated category sample</span>
             {% else %}<span class="ea6n-no-photo" role="img" aria-label="No verified photograph available"><span class="ea6n-no-photo-icon" aria-hidden="true">⌖</span><span>PHOTO NOT YET AVAILABLE</span></span>{% endif %}
+            <span class="ea6-card-map-hint" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" fill="currentColor"/></svg>View on map</span>
           </div>
           <div class="ea6-card-body">
             <div class="ea6n-badges">
@@ -162,6 +171,11 @@
     </div>
     <aside id="ea6g-map-shell" class="ea6g-map-shell" aria-label="Map of current nearby search results" hidden>
       <div class="ea6g-map-head"><h3>Nearby results map</h3><button type="button" class="ea6g-fit" id="ea6g-fit">Fit results</button></div>
+      <div class="ea6-drone-hud" id="ea6-drone-hud" hidden aria-hidden="true">
+        <span class="ea6-drone-track"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 8h4l2-3h4l2 3h4v8h-4l-2 3h-4l-2-3H4Z"/><circle cx="12" cy="12" r="2.4"/></svg>Drone view</span>
+        <strong id="ea6-drone-target">Kabankalan</strong>
+        <span class="ea6-drone-scan"></span>
+      </div>
       <div id="ea6g-map" class="ea6g-map" role="region" aria-label="Interactive map of verified nearby result pins"></div>
       <p id="ea6g-map-status" class="ea6g-map-status" role="status" aria-live="polite">Map loading will begin when you open this panel.</p>
       <p class="ea6g-map-status">Only this search's published, verified Kabankalan listings with coordinates are pinned. Map marker colors indicate selected or unselected locations—not hobby scores or business quality. Map tiles © <a href="https://www.maptiler.com/copyright/" target="_blank" rel="noopener noreferrer">MapTiler</a>; map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>.</p>
@@ -174,11 +188,12 @@
       <a class="ea6-back" href="{% url 'places:attraction_carousel' %}?browse=all">Browse existing destinations →</a>
     </section>
   {% endif %}
-  <p class="ea6-notice">Only staff-verified, published Kabankalan listings are shown. Imported OpenStreetMap business candidates are hidden until independently reviewed. Mapping data may include © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a> (ODbL). Business details can change; confirm before visiting.</p>
+  <p class="ea6-notice">Only staff-verified, published Kabankalan listings appear here. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>. Details can change — confirm before visiting.</p>
 </main>
 {% endblock %}
 {% block extra_js %}
 {{ approved_suggestions|json_script:"ea6-approved-data" }}
+<script src="{% static 'js/ea-voice.js' %}"></script>
 <script>
 (function () {
   "use strict";
@@ -303,6 +318,9 @@
     return haversine(originPoint.lat,originPoint.lng,lat,lng) <= radius + 1e-8;
   }
   function refreshRadius() {
+    // The radius control is noise until a reference point exists.
+    const radiusBox = document.getElementById("ea6h-radius");
+    if (radiusBox) radiusBox.hidden = !originPoint;
     if (distanceSelect) distanceSelect.disabled = !originPoint;
     const active = !!originPoint && distanceSelect && distanceSelect.value !== "all";
     if (radiusReset) radiusReset.disabled = !active;
@@ -578,8 +596,81 @@
     else closeNearbyMap();
   });
   fitButton?.addEventListener("click", fitResultPins);
-  mappedRows.forEach(card => {
-    card.querySelector(".ea6g-card-map")?.addEventListener("click", () => openNearbyMap(card));
+  // ---------------------------------------------------------------
+  // Drone view: choosing a listing flies the camera down onto it
+  // ---------------------------------------------------------------
+  const droneHud = document.getElementById("ea6-drone-hud");
+  const droneTarget = document.getElementById("ea6-drone-target");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let droneRing = null;
+  let droneTimer = null;
+
+  function showDroneHud(card) {
+    if (!droneHud) return;
+    if (droneTarget) droneTarget.textContent = card.dataset.title || "Kabankalan";
+    droneHud.hidden = false;
+    window.clearTimeout(droneTimer);
+    droneTimer = window.setTimeout(() => { droneHud.hidden = true; }, 5600);
+  }
+
+  async function droneTo(card) {
+    if (!card || !card.hasAttribute("data-lat")) return;
+    await openNearbyMap(card);
+    if (!mapShell) return;
+    showDroneHud(card);
+    if (!resultsMap || !window.L?.circleMarker) return;
+    const lat = Number(card.dataset.lat);
+    const lng = Number(card.dataset.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+    if (droneRing) {
+      resultsMap.removeLayer(droneRing);
+      droneRing = null;
+    }
+    droneRing = L.circleMarker([lat, lng], {
+      radius: 26, color: "#21d9c6", weight: 2,
+      fillColor: "#21d9c6", fillOpacity: .12, className: "ea6-drone-ring"
+    }).addTo(resultsMap);
+
+    const finish = () => {
+      const marker = resultsMapMarkers.get(card);
+      if (marker) {
+        selectCard(card);
+        marker.openPopup();
+      }
+      const ring = droneRing;
+      droneRing = null;
+      if (ring) window.setTimeout(() => {
+        try { resultsMap.removeLayer(ring); } catch (error) { /* map closed */ }
+      }, 2600);
+    };
+
+    if (reduceMotion.matches) {
+      resultsMap.setView([lat, lng], 16.5);
+      finish();
+      return;
+    }
+    resultsMap.once("moveend", finish);
+    resultsMap.flyTo([lat, lng], 16.5, { duration: 2.6 });
+  }
+
+  rows.forEach(card => {
+    const cover = card.querySelector(".ea6-cover");
+    cover?.addEventListener("click", () => droneTo(card));
+    cover?.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        droneTo(card);
+      }
+    });
+    card.querySelector(".ea6g-card-map")?.addEventListener("click", () => droneTo(card));
+  });
+
+  // Voice search: the same shared module the Browse page uses.
+  window.EAVoiceSearch?.attach({
+    input: document.getElementById("ea6-query"),
+    button: document.getElementById("ea6-voice"),
+    status: document.getElementById("ea6-voice-status")
   });
 })();
 </script>

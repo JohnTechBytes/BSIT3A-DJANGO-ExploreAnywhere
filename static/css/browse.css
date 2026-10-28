@@ -400,3 +400,10 @@
   .browse-page .ea-drone-scan,
   .browse-page .ea-drone-ring { animation: none !important; }
 }
+
+/* Attribution shown whenever a card uses a real, licensed photograph. */
+.browse-page .ea-card-credit { margin: 10px 0 0; color: #7f939f; font-size: 9.5px; line-height: 1.5; letter-spacing: .2px; }
+.browse-page .ea-card-credit a { color: #8cddd1; text-decoration: underline; text-underline-offset: 2px; }
+
+.browse-page .ea-card-image.ea-photo-failed { display: grid; place-items: center; background: radial-gradient(ellipse at 30% 20%, #145452, #101f2f 70%); }
+.browse-page .ea-card-image.ea-photo-failed::before { content: "PHOTO UNAVAILABLE"; color: #9fc5be; font-size: 9px; font-weight: 700; letter-spacing: 1.6px; }

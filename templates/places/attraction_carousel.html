@@ -993,6 +993,7 @@
                   decoding="async"
                   width="640"
                   height="360"
+                  onerror="this.closest('.ea-card-image').classList.add('ea-photo-failed'); this.remove();"
                 >
 
               {% elif place.sample_image %}
@@ -1063,6 +1064,14 @@
                   {{ selected_city.name }}.
                 {% endif %}
               </p>
+
+              {% if place.cover_image or place.cover_image_url %}
+                {% if place.photo_credit or place.photo_license %}
+                  <p class="ea-card-credit">
+                    Photo{% if place.photo_credit %} by {{ place.photo_credit }}{% endif %}{% if place.photo_license %} · {% if place.photo_license_url %}<a href="{{ place.photo_license_url }}" target="_blank" rel="noopener noreferrer">{{ place.photo_license }}</a>{% else %}{{ place.photo_license }}{% endif %}{% endif %}
+                  </p>
+                {% endif %}
+              {% endif %}
 
               <div class="ea-card-footer">
                 <a class="ea-map-link ea6n-primary" href="{% url 'places:place_detail' place.pk %}">View details ↗</a>
@@ -1147,6 +1156,7 @@
 
 
 {% block extra_js %}
+<script src="{% static 'js/ea-voice.js' %}"></script>
 
 <script>
 (function () {
@@ -1980,149 +1990,12 @@ const popupReason = document.createElement("p");
     // 9. Voice search: speech becomes real text in the box
     // --------------------------------------------------
 
-    (function initVoiceSearch() {
-        const input = document.getElementById("ea-search-query");
-        const button = document.getElementById("ea-voice-search");
-        const status = document.getElementById("ea-voice-status");
-
-        if (!input || !button) return;
-
-        const SpeechRecognition =
-            window.SpeechRecognition || window.webkitSpeechRecognition;
-
-        function setStatus(message, isError) {
-            if (!status) return;
-            status.textContent = message || "";
-            status.classList.toggle("is-error", Boolean(isError));
-        }
-
-        if (!SpeechRecognition) {
-            // No support: keep the button out of the way, the field still works.
-            setStatus("Voice search needs Chrome or Edge. Typing still works everywhere.");
-            return;
-        }
-
-        button.hidden = false;
-
-        const recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = "en-PH";
-
-        let listening = false;
-        let baseText = "";
-        let finalTranscript = "";
-        let triedFallbackLanguage = false;
-
-        function label(text) {
-            const element = button.querySelector(".ea-voice-text");
-            if (element) element.textContent = text;
-        }
-
-        function start() {
-            if (listening) return;
-            baseText = input.value.trim();
-            if (baseText) baseText += " ";
-            finalTranscript = "";
-            try {
-                recognition.start();
-            } catch (error) {
-                setStatus("Voice search could not start. Try again.", true);
-            }
-        }
-
-        recognition.addEventListener("start", function () {
-            listening = true;
-            button.classList.add("is-listening");
-            button.setAttribute("aria-pressed", "true");
-            label("Listening");
-            setStatus("Listening… say a place, café or activity.");
-        });
-
-        recognition.addEventListener("result", function (event) {
-            let interim = "";
-
-            for (let i = event.resultIndex; i < event.results.length; i += 1) {
-                const result = event.results[i];
-                if (result.isFinal) {
-                    finalTranscript += result[0].transcript;
-                } else {
-                    interim += result[0].transcript;
-                }
-            }
-
-            // Write straight into the search box while the visitor speaks.
-            input.value = (baseText + finalTranscript + interim)
-                .replace(/\s+/g, " ")
-                .trim();
-            input.dispatchEvent(new Event("input", { bubbles: true }));
-            setStatus("“" + input.value + "”");
-        });
-
-        recognition.addEventListener("error", function (event) {
-            const code = event.error;
-
-            if (code === "aborted") return;
-
-            if (code === "language-not-supported" && !triedFallbackLanguage) {
-                triedFallbackLanguage = true;
-                recognition.lang = "en-US";
-                // The failed session is still winding down, so stop it and
-                // restart on the next tick instead of racing its state.
-                try {
-                    recognition.stop();
-                } catch (error) {
-                    /* already stopped */
-                }
-                window.setTimeout(function () {
-                    try {
-                        recognition.start();
-                    } catch (error) {
-                        setStatus("Voice search could not start.", true);
-                    }
-                }, 250);
-                return;
-            }
-
-            const messages = {
-                "not-allowed": "Microphone access was blocked. Allow it in your browser settings and try again.",
-                "service-not-allowed": "Microphone access was blocked by the browser.",
-                "no-speech": "I did not catch that. Tap Speak and try again.",
-                "audio-capture": "No microphone was found on this device.",
-                network: "Voice search needs a connection. Check your internet and retry.",
-                "language-not-supported": "This browser cannot transcribe English. Type your search instead."
-            };
-
-            setStatus(messages[code] || "Voice search stopped. Try again.", true);
-        });
-
-        recognition.addEventListener("end", function () {
-            listening = false;
-            button.classList.remove("is-listening");
-            button.setAttribute("aria-pressed", "false");
-            label("Speak");
-
-            if (status && !status.classList.contains("is-error")) {
-                setStatus(input.value
-                    ? "Press Enter to search “" + input.value + "”."
-                    : "Tap Speak and say a place or activity.");
-            }
-        });
-
-        button.addEventListener("click", function () {
-            if (listening) {
-                recognition.stop();
-            } else {
-                start();
-            }
-        });
-
-        input.form?.addEventListener("submit", function () {
-            if (listening) recognition.stop();
-        });
-
-        setStatus("Tap Speak and say a place or activity.");
-    })();
+    // Voice search lives in a shared module so Nearby behaves identically.
+    window.EAVoiceSearch?.attach({
+        input: document.getElementById("ea-search-query"),
+        button: document.getElementById("ea-voice-search"),
+        status: document.getElementById("ea-voice-status")
+    });
 
     // The unified Map tab intentionally opens Browse's existing Leaflet map.
     // Normal List View still defers Leaflet network requests.

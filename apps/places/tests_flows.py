@@ -297,6 +297,35 @@ class CarouselLoopTests(FlowFixture):
         self.assertContains(response, "Showing the first 1 of 2 matching places")
 
 
+class NearbyPageTests(FlowFixture):
+    """Nearby search: voice input and the drone map, but no looping carousel."""
+
+    def setUp(self):
+        self.login()
+        self.url = reverse("places:attraction_carousel")
+
+    def test_nearby_offers_voice_search(self):
+        response = self.client.get(self.url, {"mode": "nearby"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="ea6-voice"')
+        self.assertContains(response, 'id="ea6-voice-status"')
+        self.assertContains(response, "js/ea-voice.js")
+
+    def test_nearby_keeps_a_plain_grid_instead_of_a_marquee(self):
+        response = self.client.get(self.url, {"mode": "nearby"})
+        self.assertNotContains(response, "data-marquee")
+        self.assertNotContains(response, "ea-carousel-track")
+        self.assertNotContains(response, "ea-marquee-toggle")
+        self.assertContains(response, 'id="ea6-results"')
+
+    def test_every_card_can_fly_the_map_to_its_place(self):
+        response = self.client.get(self.url, {"mode": "nearby"})
+        self.assertContains(response, "ea6-drone-hud")
+        self.assertContains(response, 'id="ea6-drone-target"')
+        self.assertContains(response, "ea6-card-map-hint")
+        self.assertContains(response, 'aria-label="Fly to Published Falls on the map"')
+
+
 class SavedPlacesFlowTests(FlowFixture):
     def setUp(self):
         self.login()
