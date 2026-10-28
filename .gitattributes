@@ -1,0 +1,7 @@
+/data/boundaries/adm2/geoBoundaries-PHL-ADM2-all/geoBoundaries-PHL-ADM2.geojson filter=lfs diff=lfs merge=lfs -text
+/data/boundaries/adm2/geoBoundaries-PHL-ADM2-all/geoBoundaries-PHL-ADM2.shp filter=lfs diff=lfs merge=lfs -text
+/data/boundaries/adm2/geoBoundaries-PHL-ADM2-all/geoBoundaries-PHL-ADM2.topojson filter=lfs diff=lfs merge=lfs -text
+/data/boundaries/geoBoundaries-PHL-ADM3.geojson filter=lfs diff=lfs merge=lfs -text
+/data/boundaries/geoBoundaries-PHL-ADM3.shp filter=lfs diff=lfs merge=lfs -text
+/data/boundaries/geoBoundaries-PHL-ADM3.topojson filter=lfs diff=lfs merge=lfs -text
+/data/osm/philippines-261013.osm.pbf filter=lfs diff=lfs merge=lfs -text

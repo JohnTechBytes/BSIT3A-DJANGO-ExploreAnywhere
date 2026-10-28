@@ -1,0 +1,18 @@
+
+_trash/
+
+# Python virtual environment and generated files
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.env
+
+# Local virtual environments, whatever they are named (venv, venv_old, .venv)
+venv*/
+
+# OS and tool noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.pytest_cache/

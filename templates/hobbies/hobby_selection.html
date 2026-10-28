@@ -1,0 +1,352 @@
+
+{% extends "theme/public_base.html" %}
+
+{% block extra_css %}
+<style>
+  
+/* Kabankalan City - 12 Hobby Grid */
+.ea-hobby-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.ea-hobby-card {
+    min-height: 148px;
+    padding: 20px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.ea-hobby-card:hover {
+    transform: translateY(-3px);
+}
+
+.ea-hobby-icon {
+    font-size: 34px;
+}
+
+@media (max-width: 768px) {
+    .ea-hobby-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 380px) {
+    .ea-hobby-grid {
+        gap: 10px;
+    }
+
+    .ea-hobby-card {
+        min-height: 125px;
+        padding: 14px 8px;
+    }
+}
+
+.ea-hobbies {
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: 48px 22px 100px;
+  color: #17345d;
+}
+.ea-hobbies .eyebrow {
+  color: #075ee4;
+  font-size: 12px;
+  letter-spacing: 1px;
+  font-weight: 800;
+}
+.ea-hobbies h1 {
+  font-size: clamp(28px, 4vw, 40px);
+  margin: 10px 0;
+}
+.ea-hobbies .subtitle {
+  color: #6a7d98;
+  margin-bottom: 26px;
+}
+.ea-hobby-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+.ea-hobby-choice {
+  cursor: pointer;
+  position: relative;
+}
+.ea-hobby-choice input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.ea-hobby-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  min-height: 135px;
+  border: 2px solid #dce6f3;
+  border-radius: 17px;
+  background: white;
+  transition: .2s ease;
+  font-size: 14px;
+  font-weight: 750;
+}
+.ea-hobby-icon { font-size: 32px; }
+.ea-hobby-choice input:checked + .ea-hobby-card {
+  border-color: #0760eb;
+  background: #eaf3ff;
+  color: #0757d8;
+  box-shadow: 0 6px 22px #0757d819;
+}
+.ea-hobby-choice input:focus-visible + .ea-hobby-card {
+  outline: 3px solid #80b2ff;
+  outline-offset: 3px;
+}
+.ea-hobby-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  background: white;
+  border: 1px solid #dce6f3;
+  box-shadow: 0 8px 30px #0d32600d;
+  padding: 18px 22px;
+  border-radius: 17px;
+  margin-top: 30px;
+}
+.ea-hobby-footer p {
+  color: #6a7d98;
+  margin: 5px 0 0;
+  font-size: 13px;
+}
+.ea-hobby-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ea-hobby-back {
+  color: #23476f;
+  text-decoration: none;
+  font-weight: 700;
+}
+.ea-hobby-submit {
+  border: 0;
+  border-radius: 11px;
+  padding: 14px 24px;
+  background: #075ee4;
+  color: white;
+  cursor: pointer;
+  font-weight: 800;
+}
+.ea-error { color: #b42318; margin: 15px 0; }
+@media(max-width:750px) {
+  .ea-hobby-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ea-hobby-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ea-hobby-actions {
+    justify-content: space-between;
+  }
+}
+
+/* Kabankalan Hobby Card UI */
+.ea-hobby-grid {
+  gap: 18px;
+}
+.ea-hobby-card {
+  position: relative;
+  min-height: 155px;
+  padding: 22px 12px;
+  gap: 15px;
+  border: 1.5px solid #dce6f3;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #1a2b4c;
+  box-shadow: 0 4px 14px rgba(26,43,76,.04);
+  text-align: center;
+  line-height: 1.35;
+  transition: transform .2s ease,
+              box-shadow .2s ease,
+              border-color .2s ease,
+              background-color .2s ease;
+}
+.ea-hobby-choice:hover .ea-hobby-card {
+  transform: translateY(-4px);
+  border-color: #7caeff;
+  box-shadow: 0 12px 26px rgba(43,127,255,.12);
+}
+.ea-hobby-icon {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  font-size: 32px;
+  border-radius: 16px;
+  background: #f2f6fc;
+}
+.ea-hobby-choice input:checked + .ea-hobby-card {
+  border: 2px solid #2b7fff;
+  background: #eef5ff;
+  color: #155bc7;
+  box-shadow: 0 10px 26px rgba(43,127,255,.13);
+}
+.ea-hobby-choice input:checked + .ea-hobby-card::after {
+  content: "?";
+  position: absolute;
+  top: 11px;
+  right: 11px;
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: #2b7fff;
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+}
+.ea-hobby-choice input:checked + .ea-hobby-card .ea-hobby-icon {
+  background: #dbeaff;
+}
+.ea-hobby-submit:hover:not(:disabled) {
+  background: #165fda;
+}
+.ea-hobby-submit:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+@media (max-width: 900px) {
+  .ea-hobby-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .ea-hobby-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .ea-hobby-card {
+    min-height: 130px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ea-hobby-card {
+    transition: none;
+  }
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="ea-hobbies">
+  <div class="eyebrow">
+    EXPLOREANYWHERE Â· STEP 2 OF 4
+  </div>
+
+  <h1>What are you into?</h1>
+
+  <p class="subtitle">
+    Choose your interests to personalize your experience
+    in <strong>{{ city.name }}</strong>.
+  </p>
+
+  <form method="post" id="ea-hobby-form">
+    {% csrf_token %}
+
+    {% if error %}
+      <p class="ea-error" role="alert">{{ error }}</p>
+    {% endif %}
+
+    <div class="ea-hobby-grid">
+      {% for hobby in hobbies %}
+      <label class="ea-hobby-choice">
+        <input
+          type="checkbox"
+          name="hobbies"
+          value="{{ hobby.id }}"
+          {% if hobby.id in selected_hobbies %}checked{% endif %}
+        >
+        <span class="ea-hobby-card">
+         
+<span class="ea-hobby-icon" aria-hidden="true">
+  {% if hobby.id == "billiards" %}&#127921;
+  {% elif hobby.id == "basketball" %}&#127936;
+  {% elif hobby.id == "cafe" %}&#9749;
+  {% elif hobby.id == "hiking" %}&#129406;
+  {% elif hobby.id == "photography" %}&#128247;
+  {% elif hobby.id == "gaming" %}&#127918;
+  {% elif hobby.id == "food" %}&#127860;
+  {% elif hobby.id == "music" %}&#127925;
+  {% elif hobby.id == "culture" %}&#127917;
+  {% elif hobby.id == "nature" %}&#127807;
+  {% elif hobby.id == "shopping" %}&#128717;
+  {% else %}&#10024;
+  {% endif %}
+</span>
+
+          <span>{{ hobby.label }}</span>
+        </span>
+      </label>
+      {% endfor %}
+    </div>
+
+    <div class="ea-hobby-footer">
+      <div>
+        <strong id="ea-selected-count">0 hobbies selected</strong>
+        <p>Select at least one interest to continue.</p>
+      </div>
+
+      <div class="ea-hobby-actions">
+        <a class="ea-hobby-back" href="{% url 'home' %}">
+       <span>&larr; Back</span>
+        </a>
+
+        <button
+          class="ea-hobby-submit"
+          type="submit"
+          id="ea-hobby-continue"
+          disabled
+        >
+          <span>Continue &rarr;</span>
+        </button>
+      </div>
+    </div>
+  </form>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  const checkboxes = Array.from(
+    document.querySelectorAll('input[name="hobbies"]')
+  );
+  const counter = document.getElementById("ea-selected-count");
+  const button = document.getElementById("ea-hobby-continue");
+
+  function refresh() {
+    const count = checkboxes.filter(item => item.checked).length;
+
+    counter.textContent = count === 1
+      ? "1 hobby selected"
+      : count + " hobbies selected";
+
+    button.disabled = count === 0;
+  }
+
+  checkboxes.forEach(function (checkbox) {
+    checkbox.addEventListener("change", refresh);
+  });
+
+  refresh();
+})();
+</script>
+{% endblock %}
+
+

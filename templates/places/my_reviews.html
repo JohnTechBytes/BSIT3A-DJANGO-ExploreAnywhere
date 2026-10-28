@@ -1,0 +1,98 @@
+{% extends "theme/public_base.html" %}
+{% block extra_css %}
+<style>
+.ea-myreviews{max-width:960px;padding:44px 20px 90px;margin:0 auto;color:#173454}
+.ea-myreviews h1{font-size:clamp(29px,4vw,40px);margin:10px 0 8px;color:#102f56;font-weight:850}
+.ea-myreviews p{color:#60718b;line-height:1.6}
+.ea-myr-card{background:#fff;border:1px solid #dfe8f4;border-radius:16px;padding:22px;margin:14px 0}
+.ea-myr-card h2{font-size:20px;margin:0 0 5px;color:#153d69}
+.ea-myr-stars{color:#0757d8;font-weight:800}
+.ea-myr-actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.ea-myr-btn{padding:11px 17px;border-radius:11px;text-decoration:none;background:#075ee4;color:#fff!important;font-weight:750;display:inline-block}
+.ea-myr-btn.secondary{background:white;color:#075ee4!important;border:1px solid #c7d9f0}
+.ea-myr-empty{border:1px dashed #cbd8e9;background:#fff;border-radius:15px;padding:30px}
+
+/* exploreanywhere-phase4c-polish-v1 */
+/* Scoped to these Phase 4C screens: existing forms and links are unchanged. */
+.ea-saved,.ea-myreviews,.ea-trip,.ea-visits {
+  --ea-c-navy:#102f59;--ea-c-blue:#075ee4;--ea-c-text:#19375e;
+  --ea-c-muted:#63758d;--ea-c-border:#dce7f4;--ea-c-soft:#f5f9ff;
+  --ea-c-shadow:0 12px 32px rgba(16,47,89,.075);
+  font-family:inherit;line-height:1.55;min-width:0;
+}
+.ea-saved a,.ea-myreviews a,.ea-trip a,.ea-visits a {text-underline-offset:3px}
+.ea-saved :is(a,button):focus-visible,.ea-myreviews :is(a,button):focus-visible,
+.ea-trip :is(a,button,input,select,textarea):focus-visible,
+.ea-visits :is(a,button):focus-visible {
+  outline:3px solid #f6b83b;outline-offset:3px;
+}
+.ea-saved .ea-c-page-hero,.ea-myreviews .ea-c-page-hero,
+.ea-visits .ea-c-page-hero {
+  background:radial-gradient(circle at 91% 15%,rgba(133,198,255,.29),transparent 32%),
+    linear-gradient(115deg,#102e5b,#075ee4);
+  padding:clamp(24px,5vw,40px);border-radius:22px;color:#fff;
+  box-shadow:0 20px 46px rgba(7,94,228,.13);margin-bottom:24px;
+}
+.ea-saved .ea-c-page-hero h1,.ea-myreviews .ea-c-page-hero h1,
+.ea-visits .ea-c-page-hero h1 {color:#fff;font-size:clamp(29px,4vw,43px);margin:7px 0 8px;letter-spacing:-.035em;line-height:1.15}
+.ea-saved .ea-c-page-hero p,.ea-myreviews .ea-c-page-hero p,
+.ea-visits .ea-c-page-hero p {color:#e6f1ff;margin:0;max-width:68ch;line-height:1.65}
+.ea-saved .ea-c-page-hero .ea-c-eyebrow,.ea-myreviews .ea-c-page-hero .ea-c-eyebrow,
+.ea-visits .ea-c-page-hero .ea-c-eyebrow {
+  color:#bbddff;font-size:12px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+}
+.ea-saved .ea-c-count,.ea-myreviews .ea-c-count {
+  display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.24);
+  padding:5px 12px;border-radius:999px;color:#fff;font-size:12px;font-weight:750;margin-top:14px;
+}
+.ea-saved .ea-action,.ea-myreviews .ea-myr-btn,.ea-visits .ea-visits-link,
+.ea-trip .btn {transition:box-shadow .18s ease,transform .18s ease,background .18s ease}
+.ea-saved .ea-action:hover,.ea-myreviews .ea-myr-btn:hover,
+.ea-visits .ea-visits-link:hover,.ea-trip .btn:hover {transform:translateY(-1px);box-shadow:0 5px 15px rgba(7,94,228,.12)}
+@media(max-width:700px){
+  .ea-saved,.ea-myreviews,.ea-visits,.ea-trip {padding:24px 14px 70px}
+  .ea-saved .ea-c-page-hero,.ea-myreviews .ea-c-page-hero,.ea-visits .ea-c-page-hero{border-radius:17px;padding:25px 20px}
+  .ea-saved .ea-actions,.ea-myreviews .ea-myr-actions,.ea-visits .ea-visits-nav{gap:9px}
+}
+@media(prefers-reduced-motion:reduce){
+  .ea-saved .ea-action,.ea-myreviews .ea-myr-btn,.ea-visits .ea-visits-link,.ea-trip .btn {transition:none}
+  .ea-saved .ea-action:hover,.ea-myreviews .ea-myr-btn:hover,.ea-visits .ea-visits-link:hover,.ea-trip .btn:hover{transform:none}
+}
+
+.ea-myreviews{max-width:1060px}
+.ea-myr-card{border-radius:19px;padding:clamp(19px,3vw,28px);box-shadow:var(--ea-c-shadow);margin:17px 0}
+.ea-myr-card h2{font-size:22px;line-height:1.3;margin:0 0 10px}
+.ea-myr-stars{display:inline-flex;background:#eaf2ff;color:#0755bd;padding:6px 12px;border-radius:999px;font-size:13px;gap:5px;align-items:center}
+.ea-myr-card small{color:#64748b;margin-left:8px;font-size:12px}
+.ea-myr-card p{white-space:normal;overflow-wrap:anywhere}
+.ea-myr-card .ea-myr-btn{margin-top:7px}
+.ea-myr-actions{margin:22px 0 26px}
+.ea-myr-empty{border-radius:19px;padding:clamp(28px,5vw,48px);background:var(--ea-c-soft);text-align:center}
+.ea-myr-empty h2{font-size:22px;color:var(--ea-c-navy);font-weight:800}
+@media(max-width:560px){.ea-myr-card small{display:block;margin:8px 0 0}.ea-myr-actions a{flex:1;text-align:center}}
+
+</style>
+{% endblock %}
+{% block content %}
+<main class="ea-myreviews">
+  <header class="ea-c-page-hero">
+    <p class="ea-c-eyebrow">MY KABANKALAN JOURNEY</p>
+    <h1>My Reviews</h1>
+    <p>Your ratings and experiences with Kabankalan destinations.</p>
+    <span class="ea-c-count">{{ reviews|length }} submitted review{{ reviews|length|pluralize }}</span>
+  </header>
+  <nav class="ea-myr-actions"><a class="ea-myr-btn" href="{% url 'places:journey_dashboard' %}">My Journey</a><a class="ea-myr-btn secondary" href="{% url 'places:attraction_carousel' %}">Explore Places</a></nav>
+  {% for review in reviews %}
+    <article class="ea-myr-card"><h2>{{ review.place.title }}</h2>
+      <span class="ea-myr-stars" aria-label="Rated {{ review.rating }} out of 5 stars">&#9733; {{ review.rating }} / 5 stars</span>
+      <small> · {{ review.created_at|date:"M j, Y" }}</small>
+      {% if review.comment %}<p>{{ review.comment|linebreaksbr }}</p>{% endif %}
+      {% if review.place.is_active and review.place.is_verified %}
+      <a class="ea-myr-btn secondary" href="{% url 'places:place_detail' review.place.pk %}#place-reviews">View / Edit Review</a>
+      {% else %}<p>This destination is no longer publicly listed. Your review is retained.</p>{% endif %}
+    </article>
+  {% empty %}
+    <section class="ea-myr-empty"><h2>No reviews submitted yet</h2><p>Explore Kabankalan places and add your first rating.</p></section>
+  {% endfor %}
+</main>
+{% endblock %}

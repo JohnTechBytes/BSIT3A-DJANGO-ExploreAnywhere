@@ -1,0 +1,11 @@
+{# ExploreAnywhere Phase 6F: shared Discover Kabankalan navigation. - HIDDEN in Phase 1 cleanup #}
+<style>
+.ea6f-nav{display:none;}
+</style>
+<nav class="ea6f-nav" aria-label="Discover Kabankalan views">
+  <div class="ea6f-tabs">
+    <a class="ea6f-tab" href="{% url 'places:attraction_carousel' %}?browse=all" {% if active_discovery_mode == 'browse' %}aria-current="page"{% endif %}>All Places</a>
+    <a class="ea6f-tab" href="{% url 'places:attraction_carousel' %}?mode=nearby" {% if active_discovery_mode == 'nearby' %}aria-current="page"{% endif %}>Near Me</a>
+    <a class="ea6f-tab" href="{% url 'places:attraction_carousel' %}?browse=all&amp;display=map" {% if active_discovery_mode == 'map' %}aria-current="page"{% endif %}>Map View</a>
+  </div>
+</nav>
