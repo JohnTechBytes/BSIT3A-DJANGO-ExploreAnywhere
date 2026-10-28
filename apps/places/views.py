@@ -11,6 +11,9 @@ from .models import Place, SavedPlace, Review
 from .sample_images import sample_image_for
 
 
+# Guard rail only: the carousel is designed to show every published place.
+MAX_CAROUSEL_PLACES = 500
+
 # Search intent -> possible words in attraction records.
 SEARCH_INTENTS = {
     "beach": {
@@ -306,10 +309,12 @@ def attraction_carousel(request):
             (place.title or "").casefold(),
         ))
 
-    paginator = Paginator(attractions, 12)
-    page = paginator.get_page(request.GET.get("page"))
+    # The looping carousel shows every matching destination, so no pagination
+    # page is sliced here. A high cap only guards against pathological datasets.
+    total_matches = len(attractions)
+    carousel_places = attractions[:MAX_CAROUSEL_PLACES]
     # Real photos remain authoritative; illustrative samples fill genuine gaps.
-    for place in page:
+    for place in carousel_places:
         place.sample_image = sample_image_for(place) if not (place.cover_image or place.cover_image_url) else ""
 
     # exploreanywhere-phase5a2-discovery-clarity-v1
@@ -348,9 +353,9 @@ def attraction_carousel(request):
         "places/attraction_carousel.html",
         {
             "selected_city": city,
-            "attractions": page,
-            "page_obj": page,
-            "total_attractions": paginator.count,
+            "attractions": carousel_places,
+            "total_attractions": total_matches,
+            "carousel_truncated": total_matches > len(carousel_places),
             "selected_hobbies": scoring_hobbies,
             "search_query": search_query,
             "published_total": published_total,

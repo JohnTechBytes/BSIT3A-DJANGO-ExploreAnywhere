@@ -124,9 +124,6 @@
 .browse-page .ea-map-details .ea-detail-button + .ea-detail-button { border: 1px solid #39514f; background: transparent; color: #b3e8e1 !important; }
 .browse-page .ea-map-details .ea-detail-button + .ea-detail-button:hover { background: #173a36; }
 .browse-page .ea-map-note { color: #a3b4c0; font-size: 11px; }
-.browse-page .ea-pagination a { border: 1px solid #35454f; border-radius: 9px; background: #101a23; color: #b3e8e1; }
-.browse-page .ea-pagination a:hover { border-color: var(--br-teal); }
-.browse-page .ea-pagination span { color: #a3b4c0; }
 .browse-page .ea-empty { padding: 46px 22px; border: 1px dashed #38564e; border-radius: 15px; background: #0d1b1b; }
 .browse-page .ea-empty h2 { color: #f0f5f1; font-family: Georgia, "Times New Roman", serif; font-size: 27px; font-weight: 500; }
 .browse-page .ea-empty p { color: #b5c6c9; font-size: 12px; line-height: 1.8; }
@@ -184,4 +181,218 @@
   .browse-page .ea-view-sort-group label { margin: 0; }
   .browse-page .ea-view-sort-group select { width: 100%; }
   .browse-page .ea-carousel-controls { gap: 7px; }
+}
+
+/* =====================================================================
+   Looping "Places to Explore" carousel, voice search and drone map HUD.
+   ===================================================================== */
+
+/* The strip is translated by JavaScript, so it never shows a scrollbar. */
+.browse-page .ea-carousel {
+  /* Container-relative width: the track is max-content, so a plain
+     percentage would resolve against the (circular) track width. */
+  container-type: inline-size;
+  --ea-card-w: calc((100cqw - 36px) / 3);
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 6px;
+  cursor: grab;
+  scroll-snap-type: none;
+  /* Soft 30px edges: a half-scrolled card fades out instead of being sliced. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 30px, #000 calc(100% - 30px), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 30px, #000 calc(100% - 30px), transparent 100%);
+}
+.browse-page .ea-carousel.is-dragging { cursor: grabbing; }
+.browse-page .ea-carousel-track {
+  display: flex;
+  gap: 18px;
+  width: max-content;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+.browse-page .ea-carousel .ea-carousel-track { align-items: stretch; }
+/* Equal card heights, with the action row pinned to the bottom. */
+.browse-page .ea-carousel .ea-carousel-track > .ea-card,
+.browse-page .ea-carousel .ea-carousel-track > .ea-card.ea-clone {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 var(--ea-card-w);
+  width: var(--ea-card-w);
+  min-width: 0;
+  scroll-snap-align: unset;
+}
+.browse-page .ea-carousel .ea-card-body { display: flex; flex-direction: column; flex: 1; }
+.browse-page .ea-carousel .ea-card-footer { margin-top: auto; }
+.browse-page .ea-carousel.is-cloned .ea-clone { pointer-events: none; }
+
+/* Fewer than four results: a plain grid reads better than a loop. */
+.browse-page .ea-carousel--compact { -webkit-mask-image: none; mask-image: none; cursor: default; }
+.browse-page .ea-carousel--compact .ea-carousel-track {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  width: 100%;
+}
+.browse-page .ea-carousel--compact .ea-carousel-track > .ea-card { flex: none; width: auto; }
+.browse-page .ea-carousel--single .ea-carousel-track { display: block; max-width: 890px; }
+
+@media (min-width: 700px) and (max-width: 1049px) {
+  .browse-page .ea-carousel { --ea-card-w: calc((100cqw - 18px) / 2); }
+}
+@media (max-width: 699px) {
+  .browse-page .ea-carousel { --ea-card-w: min(82vw, 330px); gap: 14px; }
+  .browse-page .ea-carousel-track { gap: 14px; }
+}
+
+.browse-page .ea-carousel-controls { align-items: center; }
+.browse-page .ea-carousel-controls .ea-marquee-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* The legacy control rules pin every button to 42px; the label needs room. */
+  width: auto;
+  height: auto;
+  min-height: 38px;
+  padding: 0 14px;
+  white-space: nowrap;
+  line-height: 1;
+  border: 1px solid #39514f;
+  border-radius: 999px;
+  background: #10241f;
+  color: #a8e5da;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  cursor: pointer;
+  transition: border-color .2s, color .2s, background .2s;
+}
+.browse-page .ea-carousel-controls .ea-marquee-toggle:hover { border-color: var(--br-teal); color: #d8fff8; }
+.browse-page .ea-marquee-icon { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.browse-page .ea-marquee-icon-play { fill: currentColor; stroke: none; }
+.browse-page .ea-carousel-controls .ea-marquee-toggle[aria-pressed="true"] .ea-marquee-icon-play,
+.browse-page .ea-carousel-controls .ea-marquee-toggle[aria-pressed="false"] .ea-marquee-icon-pause { display: none; }
+
+.browse-page .ea-carousel-caption {
+  margin: 12px 0 0;
+  color: #8fa2b0;
+  font-size: 11px;
+  letter-spacing: .2px;
+}
+
+/* "View on map" affordance over each card photo. */
+.browse-page .ea-card-image { position: relative; }
+.browse-page .ea-card-map-hint {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border: 1px solid #ffffff2e;
+  border-radius: 999px;
+  background: #06131ae0;
+  color: #d9f4ef;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .2s, transform .2s;
+  pointer-events: none;
+}
+.browse-page .ea-card-map-hint svg { width: 12px; height: 12px; }
+.browse-page .ea-card:hover .ea-card-map-hint,
+.browse-page .ea-card:focus-visible .ea-card-map-hint { opacity: 1; transform: none; }
+
+/* Voice search. */
+.browse-page .ea-search-input-wrap { position: relative; }
+/* Only reserve room next to the pill when the browser can actually listen. */
+.browse-page .ea-search-input-wrap:has(.ea-voice-button:not([hidden])) input { padding-right: 118px; }
+.browse-page .ea-voice-button {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 37px;
+  padding: 0 12px;
+  border: 1px solid #2f5a53;
+  border-radius: 999px;
+  background: #0f2725;
+  color: #a5e8dc;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, color .2s;
+}
+.browse-page .ea-voice-button:hover { border-color: var(--br-teal); color: #e7fffb; }
+.browse-page .ea-voice-icon { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.browse-page .ea-voice-button.is-listening {
+  border-color: #e8788c;
+  background: #341820;
+  color: #ffd3db;
+  animation: ea-voice-pulse 1.4s ease-in-out infinite;
+}
+.browse-page .ea-voice-status { min-height: 15px; margin: 6px 0 0; color: #8fc7bf; font-size: 10.5px; letter-spacing: .2px; }
+.browse-page .ea-voice-status.is-error { color: #ffb9c4; }
+@keyframes ea-voice-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 #e8788c33; }
+  50% { box-shadow: 0 0 0 7px #e8788c00; }
+}
+
+/* Drone flight HUD over the Leaflet panel. */
+.browse-page #ea-map-panel { position: relative; }
+.browse-page .ea-drone-hud {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 640;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  max-width: calc(100% - 28px);
+  padding: 9px 14px;
+  border: 1px solid #2f6b62;
+  border-radius: 999px;
+  background: #06131ae8;
+  color: #d9f4ef;
+  font-size: 11px;
+  letter-spacing: .3px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px #00000059;
+  animation: ea-drone-in .35s ease-out both;
+}
+.browse-page .ea-drone-track { display: inline-flex; align-items: center; gap: 6px; color: var(--br-teal); font-weight: 750; text-transform: uppercase; font-size: 9.5px; letter-spacing: 1.1px; }
+.browse-page .ea-drone-track svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.browse-page .ea-drone-hud strong { font-weight: 600; color: #f2fbf8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.browse-page .ea-drone-scan {
+  position: absolute;
+  inset: 0 auto 0 -40%;
+  width: 38%;
+  background: linear-gradient(90deg, transparent, #21d9c62e, transparent);
+  animation: ea-drone-scan 1.9s linear infinite;
+}
+@keyframes ea-drone-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@keyframes ea-drone-scan { from { left: -40%; } to { left: 110%; } }
+
+/* Drone marker pulse placed on the Leaflet map. */
+.browse-page .ea-drone-ring {
+  animation: ea-drone-ring-pulse 1.6s ease-out infinite;
+  transform-origin: center;
+}
+@keyframes ea-drone-ring-pulse {
+  0% { opacity: .85; transform: scale(.65); }
+  70% { opacity: 0; transform: scale(1.6); }
+  100% { opacity: 0; transform: scale(1.6); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .browse-page .ea-carousel-track { transform: none !important; }
+  .browse-page .ea-voice-button.is-listening,
+  .browse-page .ea-drone-hud,
+  .browse-page .ea-drone-scan,
+  .browse-page .ea-drone-ring { animation: none !important; }
 }

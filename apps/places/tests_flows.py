@@ -8,6 +8,8 @@ from datetime import date, timedelta
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from unittest import mock
+
 from django.urls import reverse
 
 from apps.cities.models import City
@@ -216,6 +218,83 @@ class DiscoveryFlowTests(FlowFixture):
         response = self.client.get(reverse("places:place_detail", args=[self.place.pk]))
         self.assertContains(response, "Open the map in Google Maps")
         self.assertContains(response, "9.876392")
+
+
+class CarouselLoopTests(FlowFixture):
+    """The Explore Places loop serves every match, with voice + map controls."""
+
+    def setUp(self):
+        self.login()
+        self.url = reverse("places:attraction_carousel")
+
+    def test_carousel_context_serves_every_match_in_one_request(self):
+        extra = [
+            Place.objects.create(
+                city=self.city, title=f"Loop Place {index}", slug=f"loop-place-{index}",
+                address="Kabankalan", category=self.nature,
+                is_active=True, is_verified=True,
+            )
+            for index in range(1, 15)
+        ]
+        response = self.client.get(self.url, {"browse": "all"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["total_attractions"], 16)
+        self.assertEqual(len(response.context["attractions"]), 16)
+        self.assertFalse(response.context["carousel_truncated"])
+        for place in extra:
+            self.assertContains(response, place.title)
+        self.assertNotContains(response, "Unpublished Draft Place")
+
+    def test_carousel_renders_a_single_marquee_track(self):
+        response = self.client.get(self.url, {"browse": "all"})
+
+        self.assertContains(response, 'id="ea-carousel-track"')
+        self.assertContains(response, "data-marquee")
+        self.assertContains(response, "ea-carousel-caption")
+        self.assertContains(response, "loop here automatically")
+        # Pagination is gone: one request holds the whole list.
+        self.assertNotContains(response, "ea-pagination")
+
+    def test_voice_search_controls_render_beside_the_query_field(self):
+        response = self.client.get(self.url, {"browse": "all"})
+
+        self.assertContains(response, 'id="ea-search-query"')
+        self.assertContains(response, 'id="ea-voice-search"')
+        self.assertContains(response, 'id="ea-voice-status"')
+        self.assertContains(response, 'aria-pressed="false"')
+
+    def test_card_photo_carries_the_map_view_hook(self):
+        response = self.client.get(self.url, {"browse": "all"})
+
+        self.assertContains(response, "ea-card-map-hint")
+        self.assertContains(response, 'data-lat="9.876392"')
+        self.assertContains(response, 'id="ea-drone-hud"')
+        self.assertContains(response, 'id="ea-drone-target"')
+
+    def test_marquee_controls_appear_only_for_a_scrollable_set(self):
+        two_places = self.client.get(self.url, {"browse": "all"})
+        self.assertNotContains(two_places, 'id="ea-marquee-toggle"')
+
+        Place.objects.create(
+            city=self.city, title="Third Place", slug="third-place",
+            address="Kabankalan", is_active=True, is_verified=True,
+        )
+        Place.objects.create(
+            city=self.city, title="Fourth Place", slug="fourth-place",
+            address="Kabankalan", is_active=True, is_verified=True,
+        )
+        four_places = self.client.get(self.url, {"browse": "all"})
+        self.assertContains(four_places, 'id="ea-marquee-toggle"')
+
+    def test_carousel_cap_truncates_with_a_visible_notice(self):
+        with mock.patch("apps.places.views.MAX_CAROUSEL_PLACES", 1):
+            response = self.client.get(self.url, {"browse": "all"})
+
+        self.assertEqual(len(response.context["attractions"]), 1)
+        self.assertEqual(response.context["total_attractions"], 2)
+        self.assertTrue(response.context["carousel_truncated"])
+        self.assertContains(response, "Showing the first 1 of 2 matching places")
 
 
 class SavedPlacesFlowTests(FlowFixture):
