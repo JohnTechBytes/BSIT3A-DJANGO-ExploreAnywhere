@@ -1056,8 +1056,9 @@
 (function () {
     "use strict";
 
-    // Use the same MapTiler key already working in your project.
-    const mapTilerKey = "2G4T5asnBPm0kLPHVQsl";
+    // The MapTiler token comes from the deployment configuration
+    // (MAPTILER_API_KEY environment variable, see mysite/settings.py).
+    const mapTilerKey = "{{ MAPTILER_API_KEY|escapejs }}";
 
     // ExploreAnywhere Phase 5E.1: load Leaflet only when Map View is requested.
     // Keep the original Leaflet version, MapTiler layers and marker logic.

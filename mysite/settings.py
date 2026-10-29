@@ -1,17 +1,60 @@
 """
 Django settings for mysite project.
 ExploreAnywhere - Multi-city, hobby-based place recommender.
+
+Deployment configuration is read from the environment so that no secret has to
+live in the repository. Every variable has a working development default, so a
+fresh clone still runs with `python manage.py runserver` unchanged.
 """
 
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-zsnno#^l!whuzs%55j6*366px#r09+borh$1^2mj*_ovz47!o_'
 
-DEBUG = True
+def _env_flag(name, default=False):
+    """Read a boolean environment variable ('1', 'true', 'yes', 'on')."""
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
 
-ALLOWED_HOSTS = ['*']
+
+def _env_list(name, default=()):
+    """Read a comma separated environment variable into a clean list."""
+    raw = os.environ.get(name)
+    if raw is None:
+        return [item.strip() for item in default]
+    return [item.strip() for item in raw.split(",") if item.strip()]
+
+
+# The value below is the development fallback only. Set DJANGO_SECRET_KEY in
+# the environment before deploying; never commit a production key.
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-zsnno#^l!whuzs%55j6*366px#r09+borh$1^2mj*_ovz47!o_",
+)
+
+DEBUG = _env_flag("DJANGO_DEBUG", default=True)
+
+# Hosts allowed to serve this site. The development default accepts any host
+# so the project can be opened from a phone on the local network; production
+# should set DJANGO_ALLOWED_HOSTS to the real domain names.
+LOCAL_DEV_HOSTS = ("192.168.80.1", "10.172.248.90")
+ALLOWED_HOSTS = _env_list("DJANGO_ALLOWED_HOSTS", default=("*",))
+if DEBUG:
+    for host in LOCAL_DEV_HOSTS:
+        if host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(host)
+
+# MapTiler access token used by the interactive Leaflet maps. The default is
+# the public development token that the project already shipped with; override
+# it with MAPTILER_API_KEY for a deployment.
+MAPTILER_API_KEY = os.environ.get(
+    "MAPTILER_API_KEY",
+    "2G4T5asnBPm0kLPHVQsl",
+)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -58,6 +101,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.core.context_processors.explore_settings',
             ],
         },
     },
@@ -68,18 +112,19 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "exploreanywhere",
-        "USER": "root",
-        "PASSWORD": "",
-        "HOST": "127.0.0.1",
-        "PORT": "3306",
-      "OPTIONS": {
-    "charset": "utf8mb4",
-    "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
-},
+        "ENGINE": os.environ.get("DJANGO_DB_ENGINE", "django.db.backends.mysql"),
+        "NAME": os.environ.get("DJANGO_DB_NAME", "exploreanywhere"),
+        "USER": os.environ.get("DJANGO_DB_USER", "root"),
+        "PASSWORD": os.environ.get("DJANGO_DB_PASSWORD", ""),
+        "HOST": os.environ.get("DJANGO_DB_HOST", "127.0.0.1"),
+        "PORT": os.environ.get("DJANGO_DB_PORT", "3306"),
+        "OPTIONS": {"charset": "utf8mb4"},
     }
 }
+if DATABASES["default"]["ENGINE"].endswith("mysql"):
+    DATABASES["default"]["OPTIONS"]["init_command"] = (
+        "SET sql_mode='STRICT_TRANS_TABLES'"
+    )
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -108,8 +153,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/cities/select/"
 LOGOUT_REDIRECT_URL = "/"
-
-# Local Wi-Fi Android testing
-ALLOWED_HOSTS = [*ALLOWED_HOSTS, '192.168.80.1']
-
-ALLOWED_HOSTS = list(set([*ALLOWED_HOSTS, ' 10.172.248.90 ']))

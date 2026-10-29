@@ -504,8 +504,8 @@
     if (resultsMap) return;
     resultsMap = L.map("ea6g-map", {scrollWheelZoom:false});
     // ExploreAnywhere Phase 6G.1: MapTiler nearby tile layer
-    // Same MapTiler key and style URLs as the existing Discover Kabankalan map.
-    const nearbyMapTilerKey = "2G4T5asnBPm0kLPHVQsl";
+    // The token comes from the deployment configuration (MAPTILER_API_KEY).
+    const nearbyMapTilerKey = "{{ MAPTILER_API_KEY|escapejs }}";
     const nearbyAttribution =
       '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> ' +
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';

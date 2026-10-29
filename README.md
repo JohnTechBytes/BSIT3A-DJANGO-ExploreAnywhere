@@ -252,8 +252,9 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-Database settings are hardcoded in `mysite/settings.py`: database
-`exploreanywhere`, user `root`, no password, `127.0.0.1:3306`, `utf8mb4`.
+Database settings come from the environment with development defaults
+(`exploreanywhere`, user `root`, no password, `127.0.0.1:3306`, `utf8mb4`).
+Set `DJANGO_DB_*` variables to point the project at a real MySQL server.
 
 Virtual environments are gitignored under any name (`venv*`, `.venv/`).
 
@@ -297,6 +298,16 @@ Optional, read at runtime with safe defaults:
 
 | Variable | Used by |
 |----------|---------|
+| `DJANGO_SECRET_KEY` | session and token signing; set a real key in production |
+| `DJANGO_DEBUG` | debug mode (`1`, `true`, `yes`, `on`); defaults to on for development |
+| `DJANGO_ALLOWED_HOSTS` | comma-separated list of host names allowed to serve the site |
+| `DJANGO_DB_ENGINE` | database engine, e.g. `django.db.backends.mysql` |
+| `DJANGO_DB_NAME` | database name |
+| `DJANGO_DB_USER` | database user |
+| `DJANGO_DB_PASSWORD` | database password |
+| `DJANGO_DB_HOST` | database host |
+| `DJANGO_DB_PORT` | database port |
+| `MAPTILER_API_KEY` | access token for the MapTiler map tiles |
 | `EXPLOREANYWHERE_PHOTO_USER_AGENT` | photo discovery commands |
 | `WIKIMEDIA_USER_AGENT` | Wikimedia photo lookup commands |
 
