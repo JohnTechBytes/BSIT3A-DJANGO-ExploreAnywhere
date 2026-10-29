@@ -856,7 +856,7 @@
 
         <div class="ea-view-sort-group">
             <label for="ea-inline-sort">Sort:</label>
-            <select id="ea-inline-sort" name="inline_sort" onchange="document.getElementById('ea-filter-sort').value = this.value; document.forms[0].submit();">
+            <select id="ea-inline-sort" name="inline_sort" onchange="var eaSort = document.getElementById('ea-filter-sort'); eaSort.value = this.value; var eaForm = eaSort.form; if (eaForm.requestSubmit) { eaForm.requestSubmit(); } else { eaForm.submit(); }">
                 <option value="recommended" {% if selected_sort == 'recommended' %}selected{% endif %}>Recommended</option>
                 <option value="rating" {% if selected_sort == 'rating' %}selected{% endif %}>Highest rated</option>
                 <option value="name" {% if selected_sort == 'name' %}selected{% endif %}>Name A–Z</option>
