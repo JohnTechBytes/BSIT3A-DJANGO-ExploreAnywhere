@@ -1,0 +1,111 @@
+{% extends "theme/public_base.html" %}
+{% load static %}
+{% block extra_css %}
+<style>
+/* ExploreAnywhere privacy notice v1 */
+.eapriv-page {--eapriv-panel:#101822;--eapriv-panel-2:#0c141c;--eapriv-line:#2a3642;--eapriv-text:#e7edf1;--eapriv-muted:#a6b4c2;--eapriv-teal:#21d9c6;max-width:900px;margin:0 auto;padding:34px 24px 92px;color:var(--eapriv-text)}
+.eapriv-page * {box-sizing:border-box}
+.eapriv-page a {text-decoration:none}
+.eapriv-page a:hover {color:var(--eapriv-teal)}
+.eapriv-hero {position:relative;overflow:hidden;padding:33px 34px;border:1px solid #2a4c47;border-radius:17px;background:linear-gradient(120deg,#112e32,#0c2230 70%);box-shadow:0 18px 45px #0002;color:#eaf4f1}
+.eapriv-hero::after {content:"";position:absolute;right:-70px;top:-100px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,#21d9c61f,transparent 65%);pointer-events:none}
+.eapriv-hero > * {position:relative;z-index:1}
+.eapriv-kicker {margin:0 0 12px;color:var(--eapriv-teal);font-size:10px;font-weight:750;letter-spacing:1.5px;text-transform:uppercase}
+.eapriv-hero h1 {margin:0 0 12px;color:#f1f6f3;font-family:Georgia,"Times New Roman",serif;font-size:clamp(28px,4vw,42px);font-weight:600;line-height:1.1;letter-spacing:-1.4px}
+.eapriv-hero p {margin:0;color:#b6c8c7;font-size:13px;line-height:1.8;max-width:62ch}
+.eapriv-version {display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:6px 12px;border:1px solid #2f5a53;border-radius:999px;background:#0f2b27;color:#a5e8dc;font-size:10px;font-weight:750;letter-spacing:.4px}
+.eapriv-card {margin-top:18px;background:var(--eapriv-panel);border:1px solid var(--eapriv-line);border-radius:16px;padding:22px;box-shadow:0 14px 32px #00000021}
+.eapriv-card h2 {margin:0 0 12px;color:#f1f6f3;font-family:Georgia,"Times New Roman",serif;font-size:19px;font-weight:600}
+.eapriv-card p {margin:0 0 10px;color:#aebdca;font-size:13px;line-height:1.75}
+.eapriv-card p:last-child {margin-bottom:0}
+.eapriv-card ul {margin:0;padding-left:19px;color:#aebdca;font-size:13px;line-height:1.8}
+.eapriv-card li {margin-bottom:6px}
+.eapriv-card strong {color:#e7edf1}
+.eapriv-never {border-color:#2f5a53;background:#0f2b27}
+.eapriv-never h2 {color:#a5e8dc}
+.eapriv-foot {margin-top:24px;color:#8296a6;font-size:11px;line-height:1.75}
+@media(max-width:760px){.eapriv-page{padding:22px 15px 65px}.eapriv-hero{padding:26px 22px;border-radius:15px}}
+</style>
+{% endblock %}
+{% block title %}Privacy Notice · ExploreKabankalan{% endblock %}
+{% block body_class %}site-dark{% endblock %}
+{% block skip_link %}<a class="sd-skip" href="#main-content">Skip to content</a>{% endblock %}
+{% block brand_content %}
+  <span class="sd-brand-icon" aria-hidden="true">✺</span>
+  <span class="sd-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
+{% endblock %}
+{% block footer_brand %}ExploreKabankalan{% endblock %}
+{% block footer_tagline %}Local places. Your adventure.{% endblock %}
+{% block extra_css_after %}<link rel="stylesheet" href="{% static 'css/site-dark.css' %}">{% endblock %}
+
+{% block content %}
+<main class="eapriv-page" id="main-content">
+  <header class="eapriv-hero">
+    <p class="eapriv-kicker">Data protection</p>
+    <h1>Privacy Notice</h1>
+    <p>
+      ExploreAnywhere is a place recommender for Kabankalan City. This notice
+      explains exactly what the system stores, what it deliberately does not
+      store, and who can see it.
+    </p>
+    <span class="eapriv-version">Version {{ notice_version }} &middot; {{ notice_date }}</span>
+  </header>
+
+  <section class="eapriv-card" aria-labelledby="eapriv-collect">
+    <h2 id="eapriv-collect">What is stored</h2>
+    <ul>
+      <li><strong>Your account:</strong> username, email address, a hashed password, the staff-assigned role and the date you accepted this notice.</li>
+      <li><strong>Your activity:</strong> saved places, trip plans, reviews you wrote, visit reports you submitted, the searches you run, your relevance ratings and your usability survey answers.</li>
+      <li><strong>Your feedback:</strong> everything you rate or review is attached to your account so the staff dashboard can show it next to the destination it belongs to.</li>
+    </ul>
+  </section>
+
+  <section class="eapriv-card eapriv-never" aria-labelledby="eapriv-never">
+    <h2 id="eapriv-never">What is never stored</h2>
+    <ul>
+      <li><strong>Your live GPS position.</strong> The distance between you and a destination is calculated inside your browser. The coordinates are not sent to the server and are not written to the database.</li>
+      <li><strong>Your precise location history.</strong> The system keeps no trail of where you have been.</li>
+      <li><strong>Advertising or third-party tracking.</strong> The project sets no advertising cookies and shares nothing with advertisers.</li>
+    </ul>
+  </section>
+
+  <section class="eapriv-card" aria-labelledby="eapriv-who">
+    <h2 id="eapriv-who">Who can see it</h2>
+    <p>
+      You see your own saved places, plans, reviews, visits, searches and survey
+      answers on your own pages. Staff of the city administration see the
+      destination records, the visit reports that still need a decision, the
+      survey answers and anonymous search statistics in the staff dashboard.
+      Nobody else receives your data, and nothing is sold.
+    </p>
+  </section>
+
+  <section class="eapriv-card" aria-labelledby="eapriv-map">
+    <h2 id="eapriv-map">Maps and external services</h2>
+    <p>
+      The interactive map loads its tiles from MapTiler and its code from a
+      public content delivery network. Those requests reveal the map area you
+      are looking at, in the same way as any website that shows a map. They do
+      not receive your account, your searches or your saved places.
+    </p>
+  </section>
+
+  <section class="eapriv-card" aria-labelledby="eapriv-keep">
+    <h2 id="eapriv-keep">How long it is kept and what you can do</h2>
+    <p>
+      Your data stays on the project database until you ask for it to be
+      removed, or until the project ends. You can ask the project
+      administrator to delete your account; the saved places, plans, reviews,
+      visit reports, searches and survey answers that belong to that account
+      are removed with it. You can also ask for a copy of the data that is
+      stored about you.
+    </p>
+  </section>
+
+  <p class="eapriv-foot">
+    Creating an account means accepting this notice: the acceptance and its
+    date are stored with your account. The notice is linked from the sign-up
+    form and from the footer of every page.
+  </p>
+</main>
+{% endblock %}

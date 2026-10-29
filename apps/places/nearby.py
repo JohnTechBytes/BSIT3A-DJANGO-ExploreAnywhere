@@ -12,6 +12,7 @@ from django.views.decorators.http import require_GET
 from apps.cities.models import City
 from .models import Place
 from .nearby_intent import SERVICE_CATEGORIES, detect_service_intent, matches_service
+from .sample_images import sample_image_for
 
 
 @login_required
@@ -60,6 +61,9 @@ def nearby_places(request, *, unified=False):
     # Explicit suggestions and exact-name searches take priority over a generic
     # service intent. A business named "Coffee & Talk" must not return all cafes.
     # Every branch begins from the same independently publication-checked queryset.
+    # When the complete published set has to be loaded anyway, it is kept so the
+    # suggestion list below can reuse it instead of scanning the table twice.
+    full_published = None
     selected_place_key = (request.GET.get("place") or "").strip()[:15]
     if selected_place_key.isascii() and selected_place_key.isdecimal():
         selected_service = ""
@@ -70,17 +74,28 @@ def nearby_places(request, *, unified=False):
             matched = iter(exact)
             selected_service = ""
         elif selected_service:
-            matched = (place for place in published if matches_service(place, selected_service))
+            full_published = list(published)
+            matched = (
+                place for place in full_published
+                if matches_service(place, selected_service)
+            )
         else:
             from .views import build_attraction_filter
             predicate = build_attraction_filter(query)
             if predicate is not None:
-                published = published.filter(predicate).distinct()
-            matched = iter(published)
+                matched = iter(published.filter(predicate).distinct())
+            else:
+                full_published = list(published)
+                matched = iter(full_published)
     elif selected_service:
-        matched = (place for place in published if matches_service(place, selected_service))
+        full_published = list(published)
+        matched = (
+            place for place in full_published
+            if matches_service(place, selected_service)
+        )
     else:
-        matched = iter(published)
+        full_published = list(published)
+        matched = iter(full_published)
 
     # Limit only the display; avoid falsely claiming "all nearest" when capped.
     MAX_RESULTS = 250
@@ -90,13 +105,38 @@ def nearby_places(request, *, unified=False):
         if len(results) >= MAX_RESULTS:
             limit_reached = True
             break
+        # Real uploaded or sourced photos always win; samples are illustrative.
+        place.sample_image = sample_image_for(place) if not (place.cover_image or place.cover_image_url) else ""
         results.append(place)
+
+    # A submitted search is written to the query log, so the visitor can see
+    # their own search history in My Journey.
+    if query:
+        from apps.info.models import QueryLog
+
+        QueryLog.objects.create(
+            user=request.user if request.user.is_authenticated else None,
+            raw_query=query,
+            parsed_json={"service": selected_service},
+            matched_count=len(results),
+        )
 
     # Suggestions are real, publicly approved listings, never imported candidates.
     # Only minimal display fields are embedded; no private account data or GPS.
-    approved_suggestions = list(Place.objects.filter(
-        city=city, is_active=True, is_verified=True,
-    ).order_by("title", "pk").values("pk", "title", "category__name")[:250])
+    if full_published is not None:
+        # The complete set is already in memory: reuse it, no second scan.
+        approved_suggestions = [
+            {
+                "pk": place.pk,
+                "title": place.title,
+                "category__name": place.category.name if place.category else None,
+            }
+            for place in full_published[:250]
+        ]
+    else:
+        approved_suggestions = list(Place.objects.filter(
+            city=city, is_active=True, is_verified=True,
+        ).order_by("title", "pk").values("pk", "title", "category__name")[:250])
 
     # ExploreAnywhere Phase 6K: curated Kabankalan reference landmarks
     # The fallback must not become a dropdown of every future business.

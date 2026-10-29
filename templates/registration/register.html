@@ -1,80 +1,91 @@
-﻿{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#080d14">
     <title>Create Account | ExploreKabankalan</title>
     <link rel="stylesheet" href="{% static 'css/auth.css' %}">
 </head>
-<body>
-<div class="auth-page">
+<body class="auth-body">
+<div class="auth-shell">
 
-    <header class="auth-header">
-        <a href="{% url 'home' %}" class="auth-brand">
-            ⌖ Explore<span>Anywhere</span>
+    <aside class="auth-brand-panel">
+        <a href="{% url 'home' %}" class="auth-logo">
+            <span class="auth-logo-mark" aria-hidden="true">✺</span>
+            <span class="auth-logo-name">
+                <b>Explore<span>Kabankalan</span></b>
+                <small>LOCAL PLACES. YOUR ADVENTURE.</small>
+            </span>
         </a>
-    </header>
 
-    <main class="auth-main">
-        <div style="width:100%;max-width:460px">
-            <div class="auth-card">
-                <div class="auth-icon">✦</div>
+        <div class="auth-route" aria-hidden="true"><span></span><span></span><span></span></div>
 
-                <h1>Join ExploreAnywhere</h1>
-                <p class="auth-description">
-                    Create your free account and start discovering
-                    cities, hobbies, and amazing places.
-                </p>
+        <div class="auth-brand-copy">
+            <p class="auth-eyebrow">START YOUR JOURNEY</p>
+            <h2>Keep every Kabankalan find in one place.</h2>
+            <p>Create a free account to save destinations, plan itineraries and report the places you have actually visited.</p>
+        </div>
 
-                <form method="post">
-                    {% csrf_token %}
+        <ul class="auth-points">
+            <li><strong>Published</strong> destinations only</li>
+            <li><strong>Personal</strong> trip plans</li>
+            <li><strong>Reviewed</strong> visit records</li>
+        </ul>
 
-                    {% for field in form %}
-                    <div class="auth-field">
-                        <label for="{{ field.id_for_label }}">
-                            {{ field.label }}
-                        </label>
+        <p class="auth-panel-note">Kabankalan City · Negros Occidental</p>
+    </aside>
 
+    <main class="auth-panel">
+        <div class="auth-card">
+            <div class="auth-icon" aria-hidden="true">✦</div>
+
+            <h1>Create your account</h1>
+            <p class="auth-description">It only takes a minute. Your saved places and itineraries stay private to you.</p>
+
+            {% if form.non_field_errors %}
+            <div class="auth-error" role="alert">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% for field in form %}
+                <div class="auth-field{% if field.errors %} has-error{% endif %}">
+                    {% if field.name == "consent_privacy" %}
+                    <label class="auth-consent" for="{{ field.id_for_label }}">
                         {{ field }}
+                        <span>I have read and accept the <a href="{% url 'core:privacy_notice' %}" target="_blank" rel="noopener">Privacy Notice</a></span>
+                    </label>
+                    {% else %}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
 
-                        {% if field.help_text %}
-                        <div class="auth-help">
-                            {{ field.help_text }}
-                        </div>
-                        {% endif %}
-
-                        {% if field.errors %}
-                        <div class="auth-error">
-                            {{ field.errors }}
-                        </div>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-
-                    {% if form.non_field_errors %}
-                    <div class="auth-error">
-                        {{ form.non_field_errors }}
-                    </div>
+                    {{ field }}
                     {% endif %}
 
-                    <button type="submit" class="auth-button">
-                        Create Account →
-                    </button>
-                </form>
+                    {% if field.help_text %}
+                    <div class="auth-help">{{ field.help_text }}</div>
+                    {% endif %}
 
-                <div class="auth-footer">
-                    Already have an account?
-                    <a href="{% url 'login' %}">Login</a>
+                    {% if field.errors %}
+                    <div class="auth-error" role="alert">{{ field.errors }}</div>
+                    {% endif %}
                 </div>
-            </div>
+                {% endfor %}
 
-            <div style="text-align:center">
-                <a class="auth-back" href="{% url 'home' %}">
-                    ← Back to ExploreAnywhere
-                </a>
+                <button type="submit" class="auth-button">Create Account →</button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an account?
+                <a href="{% url 'login' %}">Sign in</a>
             </div>
         </div>
+
+        <p><a class="auth-back" href="{% url 'home' %}">← Back to ExploreKabankalan</a></p>
     </main>
 
 </div>

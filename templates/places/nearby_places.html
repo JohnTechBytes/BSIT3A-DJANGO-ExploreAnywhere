@@ -1,176 +1,49 @@
 {% extends "theme/public_base.html" %}
 {% block title %}Discover Kabankalan · Nearby Places · ExploreKabankalan{% endblock %}
-{% block extra_css %}
-<style>
-.ea6-main{max-width:1160px;margin:0 auto;padding:36px 18px 90px;color:#193353}
-.ea6-top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:22px}
-.ea6-eyebrow{font-size:12px;font-weight:800;color:#0757d8;text-transform:uppercase;letter-spacing:.11em}
-.ea6-main h1{font-size:clamp(27px,4vw,42px);line-height:1.18;margin:6px 0 10px;color:#102b53}
-.ea6-muted{color:#5f738f;font-size:14px;line-height:1.65;margin:0}
-.ea6-back{display:inline-flex;padding:11px 15px;border:1px solid #cfdef2;border-radius:12px;text-decoration:none;color:#1954a5;font-weight:750}
-.ea6-box{background:#fff;border:1px solid #dce5f3;box-shadow:0 10px 28px rgba(15,42,83,.055);border-radius:20px;padding:22px;margin-bottom:22px}
-.ea6-search{display:grid;grid-template-columns:minmax(230px,2fr) minmax(160px,1fr) auto;gap:12px;align-items:end}
-.ea6-field{display:flex;flex-direction:column;gap:7px;min-width:0}
-.ea6-field label{font-size:12px;font-weight:800;color:#274466}
-.ea6-field input,.ea6-field select{background:#fff;width:100%;min-height:46px;padding:10px 12px;border:1px solid #bfcee2;border-radius:11px;font:inherit;color:#18324c}
-.ea6-btn{min-height:45px;padding:11px 17px;border:0;border-radius:11px;background:#0757d8;color:#fff;font:inherit;font-weight:750;cursor:pointer}
-.ea6-btn:hover{background:#064ab3}
-.ea6-btn:disabled{opacity:.65;cursor:wait}
-.ea6-location-bar{display:grid;grid-template-columns:auto minmax(190px,1fr) auto;gap:12px;align-items:end}
-.ea6-plain{background:#eef5ff;color:#1554a8;border:1px solid #bcd4f6;text-decoration:none;text-align:center}
-.ea6-plain:hover{background:#dbeaff}
-.ea6-status{font-size:13px;color:#3e5e82;line-height:1.55;min-height:20px;margin:12px 0 0}
-.ea6-warning{font-size:12px;line-height:1.5;color:#765623;margin:11px 0 0}
-.ea6-heading{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;margin:28px 0 14px}
-.ea6-heading h2{font-size:21px;color:#17345c;margin:0}
-.ea6-pill{background:#edf4ff;color:#19539c;border-radius:999px;padding:6px 12px;font-weight:750;font-size:12px}
-.ea6-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,335px),1fr));gap:17px}
-.ea6-card{display:flex;flex-direction:column;min-width:0;border:1px solid #dfe9f4;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 8px 24px rgba(15,42,83,.06)}
-.ea6-cover{height:174px;background:linear-gradient(120deg,#e5f2ff,#e9f7ed);display:flex;align-items:center;justify-content:center;color:#345a83;font-weight:700;text-align:center}
-.ea6-cover img{width:100%;height:100%;object-fit:cover}
-.ea6-card-body{padding:19px;display:flex;flex:1;flex-direction:column;gap:9px}
-.ea6-category{font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:800;color:#1762b8}
-.ea6-card h3{font-size:19px;line-height:1.3;margin:0;color:#132c51;overflow-wrap:anywhere}
-.ea6-description{font-size:13px;line-height:1.6;color:#526985;margin:0}
-.ea6-distance{font-size:13px;font-weight:800;color:#11704d;margin:1px 0}
-.ea6-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:auto;padding-top:12px}
-.ea6-actions a{flex:1;min-width:115px;display:inline-flex;justify-content:center;align-items:center;border-radius:11px;padding:11px 14px;font-size:13px;text-align:center;text-decoration:none;font-weight:750;color:#0757d8;border:1px solid #bcd4f6}
-.ea6-actions a:first-child{background:#0757d8;color:#fff;border-color:#0757d8}
-.ea6-empty{border:1px dashed #bacfeb;border-radius:18px;padding:32px 18px;background:#f6faff;text-align:center}
-.ea6-empty h2{margin:0 0 10px;color:#15345d}
-.ea6-empty p{max-width:630px;margin:0 auto 15px;line-height:1.65;color:#56708d}
-.ea6-main button:focus-visible,.ea6-main a:focus-visible,.ea6-main input:focus-visible,.ea6-main select:focus-visible{outline:3px solid #8ab8ff;outline-offset:3px}
-@media(max-width:760px){.ea6-main{padding:23px 15px 65px}.ea6-search,.ea6-location-bar{grid-template-columns:minmax(0,1fr)}.ea6-box{padding:17px}.ea6-btn{width:100%}.ea6-cover{height:165px}.ea6-list{grid-template-columns:minmax(0,1fr)}}
-
-/* Phase 6E: public-only autocomplete and business information. */
-.ea6-search-field{position:relative}
-.ea6-autocomplete{position:absolute;z-index:30;top:100%;left:0;right:0;margin-top:5px;background:#fff;border:1px solid #b8cbe5;box-shadow:0 12px 32px rgba(15,42,83,.16);border-radius:12px;max-height:260px;overflow:auto}
-.ea6-autocomplete[hidden]{display:none!important}
-.ea6-suggestion{display:block;width:100%;text-align:left;padding:11px 13px;border:0;border-bottom:1px solid #edf2f8;background:#fff;color:#1e3f64;font:inherit;cursor:pointer}
-.ea6-suggestion:last-child{border-bottom:0}
-.ea6-suggestion:hover,.ea6-suggestion[aria-selected="true"]{background:#edf5ff}
-.ea6-suggestion strong{display:block;font-size:13px}
-.ea6-suggestion small{display:block;color:#607b98;font-size:11px;margin-top:3px}
-.ea6-quick{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:15px}
-.ea6-quick span{font-size:12px;font-weight:800;color:#466583;margin-right:2px}
-.ea6-quick a{display:inline-flex;align-items:center;padding:8px 11px;background:#f1f6ff;border:1px solid #cadaf0;border-radius:999px;font-weight:750;color:#1c579e;font-size:12px;text-decoration:none}
-.ea6-quick a:hover,.ea6-quick a:focus-visible{background:#dfeaff}
-.ea6-quick a[aria-current="true"]{background:#0757d8;border-color:#0757d8;color:#fff}
-.ea6-public-badge{align-self:flex-start;border-radius:999px;padding:5px 9px;background:#e8f7ee;color:#1c6c45;font-size:11px;font-weight:800}
-.ea6-meta{display:flex;align-items:center;flex-wrap:wrap;gap:7px;color:#476581;font-size:12px}
-.ea6-meta a{color:#165aac;overflow-wrap:anywhere}
-.ea6-photo-credit{font-size:11px;color:#63768c;background:#f3f7fb;padding:5px 11px}
-.ea6-notice{margin-top:16px;font-size:12px;color:#59718c;line-height:1.6}
-@media(max-width:760px){.ea6-autocomplete{max-height:210px}.ea6-quick a{min-height:39px}}
-
-/* Phase 6G: on-demand Nearby Results Map. Existing Explore Places map is untouched. */
-.ea6g-controls{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:-1px 0 17px}
-.ea6g-map-button{background:#eff6ff;color:#0757d8;border:1px solid #b9d4fa;border-radius:11px;padding:11px 17px;min-height:44px;font-weight:800;cursor:pointer;font:inherit}
-.ea6g-map-button:hover,.ea6g-map-button[aria-expanded="true"]{background:#0757d8;color:#fff}
-.ea6g-map-button:disabled{opacity:.6;cursor:not-allowed}
-.ea6g-small{font-size:12px;line-height:1.5;color:#526c8c}
-.ea6g-layout{min-width:0}
-.ea6g-layout.map-open{display:grid;grid-template-columns:minmax(0,1fr) minmax(330px,.9fr);gap:16px;align-items:start}
-.ea6g-layout.map-open .ea6-list{grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr))}
-.ea6g-map-shell{position:sticky;top:16px;min-width:0;border:1px solid #d0dff2;background:#fff;border-radius:18px;padding:13px;box-shadow:0 8px 24px rgba(15,42,83,.055)}
-.ea6g-map-shell[hidden]{display:none!important}
-.ea6g-map-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:0 0 10px}
-.ea6g-map-head h3{margin:0;font-size:16px;color:#12345a}
-.ea6g-fit{background:#eef5ff;border:1px solid #c9dafa;color:#1451a2;border-radius:9px;padding:8px 11px;min-height:38px;font-weight:750;cursor:pointer}
-.ea6g-map{width:100%;height:445px;max-height:65vh;border-radius:12px;background:#edf5fc;overflow:hidden}
-.ea6g-map-status{font-size:12px;color:#405f80;line-height:1.6;margin:10px 2px 0}
-.ea6g-card-map{flex:1;min-width:105px;background:#f3f8ff!important;color:#0757d8!important;border:1px solid #bfd6f5!important;cursor:pointer;font:inherit;font-weight:750;border-radius:11px;padding:11px 10px;font-size:13px}
-.ea6g-card-map:hover{background:#e0efff!important}
-.ea6g-card-map:focus-visible,.ea6g-map-button:focus-visible,.ea6g-fit:focus-visible{outline:3px solid #8ab8ff;outline-offset:3px}
-.ea6-card.ea6g-selected{outline:2px solid #1469d8;outline-offset:2px}
-.ea6g-popup{min-width:175px;max-width:245px;font-size:13px;line-height:1.5;color:#24415e}
-.ea6g-popup strong{display:block;font-size:15px;color:#122e4d;margin-bottom:3px;overflow-wrap:anywhere}
-.ea6g-popup small{display:block;color:#607895;margin-bottom:6px}
-.ea6g-popup-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
-.ea6g-popup-links a{color:#0757d8;font-size:12px;font-weight:800}
-@media(max-width:980px){.ea6g-layout.map-open{display:flex;flex-direction:column}.ea6g-map-shell{position:static;order:-1;width:100%}.ea6g-layout.map-open .ea6-list{width:100%}}
-@media(max-width:760px){.ea6g-map{height:320px;max-height:none}.ea6g-map-shell{padding:9px}.ea6g-card-map{min-height:44px}}
-
-/* Phase 6H: location-aware radius filter; existing map tiles and search stay intact. */
-.ea6h-radius{display:flex;align-items:end;flex-wrap:wrap;gap:12px;margin:13px 0 0;padding:15px;border:1px solid #d5e5f5;border-radius:13px;background:#f7fbff}
-.ea6h-radius .ea6-field{flex:0 1 235px;min-width:min(220px,100%)}
-.ea6h-reset{min-height:44px;padding:10px 13px;border:1px solid #bcd4f6;border-radius:10px;background:#fff;color:#1554a8;font:inherit;font-size:13px;font-weight:750;cursor:pointer}
-.ea6h-reset:disabled{opacity:.55;cursor:not-allowed}
-.ea6h-help{flex:1 1 235px;max-width:100%;font-size:12px;line-height:1.55;color:#426080;padding-bottom:3px}
-.ea6h-none{margin:0 0 16px;padding:18px;border:1px dashed #a9c7e9;border-radius:12px;background:#f8fbff;color:#25476d;font-size:13px;line-height:1.6}
-.ea6-card[hidden],.ea6h-none[hidden]{display:none!important}
-.ea6h-radius select:disabled{background:#eaf0f8;color:#65798e}
-.ea6h-reset:focus-visible{outline:3px solid #8ab8ff;outline-offset:3px}
-@media(max-width:760px){.ea6h-radius{align-items:stretch}.ea6h-radius .ea6-field,.ea6h-help{flex-basis:100%}.ea6h-reset{width:100%}}
-
-/* ExploreAnywhere Phase 6K: optional landmark reference; GPS remains primary. */
-.ea6k-location-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
-.ea6k-location-top h2{font-size:18px;color:#17345c;margin:0 0 5px}
-.ea6k-location-top p{margin:0;font-size:13px;line-height:1.55;color:#506986}
-.ea6k-location-top #ea6-use-gps{flex:0 0 auto}
-.ea6k-landmark{margin-top:16px;border:1px solid #d6e4f2;border-radius:12px;background:#f9fbff;padding:0 14px}
-.ea6k-landmark summary{font-size:13px;font-weight:800;color:#1c579e;cursor:pointer;padding:14px 0;line-height:1.5}
-.ea6k-landmark summary:focus-visible{outline:3px solid #8ab8ff;outline-offset:3px}
-.ea6k-landmark p{font-size:12px;color:#4b6482;line-height:1.55;margin:0 0 13px}
-.ea6k-landmark-form{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
-.ea6k-landmark-form .ea6-field{min-width:min(225px,100%);flex:1}
-.ea6k-landmark-form .ea6-btn{flex:0 0 auto}
-@media(max-width:760px){.ea6k-location-top{align-items:stretch}.ea6k-location-top #ea6-use-gps{flex:1 1 100%}.ea6k-landmark-form .ea6-field,.ea6k-landmark-form .ea6-btn{flex:1 1 100%}}
-
-/* ExploreAnywhere Phase 6N: calm, accessible nearby result cards. */
-.ea6-card { transition: box-shadow .18s ease, border-color .18s ease; }
-@media (hover:hover) and (prefers-reduced-motion:no-preference) {
-  .ea6-card:hover { border-color:#b8cfe9; box-shadow:0 13px 30px rgba(15,42,83,.11); }
-}
-.ea6-cover { height:auto; min-height:0; aspect-ratio:16/9; overflow:hidden; padding:0 16px; }
-.ea6-cover img { display:block; width:calc(100% + 32px); max-width:none; height:100%; min-height:0; margin:0 -16px; object-fit:cover; }
-.ea6n-no-photo { display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px; font-size:12px; line-height:1.45; }
-.ea6n-no-photo-icon { font-size:29px; line-height:1; }
-.ea6n-badges { display:flex; flex-wrap:wrap; align-items:center; gap:7px; }
-.ea6n-badges .ea6-category, .ea6n-badges .ea6-public-badge { margin:0; }
-.ea6-card-body { gap:10px; padding:19px; }
-.ea6-card h3 { font-size:clamp(17px,2vw,19px); line-height:1.35; }
-.ea6-card .ea6-description { overflow-wrap:anywhere; }
-.ea6-card .ea6-description.ea6n-summary {
-  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
-  overflow:hidden; line-clamp:3;
-}
-.ea6-card .ea6-distance { margin-top:auto; padding:10px 12px; background:#f0faf5; border:1px solid #d6ebdf; border-radius:10px; line-height:1.45; }
-.ea6-card .ea6-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; margin-top:0; padding-top:5px; }
-.ea6-card .ea6-actions a, .ea6-card .ea6-actions .ea6g-card-map {
-  display:inline-flex; align-items:center; justify-content:center; min-width:0; width:100%;
-  min-height:44px; box-sizing:border-box; padding:10px 9px; line-height:1.35; white-space:normal;
-  font-size:13px; border-radius:11px; text-align:center; text-decoration:none;
-}
-.ea6-card .ea6-actions a:first-child { grid-column:auto; }
-.ea6-card .ea6-actions a:only-child { grid-column:1/-1; }
-.ea6-card .ea6-actions .ea6g-card-map { grid-column:1/-1; margin:0; }
-@media (max-width:420px) { .ea6-card-body { padding:16px; } .ea6-card .ea6-actions { gap:8px; } }
-@media (prefers-reduced-motion:reduce) { .ea6-card { transition:none; } }
-
-/* Phase 6O.6: Commons attribution adjacent to displayed place photos. */
-.ea6-photo-attribution{font-size:11px;line-height:1.5;color:#61758e;margin:0;overflow-wrap:anywhere}
-.ea6-photo-attribution a{color:#0757d8;text-decoration:underline;text-underline-offset:2px}
-</style>
+{% load static %}
+{% block body_class %}nearby-page{% endblock %}
+{% block skip_link %}<a class="ea6-skip" href="#nearby-main">Skip to content</a>{% endblock %}
+{% block brand_content %}
+  <span class="ea6-brand-icon" aria-hidden="true">✺</span>
+  <span class="ea6-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
 {% endblock %}
+{% block footer_brand %}ExploreKabankalan{% endblock %}
+{% block footer_tagline %}Local places. Your adventure.{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/nearby.css' %}">{% endblock %}
 {% block content %}
-<main class="ea6-main">
+<main class="ea6-main" id="nearby-main">
   <header class="ea6-top">
-    <div>
-      <span class="ea6-eyebrow">ExploreKabankalan · Kabankalan Only</span>
-      <h1>Discover Kabankalan</h1>
-      <p class="ea6-muted">Find verified destinations and businesses in Kabankalan City. Explore by hobbies, search for local services, or check nearby places.</p>
+    <div class="ea6-intro">
+      <span class="ea6-eyebrow"><span aria-hidden="true">✦</span> YOUR LOCAL GUIDE TO KABANKALAN</span>
+      <h1>Discover <span>Kabankalan</span><b>.</b></h1>
+      <p class="ea6-muted">Find verified destinations and local businesses, follow your interests, and discover what’s around the corner.</p>
+    </div>
+    <div class="ea6-intro-note" aria-hidden="true">
+      <span class="ea6-compass"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/><circle cx="12" cy="12" r="2"/></svg></span>
+      <div><small>ONE CITY, MANY STORIES</small><strong>Your next stop starts here.</strong><span>NEGROS OCCIDENTAL, PH</span></div>
     </div>
   </header>
   {% include "places/_discovery_modes.html" %}
-  <section class="ea6-box" aria-label="Search places">
+  <section class="ea6-box ea6-search-box" aria-labelledby="ea6-search-title">
+    <div class="ea6-panel-heading">
+      <div><span class="ea6-panel-eyebrow">01 / EXPLORE YOUR WAY</span><h2 id="ea6-search-title">Find your next stop</h2><p>Search by place or browse a local category.</p></div>
+      <span class="ea6-panel-symbol" aria-hidden="true">✧</span>
+    </div>
     <form method="get" action="{% url 'places:attraction_carousel' %}" class="ea6-search" id="ea6-search-form" autocomplete="off">
       <input type="hidden" name="mode" value="nearby">
       <div class="ea6-field ea6-search-field">
         <label for="ea6-query">What are you looking for?</label>
         <input id="ea6-query" name="q" value="{{ query }}" maxlength="160" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ea6-suggestions" placeholder="e.g. Coffee &amp; Talk or coffee shop near me">
         <input type="hidden" name="place" id="ea6-place-id" value="">
+        <button type="button" class="ea6-voice-button" id="ea6-voice" aria-pressed="false" aria-label="Search by voice" hidden>
+          <svg class="ea6-voice-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.5a2.8 2.8 0 0 0-2.8 2.8v5.4a2.8 2.8 0 0 0 5.6 0V6.3A2.8 2.8 0 0 0 12 3.5Z"/>
+            <path d="M5.5 11.2a6.5 6.5 0 0 0 13 0M12 17.7v3M9 20.7h6"/>
+          </svg>
+          <span class="ea6-voice-text">Speak</span>
+        </button>
         <div id="ea6-suggestions" class="ea6-autocomplete" role="listbox" aria-label="Suggested verified Kabankalan places" hidden></div>
+        <p class="ea6-voice-status" id="ea6-voice-status" role="status" aria-live="polite"></p>
       </div>
       <div class="ea6-field">
         <label for="ea6-service">Place type</label>
@@ -179,26 +52,27 @@
           {% for key, label in service_categories %}<option value="{{ key }}" {% if selected_service == key %}selected{% endif %}>{{ label }}</option>{% endfor %}
         </select>
       </div>
-      <button class="ea6-btn" type="submit">Find Places →</button>
+      <button class="ea6-btn" type="submit">Find places <span aria-hidden="true">↗</span></button>
     </form>
     <div class="ea6-quick" aria-label="Quick searches for published Kabankalan listings">
-      <span>Quick searches:</span>
-      <a href="{% url 'places:attraction_carousel' %}?mode=nearby&amp;service=coffee">☕ Coffee</a>
-      <a href="{% url 'places:attraction_carousel' %}?mode=nearby&amp;service=restaurant">🍴 Restaurants</a>
-      <a href="{% url 'places:attraction_carousel' %}?mode=nearby&amp;service=barber">✂ Barbers</a>
-      <a href="{% url 'places:attraction_carousel' %}?mode=nearby&amp;service=mall">🛍 Malls</a>
-      <a href="{% url 'places:attraction_carousel' %}?mode=nearby&amp;service=billiards">🎱 Billiards</a>
-      <a href="{% url 'places:attraction_carousel' %}?mode=nearby">Clear search</a>
+      <span>QUICK SEARCHES</span>
+      <a href="{% url 'places:attraction_carousel' %}?mode=nearby&amp;service=coffee" {% if selected_service == 'coffee' %}aria-current="true"{% endif %}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V7Zm12 1h2a2.5 2.5 0 0 1 0 5h-2M3 20h15M8 3v2m4-2v2"/></svg>Coffee</a>
+      <a href="{% url 'places:attraction_carousel' %}?mode=nearby&amp;service=restaurant" {% if selected_service == 'restaurant' %}aria-current="true"{% endif %}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3v5a3 3 0 0 0 6 0V3M8 3v18M17 21V3c-2 2-3 5-3 8h3"/></svg>Restaurants</a>
+      <a href="{% url 'places:attraction_carousel' %}?mode=nearby&amp;service=barber" {% if selected_service == 'barber' %}aria-current="true"{% endif %}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="m8.2 8.2 11 10.8M8.2 15.8 19 5"/></svg>Barbers</a>
+      <a href="{% url 'places:attraction_carousel' %}?mode=nearby&amp;service=mall" {% if selected_service == 'mall' %}aria-current="true"{% endif %}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16l-1 13H5L4 8Zm5 0V6a3 3 0 0 1 6 0v2"/></svg>Malls</a>
+      <a href="{% url 'places:attraction_carousel' %}?mode=nearby&amp;service=billiards" {% if selected_service == 'billiards' %}aria-current="true"{% endif %}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 10v4"/></svg>Billiards</a>
+      <a class="ea6-clear" href="{% url 'places:attraction_carousel' %}?mode=nearby">Clear search ↗</a>
     </div>
   </section>
-  <section class="ea6-box" aria-label="Nearby sorting">
+  <section class="ea6-box ea6-nearby-box" aria-labelledby="ea6-nearby-title">
     <!-- ExploreAnywhere Phase 6K: optional landmark reference, Kabankalan only -->
     <div class="ea6k-location-top">
-      <div>
-        <h2>Find places near you</h2>
-        <p>Use GPS to sort by your location and enable the distance filter.</p>
+      <div class="ea6-location-title">
+        <span class="ea6-location-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+        <div><span class="ea6-panel-eyebrow">NEAR ME</span><h2 id="ea6-nearby-title">Find places near you</h2>
+        <p>Optional: sort these results by distance from your location.</p></div>
       </div>
-      <button id="ea6-use-gps" class="ea6-btn" type="button">📍 Use my location</button>
+      <button id="ea6-use-gps" class="ea6-btn ea6-location-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg> Use my location</button>
     </div>
     <details class="ea6k-landmark" {% if selected_origin %}open{% endif %}>
       <summary>Can't use GPS? Choose a Kabankalan landmark instead</summary>
@@ -221,7 +95,7 @@
       <p>There are currently no mapped, verified reference landmarks available. You can still browse verified Kabankalan places and use GPS when supported.</p>
       {% endif %}
     </details>
-    <div class="ea6h-radius" aria-label="Filter results by distance">
+    <div class="ea6h-radius" id="ea6h-radius" aria-label="Filter results by distance" hidden>
       <div class="ea6-field">
         <label for="ea6h-distance">Show places within</label>
         <select id="ea6h-distance" disabled aria-describedby="ea6h-distance-help">
@@ -237,15 +111,18 @@
       <span id="ea6h-distance-help" class="ea6h-help" role="status" aria-live="polite">Choose a landmark or enable location permission to filter by distance. This does not use driving routes.</span>
     </div>
     <p id="ea6-location-status" class="ea6-status" role="status" aria-live="polite">{% if selected_origin %}Distances are estimated from {{ selected_origin.title }}. This is a landmark reference, not your live GPS position.{% else %}Use GPS for distance sorting, or expand the optional Kabankalan landmark selector if GPS is unavailable. Without a reference, results are alphabetical.{% endif %}</p>
-    <p class="ea6-warning">Your precise GPS coordinates are used only inside this browser page; they are not sent to ExploreKabankalan. GPS generally needs HTTPS on Android (localhost is an exception). Distances are straight-line estimates, not driving times. Places shown are Kabankalan listings; location permission does not independently verify city boundaries.</p>
+    <p class="ea6-fineprint">Your location stays in this browser tab; distances are straight-line estimates, not driving times.</p>
   </section>
   <div class="ea6-heading">
-    <h2>{% if selected_service_label %}{{ selected_service_label }}{% elif query %}Results for “{{ query }}”{% else %}Verified Kabankalan Places{% endif %}</h2>
+    <div><span class="ea6-panel-eyebrow">PLACES TO EXPLORE</span>
+      <h2>{% if selected_service_label %}{{ selected_service_label }}{% elif query %}Results for “{{ query }}”{% else %}Discover local places{% endif %}</h2>
+      <p>Thoughtfully collected places in Kabankalan, ready for your next stop.</p>
+    </div>
     <span class="ea6-pill" id="ea6h-result-count">{{ result_count }} matching listing{{ result_count|pluralize }}</span>
   </div>
   {% if results %}
     <div class="ea6g-controls" aria-label="Nearby results viewing options">
-      <button class="ea6g-map-button" id="ea6g-toggle" type="button" aria-controls="ea6g-map-shell" aria-expanded="false">🗺 View nearby results on map</button>
+      <button class="ea6g-map-button" id="ea6g-toggle" type="button" aria-controls="ea6g-map-shell" aria-expanded="false">View nearby results on map ↗</button>
       <span id="ea6g-count" class="ea6g-small" role="status" aria-live="polite">The map only includes displayed listings with coordinates.</span>
     </div>
   {% endif %}
@@ -256,19 +133,21 @@
     <div class="ea6-list" id="ea6-results"{% if selected_origin %} data-origin-lat="{{ selected_origin.latitude }}" data-origin-lng="{{ selected_origin.longitude }}" data-origin-name="{{ selected_origin.title }}"{% endif %}>
       {% for place in results %}
         <article class="ea6-card" data-place-id="{{ place.pk }}" data-title="{{ place.title }}" data-category="{% if place.category %}{{ place.category.name }}{% else %}Kabankalan place{% endif %}" data-detail-url="{% url 'places:place_detail' place.pk %}" {% if place.latitude != None and place.longitude != None %}data-lat="{{ place.latitude }}" data-lng="{{ place.longitude }}" data-directions-url="https://www.google.com/maps/dir/?api=1&amp;destination={{ place.latitude }},{{ place.longitude }}"{% endif %}>
-          <div class="ea6-cover">
+          <div class="ea6-cover" role="button" tabindex="0" aria-label="Fly to {{ place.title }} on the map">
             {% if place.cover_image %}<img loading="lazy" decoding="async" width="640" height="360" alt="{{ place.title }}" src="{{ place.cover_image.url }}">
-            {% elif place.cover_image_url %}<img loading="lazy" decoding="async" width="640" height="360" alt="{{ place.title }}" src="{{ place.cover_image_url }}">
-            {% else %}<span class="ea6n-no-photo" role="img" aria-label="No verified photograph available"><span class="ea6n-no-photo-icon" aria-hidden="true">📷</span><span>Photo not yet available</span></span>{% endif %}
+            {% elif place.cover_image_url %}<img loading="lazy" decoding="async" width="640" height="360" alt="{{ place.title }}" src="{{ place.cover_image_url }}" onerror="this.closest('.ea6-cover').classList.add('ea6-photo-failed'); this.remove();">
+            {% elif place.sample_image %}<img loading="lazy" decoding="async" width="640" height="360" alt="Illustrative category sample, not an actual photo of {{ place.title }}" src="{% static place.sample_image %}"><span class="ea6-sample-badge">AI-generated category sample</span>
+            {% else %}<span class="ea6n-no-photo" role="img" aria-label="No verified photograph available"><span class="ea6n-no-photo-icon" aria-hidden="true">⌖</span><span>PHOTO NOT YET AVAILABLE</span></span>{% endif %}
+            <span class="ea6-card-map-hint" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" fill="currentColor"/></svg>View on map</span>
           </div>
           <div class="ea6-card-body">
             <div class="ea6n-badges">
               <span class="ea6-category">{% if place.category %}{{ place.category.name }}{% else %}Place in Kabankalan{% endif %}</span>
               <span class="ea6-public-badge" title="Reviewed and published by ExploreKabankalan staff">✓ Staff verified listing</span>
             </div>
-            <h3>{{ place.title }}</h3>
+            <h3><a href="{% url 'places:place_detail' place.pk %}">{{ place.title }}</a></h3>
             {% if place.review_count %}<p class="ea6-meta">★ {{ place.avg_rating|floatformat:1 }} / 5 · {{ place.review_count }} visitor review{{ place.review_count|pluralize }}</p>{% endif %}
-            <p class="ea6-description">{% if place.address %}📍 {{ place.address }}{% elif place.barangay %}📍 {{ place.barangay }}, Kabankalan{% else %}Location details need verification{% endif %}</p>
+            <p class="ea6-description ea6-address">{% if place.address %}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg> {{ place.address }}{% elif place.barangay %}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg> {{ place.barangay }}, Kabankalan{% else %}Location details need verification{% endif %}</p>
             <p class="ea6-description ea6n-summary">{% if place.description %}{{ place.description|truncatechars:125 }}{% else %}Detailed information is not yet available.{% endif %}</p>
             {% if place.phone %}<p class="ea6-meta">☎ Contact: {{ place.phone }} (confirm current details with the business)</p>{% endif %}
             {% if place.cover_image or place.cover_image_url %}
@@ -280,7 +159,7 @@
             {% endif %}
             <p class="ea6-distance" aria-live="polite">{% if place.latitude != None and place.longitude != None %}Choose a location to calculate distance{% else %}Precise map coordinates unavailable{% endif %}</p>
             <div class="ea6-actions">
-              <a href="{% url 'places:place_detail' place.pk %}">View Details →</a>
+              <a href="{% url 'places:place_detail' place.pk %}">View details ↗</a>
               {% if place.latitude != None and place.longitude != None %}
                 <a target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&amp;destination={{ place.latitude }},{{ place.longitude }}">Directions ↗</a>
                 <button class="ea6g-card-map" type="button" aria-label="Show {{ place.title }} on nearby map">Show on map ↗</button>
@@ -292,6 +171,11 @@
     </div>
     <aside id="ea6g-map-shell" class="ea6g-map-shell" aria-label="Map of current nearby search results" hidden>
       <div class="ea6g-map-head"><h3>Nearby results map</h3><button type="button" class="ea6g-fit" id="ea6g-fit">Fit results</button></div>
+      <div class="ea6-drone-hud" id="ea6-drone-hud" hidden aria-hidden="true">
+        <span class="ea6-drone-track"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 8h4l2-3h4l2 3h4v8h-4l-2 3h-4l-2-3H4Z"/><circle cx="12" cy="12" r="2.4"/></svg>Drone view</span>
+        <strong id="ea6-drone-target">Kabankalan</strong>
+        <span class="ea6-drone-scan"></span>
+      </div>
       <div id="ea6g-map" class="ea6g-map" role="region" aria-label="Interactive map of verified nearby result pins"></div>
       <p id="ea6g-map-status" class="ea6g-map-status" role="status" aria-live="polite">Map loading will begin when you open this panel.</p>
       <p class="ea6g-map-status">Only this search's published, verified Kabankalan listings with coordinates are pinned. Map marker colors indicate selected or unselected locations—not hobby scores or business quality. Map tiles © <a href="https://www.maptiler.com/copyright/" target="_blank" rel="noopener noreferrer">MapTiler</a>; map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>.</p>
@@ -304,11 +188,12 @@
       <a class="ea6-back" href="{% url 'places:attraction_carousel' %}?browse=all">Browse existing destinations →</a>
     </section>
   {% endif %}
-  <p class="ea6-notice">Only staff-verified, published Kabankalan listings are shown. Imported OpenStreetMap business candidates are hidden until independently reviewed. Mapping data may include © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a> (ODbL). Business details can change; confirm before visiting.</p>
+  <p class="ea6-notice">Only staff-verified, published Kabankalan listings appear here. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>. Details can change — confirm before visiting.</p>
 </main>
 {% endblock %}
 {% block extra_js %}
 {{ approved_suggestions|json_script:"ea6-approved-data" }}
+<script src="{% static 'js/ea-voice.js' %}"></script>
 <script>
 (function () {
   "use strict";
@@ -433,6 +318,9 @@
     return haversine(originPoint.lat,originPoint.lng,lat,lng) <= radius + 1e-8;
   }
   function refreshRadius() {
+    // The radius control is noise until a reference point exists.
+    const radiusBox = document.getElementById("ea6h-radius");
+    if (radiusBox) radiusBox.hidden = !originPoint;
     if (distanceSelect) distanceSelect.disabled = !originPoint;
     const active = !!originPoint && distanceSelect && distanceSelect.value !== "all";
     if (radiusReset) radiusReset.disabled = !active;
@@ -456,7 +344,7 @@
       const open = !!mapShell && !mapShell.hidden;
       mapToggle.disabled = pins.length === 0 && !open;
       mapToggle.textContent = open ? "Hide nearby map"
-        : pins.length ? "🗺 View nearby results on map"
+        : pins.length ? "View nearby results on map ↗"
         : "Map unavailable for these results";
     }
     if (resultsMap) {
@@ -616,8 +504,8 @@
     if (resultsMap) return;
     resultsMap = L.map("ea6g-map", {scrollWheelZoom:false});
     // ExploreAnywhere Phase 6G.1: MapTiler nearby tile layer
-    // Same MapTiler key and style URLs as the existing Discover Kabankalan map.
-    const nearbyMapTilerKey = "2G4T5asnBPm0kLPHVQsl";
+    // The token comes from the deployment configuration (MAPTILER_API_KEY).
+    const nearbyMapTilerKey = "{{ MAPTILER_API_KEY|escapejs }}";
     const nearbyAttribution =
       '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> ' +
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
@@ -700,7 +588,7 @@
     if (!mapShell || !mapLayout || !mapToggle) return;
     mapShell.hidden = true;
     mapLayout.classList.remove("map-open");
-    mapToggle.textContent = "🗺 View nearby results on map";
+    mapToggle.textContent = "View nearby results on map ↗";
     mapToggle.setAttribute("aria-expanded","false");
   }
   mapToggle?.addEventListener("click", () => {
@@ -708,8 +596,81 @@
     else closeNearbyMap();
   });
   fitButton?.addEventListener("click", fitResultPins);
-  mappedRows.forEach(card => {
-    card.querySelector(".ea6g-card-map")?.addEventListener("click", () => openNearbyMap(card));
+  // ---------------------------------------------------------------
+  // Drone view: choosing a listing flies the camera down onto it
+  // ---------------------------------------------------------------
+  const droneHud = document.getElementById("ea6-drone-hud");
+  const droneTarget = document.getElementById("ea6-drone-target");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let droneRing = null;
+  let droneTimer = null;
+
+  function showDroneHud(card) {
+    if (!droneHud) return;
+    if (droneTarget) droneTarget.textContent = card.dataset.title || "Kabankalan";
+    droneHud.hidden = false;
+    window.clearTimeout(droneTimer);
+    droneTimer = window.setTimeout(() => { droneHud.hidden = true; }, 5600);
+  }
+
+  async function droneTo(card) {
+    if (!card || !card.hasAttribute("data-lat")) return;
+    await openNearbyMap(card);
+    if (!mapShell) return;
+    showDroneHud(card);
+    if (!resultsMap || !window.L?.circleMarker) return;
+    const lat = Number(card.dataset.lat);
+    const lng = Number(card.dataset.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+    if (droneRing) {
+      resultsMap.removeLayer(droneRing);
+      droneRing = null;
+    }
+    droneRing = L.circleMarker([lat, lng], {
+      radius: 26, color: "#21d9c6", weight: 2,
+      fillColor: "#21d9c6", fillOpacity: .12, className: "ea6-drone-ring"
+    }).addTo(resultsMap);
+
+    const finish = () => {
+      const marker = resultsMapMarkers.get(card);
+      if (marker) {
+        selectCard(card);
+        marker.openPopup();
+      }
+      const ring = droneRing;
+      droneRing = null;
+      if (ring) window.setTimeout(() => {
+        try { resultsMap.removeLayer(ring); } catch (error) { /* map closed */ }
+      }, 2600);
+    };
+
+    if (reduceMotion.matches) {
+      resultsMap.setView([lat, lng], 16.5);
+      finish();
+      return;
+    }
+    resultsMap.once("moveend", finish);
+    resultsMap.flyTo([lat, lng], 16.5, { duration: 2.6 });
+  }
+
+  rows.forEach(card => {
+    const cover = card.querySelector(".ea6-cover");
+    cover?.addEventListener("click", () => droneTo(card));
+    cover?.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        droneTo(card);
+      }
+    });
+    card.querySelector(".ea6g-card-map")?.addEventListener("click", () => droneTo(card));
+  });
+
+  // Voice search: the same shared module the Browse page uses.
+  window.EAVoiceSearch?.attach({
+    input: document.getElementById("ea6-query"),
+    button: document.getElementById("ea6-voice"),
+    status: document.getElementById("ea6-voice-status")
   });
 })();
 </script>

@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views, journey_views, review_views, nearby
+from . import views, journey_views, review_views, nearby, relevance_views
 from .photo_preview import admin_photo_preview
 from .city_discovery import city_discover
 
@@ -17,6 +17,7 @@ urlpatterns = [
     path("my-reviews/", review_views.my_reviews, name="my_reviews"),
     path("<int:pk>/review/", review_views.submit_review, name="submit_review"),
     path("<int:pk>/review/delete/", review_views.delete_review, name="delete_review"),
+    path("<int:pk>/relevance/", relevance_views.rate_relevance, name="rate_relevance"),
     path("saved/", journey_views.saved_places, name="saved_places"),
     path("journey/", journey_views.journey_dashboard, name="journey_dashboard"),
     path("<int:pk>/save/", journey_views.save_place, name="save_place"),

@@ -1,69 +1,20 @@
 
 {% extends "theme/public_base.html" %}
-{% load attraction_photos %}
+{% load attraction_photos static %}
+{% block title %}Explore Places · ExploreKabankalan{% endblock %}
+{% block body_class %}browse-page{% endblock %}
+{% block skip_link %}<a class="browse-skip" href="#browse-main">Skip to content</a>{% endblock %}
+{% block brand_content %}
+  <span class="browse-brand-icon" aria-hidden="true">✺</span>
+  <span class="browse-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
+{% endblock %}
+{% block footer_brand %}ExploreKabankalan{% endblock %}
+{% block footer_tagline %}Local places. Your adventure.{% endblock %}
 
 {% block extra_css %}
 
 <style>
   
-.ea-match-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: #eaf3ff;
-    color: #155bc7;
-    font-size: 12px;
-    font-weight: 800;
-    white-space: nowrap;
-    position: relative;
-    cursor: help;
-}
-
-.ea-match-badge::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #102b53;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 600;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-    margin-bottom: 8px;
-    z-index: 10;
-}
-
-.ea-match-badge::before {
-    content: '';
-    position: absolute;
-    bottom: calc(100% + 2px);
-    left: 50%;
-    transform: translateX(-50%);
-    border: 4px solid transparent;
-    border-top-color: #102b53;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-}
-
-.ea-match-badge:hover::after,
-.ea-match-badge:focus::after {
-    opacity: 1;
-}
-
-.ea-match-badge:hover::before,
-.ea-match-badge:focus::before {
-    opacity: 1;
-}
-
   
 /* ExploreAnywhere enhanced map */
 .ea-map-layout {
@@ -397,31 +348,6 @@
     margin: 0 0 22px;
   }
 
-  .ea-pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 30px;
-  }
-
-  .ea-pagination a {
-    padding: 10px 15px;
-    background: #fff;
-    border: 1px solid #d8e3f2;
-    border-radius: 10px;
-    color: #0757d8;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 700;
-  }
-
-  .ea-pagination span {
-    color: #65758e;
-    font-size: 13px;
-  }
-
   @media (max-width: 700px) {
     .ea-attractions {
       padding: 25px 15px 65px;
@@ -567,12 +493,6 @@
 }
 .ea-card-body { display: flex; flex-direction: column; flex: 1; padding: 20px; min-width: 0; }
 .ea-card-image { height: 180px; }
-.ea-card .ea-match-badge {
-  align-self: flex-start;
-  margin: 0 0 12px;
-  white-space: normal;
-  line-height: 1.35;
-}
 .ea-card-description { min-height: 0; }
 .ea-card-footer {
   margin-top: auto;
@@ -597,9 +517,6 @@
   text-align: center; font-size: 12px; font-weight: 700;
 }
 .ea-photo-empty-icon { font-size: 32px; line-height: 1; }
-.ea-match-explainer {
-  margin: 0 0 14px; color: #526781; font-size: 12px; line-height: 1.5;
-}
 .ea-map-details .ea-detail-button + .ea-detail-button {
   color: #075ee4 !important; background: #eef5ff;
   border: 1px solid #cde1ff;
@@ -664,8 +581,6 @@
 .ea-filter-reset:focus-visible {outline:3px solid #82b5ff;outline-offset:2px;}
 .ea-search-relevance {font-size:12px;font-weight:750;line-height:1.4;
   margin:0 0 10px;color:#0c704d;}
-.ea-match-badge--unscored {background:#f1f5f9;color:#334155;white-space:normal;}
-.ea-score-guidance {margin:0 0 14px;color:#546882;font-size:13px;line-height:1.6;}
 .ea-carousel--compact {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));
   align-items:stretch;overflow:visible;scroll-snap-type:none;scroll-behavior:auto;gap:18px;}
 .ea-carousel--compact .ea-card {flex:none;width:100%;max-width:none;min-width:0;scroll-snap-align:unset;}
@@ -723,19 +638,8 @@
     display: none;
 }
 
-.ea-match-reason {
-    display: none;
-    margin: -5px 0 12px;
-    color: #475e7b;
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-.ea-card:hover .ea-match-reason,
-.ea-card:focus-within .ea-match-reason {
-    display: block;
-}
 </style>
+<link rel="stylesheet" href="{% static 'css/browse.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -760,21 +664,19 @@
 }
 </style>
 
-<main class="ea-attractions">
+<main class="ea-attractions" id="browse-main">
 
   <header class="ea-attractions-header">
     <div>
-      <span class="ea-eyebrow">
-        EXPLOREANYWHERE · KABANKALAN ONLY
-      </span>
+      <span class="ea-eyebrow"><span aria-hidden="true">✦</span> YOUR LOCAL GUIDE TO KABANKALAN</span>
 
       <h1>
-        Discover {{ selected_city.name }}
+        Discover <span>{{ selected_city.name }}</span><b>.</b>
       </h1>
 
       <p class="ea-subtitle">
-        Find verified destinations and businesses in Kabankalan City. Explore
-        by hobbies, search for local services, or check nearby places.
+        Find verified destinations and local businesses, follow your interests,
+        and discover what’s around the corner.
       </p>
     </div>
 
@@ -782,7 +684,7 @@
       href="#ea-filter-hobby"
       class="ea-change-city"
     >
-      Filter by hobby &#8595;
+      Filter your search <span aria-hidden="true">↓</span>
     </a>
   </header>
 
@@ -822,10 +724,22 @@
       <span class="ea-discovery-count">{{ total_attractions }} of {{ published_total }} published</span>
     </div>
     <form class="ea-tools-form" method="get" action="{% url 'places:attraction_carousel' %}" role="search">
-      <div class="ea-tool-field">
+      <div class="ea-tool-field ea-search-field">
         <label for="ea-search-query">Find places: search destinations, cafés, restaurants, activities</label>
-        <input id="ea-search-query" name="q" type="search" maxlength="200"
-               value="{{ search_query }}" placeholder="e.g. Amyan Hill, coffee shops, hiking" autocomplete="off">
+        <div class="ea-search-input-wrap">
+          <input id="ea-search-query" name="q" type="search" maxlength="200"
+                 value="{{ search_query }}" placeholder="e.g. Amyan Hill, coffee shops, hiking"
+                 autocomplete="off" aria-describedby="ea-voice-status">
+          <button type="button" class="ea-voice-button" id="ea-voice-search"
+                  aria-pressed="false" aria-label="Search by voice" hidden>
+            <svg class="ea-voice-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 3.5a2.8 2.8 0 0 0-2.8 2.8v5.4a2.8 2.8 0 0 0 5.6 0V6.3A2.8 2.8 0 0 0 12 3.5Z"/>
+              <path d="M5.5 11.2a6.5 6.5 0 0 0 13 0M12 17.7v3M9 20.7h6"/>
+            </svg>
+            <span class="ea-voice-text">Speak</span>
+          </button>
+        </div>
+        <p class="ea-voice-status" id="ea-voice-status" role="status" aria-live="polite"></p>
       </div>
       <div class="ea-tools-form-row-filters">
         <div class="ea-tool-field">
@@ -893,6 +807,22 @@
         {% if total_attractions > 3 %}<div class="ea-carousel-controls">
           <button
             type="button"
+            id="ea-marquee-toggle"
+            class="ea-marquee-toggle"
+            aria-label="Pause the looping carousel"
+            aria-pressed="true"
+          >
+            <svg class="ea-marquee-icon ea-marquee-icon-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M9 5v14M15 5v14"/>
+            </svg>
+            <svg class="ea-marquee-icon ea-marquee-icon-play" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M8 5.5 19 12 8 18.5Z"/>
+            </svg>
+            <span class="ea-marquee-toggle-text">Pause</span>
+          </button>
+
+          <button
+            type="button"
             id="ea-prev"
             aria-label="Previous attractions"
             aria-controls="ea-carousel"
@@ -915,26 +845,24 @@
         <button type="button" id="ea-list-button"
                 class="ea-view-button"
                 aria-pressed="true">
-            📋 List
+            <svg class="ea-view-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg> List
         </button>
 
         <button type="button" id="ea-map-button"
                 class="ea-view-button"
                 aria-pressed="false">
-            🗺️ Map
+            <svg class="ea-view-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-2 6 2 6-2v14l-6 2-6-2-6 2V6Zm6-2v14m6-12v14"/></svg> Map
         </button>
 
         <div class="ea-view-sort-group">
             <label for="ea-inline-sort">Sort:</label>
-            <select id="ea-inline-sort" name="inline_sort" onchange="document.getElementById('ea-filter-sort').value = this.value; document.forms[0].submit();">
+            <select id="ea-inline-sort" name="inline_sort" onchange="var eaSort = document.getElementById('ea-filter-sort'); eaSort.value = this.value; var eaForm = eaSort.form; if (eaForm.requestSubmit) { eaForm.requestSubmit(); } else { eaForm.submit(); }">
                 <option value="recommended" {% if selected_sort == 'recommended' %}selected{% endif %}>Recommended</option>
                 <option value="rating" {% if selected_sort == 'rating' %}selected{% endif %}>Highest rated</option>
                 <option value="name" {% if selected_sort == 'name' %}selected{% endif %}>Name A–Z</option>
             </select>
         </div>
       </div>
-
-<p class="ea-score-guidance" id="ea-score-guidance">Finding a destination with search or filters does not mean it matches your personal hobbies. Personalized relevance is calculated using selected hobbies and available ratings, normalized over available signals. A lower percentage is not a destination-quality rating. No GPS distance is scored. Gray map markers mean there is not enough personalization information; colored map markers use the displayed score.</p>
 
 <div id="ea-list-panel">
 
@@ -943,18 +871,15 @@
         id="ea-carousel"
         tabindex="0"
         aria-label="Attraction cards"
+        data-marquee
       >
+      <div class="ea-carousel-track" id="ea-carousel-track">
 
         {% for place in attractions %}
 
           <article class="ea-card"
           
           data-detail-url="{% url 'places:place_detail' place.pk %}"
-          data-match="{{ place.match_percent|default_if_none:'0' }}"
-          data-score-available="{% if selected_hobbies or place.avg_rating %}true{% else %}false{% endif %}"
-          data-rating-available="{% if place.avg_rating %}true{% else %}false{% endif %}"
-          data-hobby-match="{{ place.has_hobby_match|yesno:'true,false' }}"
-          data-matched-hobbies="{{ place.matched_hobbies|join:', ' }}"
         {% if place.latitude != None and place.longitude != None %}
         data-lat="{{ place.latitude }}"
         data-lng="{{ place.longitude }}"
@@ -980,15 +905,31 @@
                   decoding="async"
                   width="640"
                   height="360"
+                  onerror="this.closest('.ea-card-image').classList.add('ea-photo-failed'); this.remove();"
                 >
+
+              {% elif place.sample_image %}
+                <img
+                  src="{% static place.sample_image %}"
+                  alt="Illustrative category sample, not an actual photo of {{ place.title }}"
+                  loading="lazy"
+                  decoding="async"
+                  width="640"
+                  height="360"
+                >
+                <span class="ea-card-sample">AI-generated category sample</span>
 
               {% else %}
                 <div class="ea-photo-empty" role="img" aria-label="No verified photo available for {{ place.title }}">
-                  <span class="ea-photo-empty-icon" aria-hidden="true">&#128247;</span>
-                  <span>Destination photo coming soon</span>
+                  <span class="ea-photo-empty-icon" aria-hidden="true">&#8982;</span>
+                  <span>PHOTO NOT YET AVAILABLE</span>
                 </div>
               {% endif %}
 
+              <span class="ea-card-map-hint" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" fill="currentColor"/></svg>
+                View on map
+              </span>
             </div>
 
             <div class="ea-card-body">
@@ -1005,26 +946,8 @@
               {% if search_query %}
                 <p class="ea-search-relevance">Search result for "{{ search_query }}"</p>
               {% endif %}
-              {% if selected_hobbies or place.avg_rating %}
-                <span class="ea-match-badge" data-tooltip="Based on your selected hobbies{% if place.avg_rating %} and visitor ratings{% endif %}">
-                  🎯 {{ place.match_percent }}% Match
-                </span>
-                {% if place.has_hobby_match %}
-                  <p class="ea-match-reason">↳ Matches: {{ place.matched_hobbies|join:", " }}</p>
-                {% elif place.avg_rating %}
-                  <p class="ea-match-reason">↳ Based on visitor ratings</p>
-                {% else %}
-                  <p class="ea-match-reason">↳ Score calculated from available signals</p>
-                {% endif %}
-              {% else %}
-                <span class="ea-match-badge ea-match-badge--unscored" data-tooltip="Select a hobby above to see personalized scores">
-                  ○ Not scored
-                </span>
-                <p class="ea-match-reason">↳ Choose hobbies to personalize</p>
-              {% endif %}
-
               <p class="ea-card-location">
-                &#128205; {{ selected_city.name }}
+                <svg class="ea-pin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg> {{ selected_city.name }}
               </p>
 
               <p class="ea-card-description">
@@ -1036,8 +959,16 @@
                 {% endif %}
               </p>
 
+              {% if place.cover_image or place.cover_image_url %}
+                {% if place.photo_credit or place.photo_license %}
+                  <p class="ea-card-credit">
+                    Photo{% if place.photo_credit %} by {{ place.photo_credit }}{% endif %}{% if place.photo_license %} · {% if place.photo_license_url %}<a href="{{ place.photo_license_url }}" target="_blank" rel="noopener noreferrer">{{ place.photo_license }}</a>{% else %}{{ place.photo_license }}{% endif %}{% endif %}
+                  </p>
+                {% endif %}
+              {% endif %}
+
               <div class="ea-card-footer">
-                <a class="ea-map-link ea6n-primary" href="{% url 'places:place_detail' place.pk %}">View Details →</a>
+                <a class="ea-map-link ea6n-primary" href="{% url 'places:place_detail' place.pk %}">View details ↗</a>
                 {% if place.latitude != None and place.longitude != None %}
                   <a class="ea-map-link" href="https://www.google.com/maps/dir/?api=1&amp;destination={{ place.latitude }},{{ place.longitude }}" target="_blank" rel="noopener noreferrer" aria-label="Directions to {{ place.title }} (opens Google Maps)">Directions ↗</a>
                 {% else %}
@@ -1050,6 +981,15 @@
         {% endfor %}
 
       </div>
+      </div>
+
+      <p class="ea-carousel-caption">
+        {% if carousel_truncated %}
+          Showing the first {{ attractions|length }} of {{ total_attractions }} matching places.
+        {% else %}
+          All {{ total_attractions }} matching place{{ total_attractions|pluralize }} loop here automatically — drag, pause, or open one on the map.
+        {% endif %}
+      </p>
 
 </div>
 
@@ -1058,40 +998,22 @@
 
     <div id="ea-attraction-map"></div>
 
+    <div class="ea-drone-hud" id="ea-drone-hud" hidden aria-hidden="true">
+      <span class="ea-drone-track">
+        <svg viewBox="0 0 24 24" focusable="false"><path d="M4 8h4l2-3h4l2 3h4v8h-4l-2 3h-4l-2-3H4Z"/><circle cx="12" cy="12" r="2.4"/></svg>
+        Drone view
+      </span>
+      <strong id="ea-drone-target">Kabankalan</strong>
+      <span class="ea-drone-scan"></span>
+    </div>
+
     <p id="ea-map-note" class="ea-map-note">
-        Map shows attractions on this results page.
+        Map shows every matching attraction; pick a photo to fly the drone view in.
     </p>
 </section>
 
     </section>
 
-    {% if page_obj.has_other_pages %}
-      <nav
-        class="ea-pagination"
-        aria-label="Attraction pages"
-      >
-        {% if page_obj.has_previous %}
-          <a
-            href="?page={{ page_obj.previous_page_number }}&amp;q={{ search_query|urlencode }}&amp;category={{ selected_category|urlencode }}&amp;hobby={{ selected_hobby|urlencode }}&amp;sort={{ selected_sort|urlencode }}"
-          >
-            &#8592; Previous
-          </a>
-        {% endif %}
-
-        <span>
-          Page {{ page_obj.number }}
-          of {{ page_obj.paginator.num_pages }}
-        </span>
-
-        {% if page_obj.has_next %}
-          <a
-            href="?page={{ page_obj.next_page_number }}&amp;q={{ search_query|urlencode }}&amp;category={{ selected_category|urlencode }}&amp;hobby={{ selected_hobby|urlencode }}&amp;sort={{ selected_sort|urlencode }}"
-          >
-            Next &#8594;
-          </a>
-        {% endif %}
-      </nav>
-    {% endif %}
 
   {% else %}
 
@@ -1128,13 +1050,15 @@
 
 
 {% block extra_js %}
+<script src="{% static 'js/ea-voice.js' %}"></script>
 
 <script>
 (function () {
     "use strict";
 
-    // Use the same MapTiler key already working in your project.
-    const mapTilerKey = "2G4T5asnBPm0kLPHVQsl";
+    // The MapTiler token comes from the deployment configuration
+    // (MAPTILER_API_KEY environment variable, see mysite/settings.py).
+    const mapTilerKey = "{{ MAPTILER_API_KEY|escapejs }}";
 
     // ExploreAnywhere Phase 5E.1: load Leaflet only when Map View is requested.
     // Keep the original Leaflet version, MapTiler layers and marker logic.
@@ -1218,35 +1142,243 @@
     let markers = new Map();
 
     // --------------------------------------------------
-    // 1. Preserve the existing attraction carousel
+    // 1. Looping "Places to Explore" marquee
     // --------------------------------------------------
 
-    function scrollCards(direction) {
-        if (!carousel) return;
+    const track = document.getElementById("ea-carousel-track");
+    const marqueeToggle = document.getElementById("ea-marquee-toggle");
+    const reduceMotionQuery = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+    );
 
-        const card = carousel.querySelector(".ea-card");
-        if (!card) return;
+    const marquee = {
+        ready: false,
+        offset: 0,
+        loop: 0,
+        span: 0,
+        speed: 34,          // pixels per second: slow enough to read a card
+        playing: true,      // the visitor's intent
+        hovering: false,
+        focusing: false,
+        dragging: false,
+        tween: null,
+        clones: 0
+    };
 
-        const gap = parseFloat(
-            window.getComputedStyle(carousel).gap
-        ) || 20;
+    function applyMarqueeOffset() {
+        if (track) {
+            track.style.transform =
+                "translate3d(" + marquee.offset.toFixed(2) + "px, 0, 0)";
+        }
+    }
 
-        const distance = card.getBoundingClientRect().width + gap;
+    function normalizeOffset(value) {
+        if (!marquee.loop) return value;
+        let next = value;
+        while (next <= -marquee.loop) next += marquee.loop;
+        while (next > 0) next -= marquee.loop;
+        return next;
+    }
 
-        carousel.scrollBy({
-            left: distance * direction,
-            behavior: window.matchMedia(
-                "(prefers-reduced-motion: reduce)"
-            ).matches ? "auto" : "smooth"
+    function marqueeRunning() {
+        return marquee.ready && marquee.playing &&
+            !marquee.hovering && !marquee.focusing &&
+            !marquee.dragging && !document.hidden &&
+            !reduceMotionQuery.matches;
+    }
+
+    // A tween stores a signed distance, not an absolute target: the frame loop
+    // wraps the offset one card at a time, so a step that crosses the loop
+    // boundary slides by one card instead of racing back across the whole row.
+    function slideBy(distance) {
+        if (!marquee.ready) return;
+        if (reduceMotionQuery.matches) {
+            marquee.tween = null;
+            marquee.offset = normalizeOffset(marquee.offset + distance);
+            applyMarqueeOffset();
+            return;
+        }
+        marquee.tween = {
+            from: marquee.offset,
+            distance: distance,
+            started: performance.now(),
+            duration: 420
+        };
+    }
+
+    // One step forward shows the next place; a negative step goes back.
+    function nudge(steps) {
+        if (!marquee.ready) return;
+        slideBy(-marquee.span * steps);
+    }
+
+    function setMarqueePlaying(playing) {
+        marquee.playing = playing;
+        if (marqueeToggle) {
+            marqueeToggle.setAttribute("aria-pressed", String(playing));
+            marqueeToggle.setAttribute(
+                "aria-label",
+                playing ? "Pause the looping carousel" : "Play the looping carousel"
+            );
+            const label = marqueeToggle.querySelector(".ea-marquee-toggle-text");
+            if (label) label.textContent = playing ? "Pause" : "Play";
+        }
+        if (!playing) marquee.tween = null;
+    }
+
+    function setupMarquee() {
+        if (!carousel || !track) return;
+
+        const cards = Array.from(track.querySelectorAll(".ea-card"));
+        if (cards.length < 2) return;
+
+        const gap = parseFloat(getComputedStyle(track).gap) || 18;
+        const cardWidth = cards[0].getBoundingClientRect().width + gap;
+        const viewport = carousel.clientWidth;
+
+        if (!cardWidth || cardWidth * cards.length <= viewport + cardWidth) {
+            return; // Everything already fits: a static grid is clearer.
+        }
+
+        // Clone a prefix wide enough to cover the viewport, so the strip can
+        // wrap from the last card back to the first without a visible jump.
+        const needed = Math.ceil(viewport / cardWidth) + 2;
+        const cloneCount = Math.min(cards.length, needed);
+
+        for (let index = 0; index < cloneCount; index += 1) {
+            const clone = cards[index].cloneNode(true);
+            clone.classList.add("ea-clone");
+            clone.setAttribute("aria-hidden", "true");
+            clone.removeAttribute("tabindex");
+            clone.querySelectorAll("a, button").forEach(function (element) {
+                element.tabIndex = -1;
+            });
+            track.appendChild(clone);
+            if (attractions[index]) {
+                bindCard(clone, attractions[index], index);
+            }
+        }
+
+        marquee.ready = true;
+        marquee.clones = cloneCount;
+        marquee.span = cardWidth;
+        marquee.loop = cardWidth * cards.length;
+        carousel.classList.add("is-cloned");
+        applyMarqueeOffset();
+
+        let lastFrame = 0;
+
+        function frame(timestamp) {
+            const delta = lastFrame ? Math.min(64, timestamp - lastFrame) : 16;
+            lastFrame = timestamp;
+
+            if (marquee.tween) {
+                const tween = marquee.tween;
+                const progress = Math.min(
+                    1, (timestamp - tween.started) / tween.duration
+                );
+                const eased = 1 - Math.pow(1 - progress, 3);
+                marquee.offset =
+                    tween.from + tween.distance * eased;
+                while (marquee.offset <= -marquee.loop) {
+                    marquee.offset += marquee.loop;
+                }
+                while (marquee.offset > 0) {
+                    marquee.offset -= marquee.loop;
+                }
+                applyMarqueeOffset();
+                if (progress >= 1) marquee.tween = null;
+            } else if (marqueeRunning()) {
+                marquee.offset -= marquee.speed * delta / 1000;
+                while (marquee.offset <= -marquee.loop) {
+                    marquee.offset += marquee.loop;
+                }
+                applyMarqueeOffset();
+            }
+
+            requestAnimationFrame(frame);
+        }
+
+        requestAnimationFrame(frame);
+
+        // Pause while the visitor is reading or interacting.
+        carousel.addEventListener("pointerenter", function (event) {
+            if (event.pointerType !== "touch") marquee.hovering = true;
         });
+        carousel.addEventListener("pointerleave", function () {
+            marquee.hovering = false;
+        });
+        carousel.addEventListener("focusin", function () {
+            marquee.focusing = true;
+        });
+        carousel.addEventListener("focusout", function (event) {
+            if (!carousel.contains(event.relatedTarget)) {
+                marquee.focusing = false;
+            }
+        });
+        document.addEventListener("visibilitychange", function () {
+            marquee.tween = null;
+        });
+
+        // Drag to scrub the loop manually.
+        let dragStartX = 0;
+        let dragStartOffset = 0;
+        let dragMoved = 0;
+
+        carousel.addEventListener("pointerdown", function (event) {
+            if (event.pointerType === "mouse" && event.button !== 0) return;
+            marquee.dragging = true;
+            dragStartX = event.clientX;
+            dragStartOffset = marquee.offset;
+            dragMoved = 0;
+            marquee.tween = null;
+            carousel.classList.add("is-dragging");
+        });
+
+        carousel.addEventListener("pointermove", function (event) {
+            if (!marquee.dragging) return;
+            const distance = event.clientX - dragStartX;
+            dragMoved = Math.max(dragMoved, Math.abs(distance));
+            marquee.offset = dragStartOffset + distance;
+            applyMarqueeOffset();
+        });
+
+        function endDrag() {
+            if (!marquee.dragging) return;
+            marquee.dragging = false;
+            carousel.classList.remove("is-dragging");
+            marquee.offset = normalizeOffset(marquee.offset);
+            applyMarqueeOffset();
+        }
+
+        carousel.addEventListener("pointerup", endDrag);
+        carousel.addEventListener("pointercancel", endDrag);
+        carousel.addEventListener("pointerleave", endDrag);
+
+        // A drag should not be read as a click that opens the map.
+        carousel.addEventListener("click", function (event) {
+            if (dragMoved > 8) {
+                event.stopPropagation();
+                event.preventDefault();
+                dragMoved = 0;
+            }
+        }, true);
+
+        if (reduceMotionQuery.matches) {
+            setMarqueePlaying(false);
+        }
     }
 
     previous?.addEventListener("click", function () {
-        scrollCards(-1);
+        nudge(-1);
     });
 
     next?.addEventListener("click", function () {
-        scrollCards(1);
+        nudge(1);
+    });
+
+    marqueeToggle?.addEventListener("click", function () {
+        setMarqueePlaying(!marquee.playing);
     });
 
     if (!mapPanel || !listPanel) return;
@@ -1303,11 +1435,6 @@
 
         const attraction = {
             card,
-            matchPercent: Number(card.dataset.match || 0),
-            scoreAvailable: card.dataset.scoreAvailable === "true",
-            ratingAvailable: card.dataset.ratingAvailable === "true",
-            hobbyMatch: card.dataset.hobbyMatch === "true",
-            matchedHobbies: card.dataset.matchedHobbies || "",
             lat,
             lng,
             title: card.querySelector("h3")
@@ -1339,11 +1466,6 @@
         const description = document.createElement("p");
         description.textContent = attraction.description;
 
-        const relevance = document.createElement("p");
-        relevance.textContent = attraction.scoreAvailable
-            ? attraction.matchPercent + "% personalized relevance (not a quality rating)"
-            : "Personalized relevance not scored yet";
-
         const coordinates = document.createElement("p");
         coordinates.textContent =
             "Coordinates: " +
@@ -1372,7 +1494,6 @@
             category,
             title,
             description,
-            relevance,
             coordinates,
             directions,
             detailLink
@@ -1462,40 +1583,9 @@
 
         const coordinates = [];
 
-        // ea-hobby-match-legend-v1: color thresholds match markerColor below.
-
-        const hobbyLegend = L.control({ position: "bottomleft" });
-
-        hobbyLegend.onAdd = function () {
-
-          const el = L.DomUtil.create("div", "ea-hobby-match-legend");
-
-          el.setAttribute("role", "note");
-
-          el.setAttribute("aria-label", "Recommendation match marker legend");
-
-          el.style.cssText = "background:rgba(255,255,255,.96);padding:9px 11px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.14);font:12px/1.6 Arial,sans-serif;color:#17304f;max-width:160px;";
-
-          el.innerHTML = '<strong>Personalized relevance</strong><div><span style="color:#16a34a">●</span> 80–100% Strong</div><div><span style="color:#f59e0b">●</span> 50–79% Moderate</div><div><span style="color:#dc2626">●</span> 0–49% Limited</div><div><span style="color:#64748b">●</span> Not scored</div><small>Scores are not quality ratings</small>';
-
-          L.DomEvent.disableClickPropagation(el);
-
-          return el;
-
-        };
-
-        hobbyLegend.addTo(map);
 
 
         attractions.forEach((attraction, index) => {
-        
-const score = Number(attraction.matchPercent ?? 0);
-
-const markerColor = !attraction.scoreAvailable ? "#64748b" :
-    score >= 80 ? "#16a34a" :
-    score >= 50 ? "#f59e0b" :
-                  "#dc2626";
-
 
             const marker = L.circleMarker(
     [attraction.lat, attraction.lng],
@@ -1503,7 +1593,7 @@ const markerColor = !attraction.scoreAvailable ? "#64748b" :
         radius: 9,
         color: "#ffffff",
         weight: 3,
-        fillColor: markerColor,
+        fillColor: "#21d9c6",
         fillOpacity: 1
     }
 ).addTo(map);
@@ -1517,24 +1607,7 @@ const markerColor = !attraction.scoreAvailable ? "#64748b" :
             const popupCategory = document.createElement("p");
             popupCategory.textContent = attraction.category;
 
-            
-const popupMatch = document.createElement("p");
-popupMatch.style.fontWeight = "700";
-popupMatch.style.color = markerColor;
-popupMatch.textContent = attraction.scoreAvailable
-    ? attraction.matchPercent + "% Personalized Relevance"
-    : "Not scored yet";
-
-const popupReason = document.createElement("p");
-                popupReason.textContent = !attraction.scoreAvailable
-                    ? "Choose hobbies to personalize results; there are no visitor rating signals yet."
-                    : attraction.hobbyMatch
-                        ? "Matching hobbies: " + attraction.matchedHobbies
-                        : attraction.ratingAvailable
-                            ? "No selected hobby match; available visitor ratings contribute. Not a quality rating."
-                            : "No selected hobby match or visitor ratings. Not a quality rating.";
-
-                popup.append(popupTitle, popupCategory, popupMatch, popupReason);
+            popup.append(popupTitle, popupCategory);
 
 
             marker.bindPopup(popup);
@@ -1560,13 +1633,14 @@ const popupReason = document.createElement("p");
         }
 
         if (mapNote) {
+            const uniqueCards =
+                document.querySelectorAll(".ea-card:not(.ea-clone)").length;
             mapNote.textContent =
-                coordinates.length + " of " +
-                document.querySelectorAll(".ea-card").length +
-                " destinations mapped on this results page. " +
-                (document.querySelectorAll(".ea-card").length > coordinates.length
+                coordinates.length + " of " + uniqueCards +
+                " destinations are mapped. " +
+                (uniqueCards > coordinates.length
                     ? "Other results have no verified coordinates yet."
-                    : "");
+                    : "Pick any photo to fly the drone view in.");
         }
     }
 
@@ -1640,37 +1714,93 @@ const popupReason = document.createElement("p");
     });
 
     // --------------------------------------------------
-    // 8. Card click -> zoom to selected attraction
+    // 8. Card click (including the photo) -> drone flight on the map
     // --------------------------------------------------
 
-    attractions.forEach((attraction, index) => {
-        const card = attraction.card;
+    const droneHud = document.getElementById("ea-drone-hud");
+    const droneTarget = document.getElementById("ea-drone-target");
+    let droneRing = null;
+    let droneTimer = null;
+
+    function showDroneHud(attraction) {
+        if (!droneHud) return;
+        if (droneTarget) droneTarget.textContent = attraction.title;
+        droneHud.hidden = false;
+        if (droneTimer) clearTimeout(droneTimer);
+        droneTimer = setTimeout(function () {
+            if (droneHud) droneHud.hidden = true;
+        }, 5600);
+    }
+
+    function flyDrone(attraction, index) {
+        showDroneHud(attraction);
+
+        showView("map").then(function (readyMap) {
+            if (!readyMap || mapPanel.hidden) return;
+
+            readyMap.invalidateSize();
+
+            if (droneRing) {
+                droneRing.remove();
+                droneRing = null;
+            }
+
+            if (window.L) {
+                droneRing = L.circleMarker(
+                    [attraction.lat, attraction.lng],
+                    {
+                        radius: 26,
+                        color: "#21d9c6",
+                        weight: 2,
+                        opacity: 0.95,
+                        fillColor: "#21d9c6",
+                        fillOpacity: 0.14,
+                        className: "ea-drone-ring",
+                        interactive: false
+                    }
+                ).addTo(readyMap);
+            }
+
+            const duration = reduceMotionQuery.matches ? 0 : 2.6;
+
+            readyMap.flyTo(
+                [attraction.lat, attraction.lng],
+                16.5,
+                {
+                    animate: duration > 0,
+                    duration: duration,
+                    easeLinearity: 0.22
+                }
+            );
+
+            readyMap.once("moveend", function () {
+                markers.get(index)?.openPopup();
+                if (droneRing) {
+                    setTimeout(function () {
+                        if (droneRing) {
+                            droneRing.remove();
+                            droneRing = null;
+                        }
+                    }, 2600);
+                }
+            });
+
+            showDetails(attraction);
+        });
+    }
+
+    function bindCard(card, attraction, index) {
+        if (!card || !attraction) return;
 
         card.tabIndex = 0;
         card.setAttribute(
             "aria-label",
-            "Show " + attraction.title + " on map"
+            "Fly to " + attraction.title + " on the map"
         );
-
-        function focusAttraction() {
-            showView("map").then(function (readyMap) {
-                if (!readyMap || mapPanel.hidden) return;
-                readyMap.flyTo(
-                    [attraction.lat, attraction.lng],
-                    16,
-                    {
-                        animate: true,
-                        duration: 1.2
-                    }
-                );
-                markers.get(index)?.openPopup();
-                showDetails(attraction);
-            });
-        }
 
         card.addEventListener("click", function (event) {
             if (event.target.closest("a, button")) return;
-            focusAttraction();
+            flyDrone(attraction, index);
         });
 
         card.addEventListener("keydown", function (event) {
@@ -1680,9 +1810,27 @@ const popupReason = document.createElement("p");
             ) {
                 if (event.target !== card) return;
                 event.preventDefault();
-                focusAttraction();
+                flyDrone(attraction, index);
             }
         });
+    }
+
+    attractions.forEach((attraction, index) => {
+        bindCard(attraction.card, attraction, index);
+    });
+
+    // Start the looping carousel once the cards exist and are clickable.
+    setupMarquee();
+
+    // --------------------------------------------------
+    // 9. Voice search: speech becomes real text in the box
+    // --------------------------------------------------
+
+    // Voice search lives in a shared module so Nearby behaves identically.
+    window.EAVoiceSearch?.attach({
+        input: document.getElementById("ea-search-query"),
+        button: document.getElementById("ea-voice-search"),
+        status: document.getElementById("ea-voice-status")
     });
 
     // The unified Map tab intentionally opens Browse's existing Leaflet map.

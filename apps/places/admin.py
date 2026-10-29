@@ -16,6 +16,8 @@ from .forms import KabankalanPlaceAdminForm
 from .models import OpeningHours, Place, PlacePhoto
 
 KABANKALAN_CITY_ID = 2
+# Wikimedia lookups are volunteer-run; keep each action run small.
+MAX_PHOTO_LOOKUPS = 40
 OSM_SLUG = re.compile(r"^osm-(node|way|relation)-(\d+)$")
 
 
@@ -189,7 +191,8 @@ class PlaceAdmin(admin.ModelAdmin):
             "classes": ("collapse",),
         }),
     )
-    actions = ("approve_selected", "unpublish_selected")
+    actions = ("approve_selected", "unpublish_selected",
+               "preview_commons_photos", "attach_commons_photos")
 
     def get_urls(self):
         # Before Django's object routes: a permission-protected GET-only queue.
@@ -544,6 +547,106 @@ class PlaceAdmin(admin.ModelAdmin):
             '<div style="color:#9b5500"><strong>Still needed:</strong><ul>{}</ul></div>',
             items,
         )
+
+    # ------------------------------------------------------------------
+    # Licensed photo lookup (Wikimedia Commons)
+    # ------------------------------------------------------------------
+    def _commons_helpers(self):
+        from apps.places.management.commands.phase6o_search_commons import (
+            commons_search, searches_for,
+        )
+        return commons_search, searches_for
+
+    def _photo_targets(self, queryset):
+        published = queryset.filter(city_id=KABANKALAN_CITY_ID, is_verified=True, is_active=True)
+        return list(published.order_by("title")[:MAX_PHOTO_LOOKUPS])
+
+    @admin.action(description="Check Wikimedia Commons for a licensed photo (no changes)")
+    def preview_commons_photos(self, request, queryset):
+        from . import photo_enrichment
+
+        if not photo_enrichment.user_agent():
+            self.message_user(
+                request,
+                "Set WIKIMEDIA_USER_AGENT (app name + contact email) before asking Wikimedia. "
+                "Nothing was changed.",
+                messages.ERROR,
+            )
+            return
+
+        commons_search, searches_for = self._commons_helpers()
+        targets = self._photo_targets(queryset)
+        matched, unmatched = [], []
+        for place in targets:
+            candidate, reason = photo_enrichment.find_photo(
+                place, search=commons_search, queries_for=searches_for)
+            if candidate:
+                matched.append(f"{place.title} → {candidate.get('file_title', '')}")
+            else:
+                unmatched.append(f"{place.title} ({reason})")
+
+        if matched:
+            self.message_user(
+                request,
+                f"{len(matched)} of {len(targets)} destination(s) have a licensed, name-matched photo. "
+                "Run “Attach Wikimedia Commons photos” to use them. Preview only, nothing was saved.",
+                messages.SUCCESS,
+            )
+            self.message_user(request, " · ".join(matched[:10]) + (" …" if len(matched) > 10 else ""),
+                              messages.INFO)
+        if unmatched:
+            self.message_user(
+                request,
+                f"{len(unmatched)} destination(s) had no confident match: "
+                + " · ".join(unmatched[:8]) + (" …" if len(unmatched) > 8 else ""),
+                messages.WARNING,
+            )
+
+    @admin.action(description="Attach Wikimedia Commons photos (licensed name matches only)")
+    def attach_commons_photos(self, request, queryset):
+        from . import photo_enrichment
+
+        if not photo_enrichment.user_agent():
+            self.message_user(
+                request,
+                "Set WIKIMEDIA_USER_AGENT (app name + contact email) before asking Wikimedia. "
+                "Nothing was changed.",
+                messages.ERROR,
+            )
+            return
+
+        commons_search, searches_for = self._commons_helpers()
+        targets = self._photo_targets(queryset)
+        attached, skipped, unmatched = 0, 0, []
+        for place in targets:
+            if place.cover_image or place.cover_image_url:
+                skipped += 1
+                continue
+            candidate, reason = photo_enrichment.find_photo(
+                place, search=commons_search, queries_for=searches_for)
+            if not candidate:
+                unmatched.append(f"{place.title} ({reason})")
+                continue
+            photo_enrichment.apply_photo(place, candidate)
+            attached += 1
+
+        if attached:
+            self.message_user(
+                request,
+                f"Attached {attached} licensed photo(s) with credit and licence. "
+                "Review each record before publishing.",
+                messages.SUCCESS,
+            )
+        if skipped:
+            self.message_user(request, f"{skipped} destination(s) already had a photo and were left alone.",
+                              messages.INFO)
+        if unmatched:
+            self.message_user(
+                request,
+                f"{len(unmatched)} destination(s) had no confident match: "
+                + " · ".join(unmatched[:8]) + (" …" if len(unmatched) > 8 else ""),
+                messages.WARNING,
+            )
 
     @admin.action(description="Approve and publish selected Kabankalan destinations")
     def approve_selected(self, request, queryset):

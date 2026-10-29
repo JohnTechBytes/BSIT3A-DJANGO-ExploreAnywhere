@@ -27,15 +27,19 @@ urlpatterns = [
     path("cities/", include("apps.cities.urls")),
     path("places/", include("apps.places.urls")),
     path("hobbies/", include("apps.hobbies.urls")),
-    path('accounts/', include('apps.users.auth_urls')),
-    path("accounts/", include("apps.users.urls")),
+    path("evaluation/", include("apps.evaluation.urls")),
+    # Branded sign-in / sign-up / sign-out (the canonical account routes).
+    path("accounts/", include("apps.users.auth_urls")),
     path("", views.home, name="home"),
     path('admin/', admin.site.urls),
     path('', include('apps.core.urls')),
-    path("accounts/", include("apps.users.auth_urls")),
+    # Legacy aliases for links published before the redesign.
     path('users/', include('apps.users.urls')),
     path('info/', include('apps.info.urls')),
 ]
+
+handler404 = "mysite.views.error_404"
+handler500 = "mysite.views.error_500"
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -38,7 +38,7 @@
               <a class="ea-shortcut" href="{% url 'admin:places_place_osm_review' %}"><div><b>Business review queue</b><span>Independently verify imported OSM listings before publication</span></div><i aria-hidden="true">↗</i></a>
             {% elif app.app_label == 'visits' and model.object_name == 'VisitCheckIn' %}
               <a class="ea-shortcut" href="{{ model.admin_url }}"><div><b>Review check-ins</b><span>Approve only visits supported by independent evidence</span></div><i aria-hidden="true">↗</i></a>
-            {% elif app.app_label == 'auth' and model.object_name == 'User' %}
+            {% elif app.app_label == 'users' and model.object_name == 'User' %}
               <a class="ea-shortcut" href="{{ model.admin_url }}"><div><b>Manage users</b><span>View and administer authorized accounts</span></div><i aria-hidden="true">↗</i></a>
             {% elif app.app_label == 'info' and model.object_name == 'CityInformation' %}
               <a class="ea-shortcut" href="{{ model.admin_url }}"><div><b>City information</b><span>Edit Kabankalan information content</span></div><i aria-hidden="true">↗</i></a>

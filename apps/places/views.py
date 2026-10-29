@@ -2,13 +2,17 @@
 import re
 
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import redirect, render
 
 from apps.cities.models import City
+from apps.core.models import Category, Hobby
 from .models import Place, SavedPlace, Review
+from .sample_images import sample_image_for
 
+
+# Guard rail only: the carousel is designed to show every published place.
+MAX_CAROUSEL_PLACES = 500
 
 # Search intent -> possible words in attraction records.
 SEARCH_INTENTS = {
@@ -234,20 +238,29 @@ def attraction_carousel(request):
             )
 
     # Only offer category/hobby filters used by published Kabankalan places.
-    published_places = (
-        Place.objects.filter(city=city, is_active=True, is_verified=True)
-        .select_related("city", "category")
+    # Performance: the option lists are built with small aggregate queries
+    # instead of loading every published place (and all of its hobby rows) a
+    # second time. The complete set is still loaded once, for the carousel.
+    published_scope = Place.objects.filter(
+        city=city, is_active=True, is_verified=True,
     )
-    available_categories = {}
-    available_hobbies = {}
-    published_total = 0
-    for published_place in published_places.prefetch_related("hobbies"):
-        published_total += 1
-        if published_place.category_id and published_place.category:
-            available_categories[str(published_place.category_id)] = str(published_place.category)
-        for hobby in published_place.hobbies.all():
-            if hobby.slug:
-                available_hobbies[hobby.slug] = str(hobby)
+    published_total = published_scope.count()
+    available_categories = {
+        str(category_id): name
+        for category_id, name in Category.objects
+            .filter(places__in=published_scope)
+            .values_list("id", "name")
+            .distinct()
+    }
+    available_hobbies = {
+        slug: name
+        for slug, name in Hobby.objects
+            .filter(places__in=published_scope)
+            .exclude(slug="")
+            .values_list("slug", "name")
+            .distinct()
+    }
+    published_places = published_scope.select_related("city", "category")
 
     category_options = sorted(
         ({"value": key, "label": value} for key, value in available_categories.items()),
@@ -267,6 +280,16 @@ def attraction_carousel(request):
         selected_hobby = ""
     if selected_sort not in {"recommended", "rating", "name"}:
         selected_sort = "recommended"
+
+    # The hobby choice is a preference, not a one-off filter: it is stored in
+    # the session so the recommendation score keeps using it on later pages
+    # (and so My Journey can show the visitor's interests). Browsing every
+    # place keeps the preference; an explicit empty hobby parameter clears it.
+    if "hobby" in request.GET and not browse_all:
+        if selected_hobby:
+            request.session["selected_hobbies"] = [selected_hobby]
+        else:
+            request.session.pop("selected_hobbies", None)
 
     attractions = published_places
     if selected_category:
@@ -305,8 +328,29 @@ def attraction_carousel(request):
             (place.title or "").casefold(),
         ))
 
-    paginator = Paginator(attractions, 12)
-    page = paginator.get_page(request.GET.get("page"))
+    # The looping carousel shows every matching destination, so no pagination
+    # page is sliced here. A high cap only guards against pathological datasets.
+    total_matches = len(attractions)
+    carousel_places = attractions[:MAX_CAROUSEL_PLACES]
+    # Real photos remain authoritative; illustrative samples fill genuine gaps.
+    for place in carousel_places:
+        place.sample_image = sample_image_for(place) if not (place.cover_image or place.cover_image_url) else ""
+
+    # Every submitted search is written to the query log so the visitor can
+    # see their own search history in My Journey.
+    if "q" in request.GET and search_query:
+        from apps.info.models import QueryLog
+
+        QueryLog.objects.create(
+            user=request.user if request.user.is_authenticated else None,
+            raw_query=search_query,
+            parsed_json={
+                "category": selected_category,
+                "hobby": selected_hobby,
+                "sort": selected_sort,
+            },
+            matched_count=total_matches,
+        )
 
     # exploreanywhere-phase5a2-discovery-clarity-v1
     # Remove-one controls retain the other active filters and clear q from the
@@ -344,9 +388,9 @@ def attraction_carousel(request):
         "places/attraction_carousel.html",
         {
             "selected_city": city,
-            "attractions": page,
-            "page_obj": page,
-            "total_attractions": paginator.count,
+            "attractions": carousel_places,
+            "total_attractions": total_matches,
+            "carousel_truncated": total_matches > len(carousel_places),
             "selected_hobbies": scoring_hobbies,
             "search_query": search_query,
             "published_total": published_total,
@@ -405,6 +449,23 @@ def place_detail(request, pk):
         .order_by("-avg_rating", "title")[:4]
     )
 
+    place.sample_image = sample_image_for(place) if not (place.cover_image or place.cover_image_url) else ""
+
+    # The active search is what makes a relevance rating meaningful, so the
+    # page can offer the rating control and show the visitor's own answer.
+    from apps.info.models import RecommendationRating
+
+    active_search_query = (
+        request.session.get("attraction_search_query") or ""
+    ).strip()[:255]
+    my_relevance_rating = None
+    if request.user.is_authenticated:
+        my_relevance_rating = (
+            RecommendationRating.objects.filter(
+                user=request.user, place=place, query_text=active_search_query,
+            ).order_by("-created_at", "-pk").first()
+        )
+
     return render(
         request,
         "places/place_detail.html",
@@ -419,6 +480,10 @@ def place_detail(request, pk):
             "my_review": Review.objects.filter(user=request.user, place=place).order_by("pk").first(),
             "public_reviews": Review.objects.filter(place=place).select_related("user").order_by("-created_at")[:8],
             "review_rating_options": (5, 4, 3, 2, 1),
+            # Relevance feedback for the active search (P1)
+            "active_search_query": active_search_query,
+            "my_relevance_rating": my_relevance_rating,
+            "relevance_rating_choices": RecommendationRating.RatingChoices.choices,
         },
     )
 

@@ -1,4 +1,5 @@
 {% extends "theme/public_base.html" %}
+{% load static %}
 {% block extra_css %}
 <style>
 /* ExploreAnywhere Phase 4B Journey UI v1 */
@@ -35,6 +36,10 @@
 .ea4b-section-intro p {font-size:13px;color:#64758c;margin:0}
 .ea4b-layout {display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:16px}
 .ea4b-panel {min-width:0;background:#fff;border:1px solid var(--ea4b-line);border-radius:20px;padding:22px;box-shadow:0 8px 28px rgba(8,40,80,.035)}
+.ea4b-panel-wide {grid-column:1/-1}
+.ea4b-subgrid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:4px}
+.ea4b-subcol {min-width:0}
+.ea4b-subhead {margin:0 0 10px;color:#153658;font-size:12px;font-weight:800;letter-spacing:.4px;text-transform:uppercase}
 .ea4b-panel-head {display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .ea4b-panel-head h3 {color:#16375d;font-size:18px;font-weight:800;margin:0}
 .ea4b-panel-head a {font-size:12px;color:#075ee4;font-weight:800;white-space:nowrap}
@@ -69,13 +74,24 @@
 .ea4b-quick a {display:flex;justify-content:space-between;align-items:center;gap:8px;border-radius:14px;padding:16px;background:#e9f2ff;border:1px solid #cce0fa;color:#134e97;font-size:13px;font-weight:800}
 .ea4b-quick a:hover {background:#dcecff}
 @media(max-width:1100px){.ea4b-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.ea4b-hero{align-items:flex-start;flex-direction:column}}
-@media(max-width:760px){.ea4b-page{padding:22px 15px 65px}.ea4b-hero{padding:26px 22px;border-radius:18px}.ea4b-layout{grid-template-columns:1fr}.ea4b-section-intro{align-items:flex-start;flex-direction:column}.ea4b-badges{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.ea4b-page{padding:22px 15px 65px}.ea4b-hero{padding:26px 22px;border-radius:18px}.ea4b-layout{grid-template-columns:1fr}.ea4b-section-intro{align-items:flex-start;flex-direction:column}.ea4b-badges{grid-template-columns:repeat(3,minmax(0,1fr))}.ea4b-subgrid{grid-template-columns:1fr}}
 @media(max-width:520px){.ea4b-metrics{grid-template-columns:1fr;gap:9px}.ea4b-metric{padding:14px 12px}.ea4b-metric strong{font-size:25px}.ea4b-metric-symbol{width:31px;height:31px}.ea4b-panel{padding:17px}.ea4b-quick{grid-template-columns:1fr}.ea4b-hero-actions{width:100%}.ea4b-hero-actions .ea4b-btn{flex:1}}
 @media(prefers-reduced-motion:reduce){.ea4b-btn{transition:none}}
 </style>
 {% endblock %}
+{% block title %}My Journey · ExploreKabankalan{% endblock %}
+{% block body_class %}site-dark{% endblock %}
+{% block skip_link %}<a class="sd-skip" href="#main-content">Skip to content</a>{% endblock %}
+{% block brand_content %}
+  <span class="sd-brand-icon" aria-hidden="true">✺</span>
+  <span class="sd-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
+{% endblock %}
+{% block footer_brand %}ExploreKabankalan{% endblock %}
+{% block footer_tagline %}Local places. Your adventure.{% endblock %}
+{% block extra_css_after %}<link rel="stylesheet" href="{% static 'css/site-dark.css' %}">{% endblock %}
+
 {% block content %}
-<main class="ea4b-page">
+<main class="ea4b-page" id="main-content">
   <header class="ea4b-hero">
     <div class="ea4b-hero-content">
       <p class="ea4b-kicker">One City. Your Hobbies. Our Map.</p>
@@ -178,6 +194,54 @@
         <div class="ea4b-empty"><strong>No visits recorded yet</strong><p>Log your visits to places you discover.</p><a class="ea4b-btn ea4b-btn-soft" href="{% url 'places:attraction_carousel' %}?browse=all">Find a place &#8594;</a></div>
       {% endif %}
       <div class="ea4b-bottom"><a class="ea4b-btn ea4b-btn-blue" href="{% url 'visits:list' %}">My Visit History</a></div>
+    </section>
+
+    <section class="ea4b-panel ea4b-panel-wide" aria-labelledby="ea4b-interests-heading">
+      <div class="ea4b-panel-head"><h3 id="ea4b-interests-heading">Interests &amp; Recent Searches</h3><a href="{% url 'places:attraction_carousel' %}?browse=all">Explore Places &#8594;</a></div>
+      <p class="ea4b-panel-sub">The interests that shape your recommendations and the searches you already made.</p>
+      <div class="ea4b-subgrid">
+        <div class="ea4b-subcol">
+          <h4 class="ea4b-subhead">Your interests</h4>
+          {% if interest_rows %}
+            <div class="ea4b-rows">
+              {% for interest in interest_rows %}
+                <div class="ea4b-row"><div class="ea4b-row-main"><span>{{ interest.name }}</span><span>Used to rank your recommendations</span></div><span class="ea4b-row-meta">Interest</span></div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="ea4b-empty"><strong>No interests selected yet</strong><p>Pick a hobby in Explore Places and it is remembered here and used for your recommendations.</p><a class="ea4b-btn ea4b-btn-soft" href="{% url 'places:attraction_carousel' %}?browse=all">Choose an interest &#8594;</a></div>
+          {% endif %}
+        </div>
+        <div class="ea4b-subcol">
+          <h4 class="ea4b-subhead">Recent searches</h4>
+          {% if recent_searches %}
+            <div class="ea4b-rows">
+              {% for search in recent_searches %}
+                <div class="ea4b-row"><div class="ea4b-row-main"><span>{{ search.raw_query }}</span><span>{{ search.created_at|date:"M j, Y H:i" }} &middot; {{ search.matched_count }} match{{ search.matched_count|pluralize:"es" }}</span></div><span class="ea4b-row-meta">Search</span></div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="ea4b-empty"><strong>No searches yet</strong><p>Every search you submit is stored with your account, so you can see what you already looked for.</p></div>
+          {% endif %}
+        </div>
+        <div class="ea4b-subcol">
+          <h4 class="ea4b-subhead">Your relevance feedback</h4>
+          {% if relevance_ratings %}
+            <div class="ea4b-rows">
+              {% for rating in relevance_ratings %}
+                <div class="ea4b-row"><div class="ea4b-row-main">
+                  {% if rating.place.is_active and rating.place.is_verified %}
+                    <a href="{% url 'places:place_detail' rating.place.pk %}">{{ rating.place.title }}</a>
+                  {% else %}<span>{{ rating.place.title }} (no longer published)</span>{% endif %}
+                  <span>{% if rating.query_text %}Search &ldquo;{{ rating.query_text }}&rdquo;{% else %}Browse{% endif %}</span>
+                </div><span class="ea4b-row-meta">{{ rating.get_rating_display }}</span></div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="ea4b-empty"><strong>No ratings yet</strong><p>Open a destination you reached from a search and tell the system how relevant it was.</p></div>
+          {% endif %}
+        </div>
+      </div>
     </section>
   </div>
 {% endblock %}

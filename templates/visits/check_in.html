@@ -1,4 +1,5 @@
 {% extends "theme/public_base.html" %}
+{% load static %}
 {% block extra_css %}
 <style>
 .ea-checkin{max-width:840px;margin:auto;padding:44px 20px 90px;color:#183454}
@@ -14,11 +15,24 @@
 .ea-checkin-note{background:#eef5fd;color:#375575;border-radius:12px;padding:15px;margin-top:18px}
 </style>
 {% endblock %}
+{% block title %}Report a Visit · ExploreKabankalan{% endblock %}
+{% block body_class %}site-dark{% endblock %}
+{% block skip_link %}<a class="sd-skip" href="#main-content">Skip to content</a>{% endblock %}
+{% block brand_content %}
+  <span class="sd-brand-icon" aria-hidden="true">✺</span>
+  <span class="sd-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
+{% endblock %}
+{% block footer_brand %}ExploreKabankalan{% endblock %}
+{% block footer_tagline %}Local places. Your adventure.{% endblock %}
+{% block extra_css_after %}<link rel="stylesheet" href="{% static 'css/site-dark.css' %}">{% endblock %}
+
 {% block content %}
-<main class="ea-checkin">
-  <p>MY KABANKALAN JOURNEY</p>
-  <h1>Report a Visit: {{ place.title }}</h1>
-  <p>Only submit a check-in for a destination you visited in person. Your report starts as pending and does not earn points until staff reviews and approves it using independent evidence.</p>
+<main class="ea-checkin" id="main-content">
+  <header class="hero">
+    <p>MY KABANKALAN JOURNEY</p>
+    <h1>Report a Visit: {{ place.title }}</h1>
+    <p>Only submit a check-in for a destination you visited in person. Your report starts as pending and does not earn points until staff reviews and approves it using independent evidence.</p>
+  </header>
   <nav class="ea-checkin-actions"><a class="ea-checkin-btn secondary" href="{% url 'places:place_detail' place.pk %}">Place Details</a><a class="ea-checkin-btn secondary" href="{% url 'visits:list' %}">My Visits</a></nav>
   <section class="ea-checkin-card">
     {% if checkin and checkin.status == 'approved' %}
