@@ -110,21 +110,36 @@ TEMPLATES = [
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
 
+_DB_ENGINE = os.environ.get("DJANGO_DB_ENGINE", "django.db.backends.mysql")
+
+
+def _database_options(engine):
+    """Connection options for the configured database engine.
+
+    Only MySQL understands ``charset`` and ``init_command``. Handing them to
+    the SQLite backend raises
+    ``TypeError: 'charset' is an invalid keyword argument for Connection()``,
+    so the SQLite fallback used for local testing stays option-free.
+    """
+    if engine.endswith("mysql"):
+        return {
+            "charset": "utf8mb4",
+            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+        }
+    return {}
+
+
 DATABASES = {
     "default": {
-        "ENGINE": os.environ.get("DJANGO_DB_ENGINE", "django.db.backends.mysql"),
+        "ENGINE": _DB_ENGINE,
         "NAME": os.environ.get("DJANGO_DB_NAME", "exploreanywhere"),
         "USER": os.environ.get("DJANGO_DB_USER", "root"),
         "PASSWORD": os.environ.get("DJANGO_DB_PASSWORD", ""),
         "HOST": os.environ.get("DJANGO_DB_HOST", "127.0.0.1"),
         "PORT": os.environ.get("DJANGO_DB_PORT", "3306"),
-        "OPTIONS": {"charset": "utf8mb4"},
+        "OPTIONS": _database_options(_DB_ENGINE),
     }
 }
-if DATABASES["default"]["ENGINE"].endswith("mysql"):
-    DATABASES["default"]["OPTIONS"]["init_command"] = (
-        "SET sql_mode='STRICT_TRANS_TABLES'"
-    )
 
 
 AUTH_PASSWORD_VALIDATORS = [

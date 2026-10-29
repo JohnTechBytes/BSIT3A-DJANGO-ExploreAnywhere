@@ -38,6 +38,17 @@ class SettingsTests(SimpleTestCase):
     def test_map_token_is_defined_in_the_settings(self):
         self.assertTrue(settings.MAPTILER_API_KEY)
 
+    def test_only_mysql_receives_the_mysql_connection_options(self):
+        from mysite.settings import _database_options
+
+        mysql = _database_options("django.db.backends.mysql")
+        self.assertEqual(mysql["charset"], "utf8mb4")
+        self.assertIn("sql_mode", mysql["init_command"])
+
+        # The SQLite fallback used for local testing must stay option-free:
+        # sqlite3 rejects "charset" as a connection keyword.
+        self.assertEqual(_database_options("django.db.backends.sqlite3"), {})
+
 
 class MapTilerTemplateTests(TestCase):
     """The maps must read the token from the context, not from the HTML."""

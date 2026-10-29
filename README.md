@@ -266,14 +266,29 @@ pip install -r requirements.txt
 mysql -uroot -e "CREATE DATABASE exploreanywhere CHARACTER SET utf8mb4"
 
 python manage.py migrate
+python manage.py seed_cities           # provinces and cities
+python manage.py seed_kabankalan       # hobbies, categories and places
+python manage.py seed_city_information # the entries shown on /info/
+python manage.py createsuperuser       # staff login for /admin/
 python manage.py runserver
 ```
 
 Database settings come from the environment with development defaults
 (`exploreanywhere`, user `root`, no password, `127.0.0.1:3306`, `utf8mb4`).
-Set `DJANGO_DB_*` variables to point the project at a real MySQL server.
+Set `DJANGO_DB_*` variables to point the project at a real MySQL server. To
+try the project without MySQL, use the SQLite fallback — the same code and
+migrations run against it:
+
+```bash
+export DJANGO_DB_ENGINE=django.db.backends.sqlite3
+export DJANGO_DB_NAME="$PWD/local.sqlite3"
+```
 
 Virtual environments are gitignored under any name (`venv*`, `.venv/`).
+
+`docs/LOCAL_TEST_CHECKLIST.md` walks through the whole local test: unpacking
+the archive, choosing the database, loading the data, the pages to open, the
+expected test result and what to do when something fails.
 
 ### Project layout
 
@@ -349,6 +364,7 @@ project dependency; use the Django runner.
 
 ### Documentation
 
+- `docs/LOCAL_TEST_CHECKLIST.md` — unpack, run and verify the project locally
 - `docs/QUICK_REFERENCE.md` — day-to-day commands and troubleshooting
 - `docs/PHASE6P_OPTIMIZATION_GUIDE.md` — photo discovery setup
 - `docs/PHASE7_FEATURES_PLAN.md` — feature roadmap
