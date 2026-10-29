@@ -308,6 +308,11 @@
 .site-dark .ea4b-metric span:last-child { color: #a4b6c0; font-size: 11px; }
 .site-dark .ea4b-layout { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .site-dark .ea4b-panel { padding: 21px 22px; }
+.site-dark .ea4b-panel-wide { grid-column: 1 / -1; }
+.site-dark .ea4b-subgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.site-dark .ea4b-subcol { min-width: 0; }
+.site-dark .ea4b-subhead { margin: 0 0 10px; color: #8cddd1; font-size: 10px; font-weight: 750; letter-spacing: .7px; text-transform: uppercase; }
+@media (max-width: 900px) { .site-dark .ea4b-subgrid { grid-template-columns: 1fr; } }
 .site-dark .ea4b-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
 .site-dark .ea4b-panel-head a { color: #8cddd1; font-size: 11px; font-weight: 700; text-decoration: none; }
 .site-dark .ea4b-panel-sub { color: var(--sd-muted); font-size: 11px; line-height: 1.6; margin: 0 0 14px; }

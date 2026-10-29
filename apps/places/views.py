@@ -281,6 +281,16 @@ def attraction_carousel(request):
     if selected_sort not in {"recommended", "rating", "name"}:
         selected_sort = "recommended"
 
+    # The hobby choice is a preference, not a one-off filter: it is stored in
+    # the session so the recommendation score keeps using it on later pages
+    # (and so My Journey can show the visitor's interests). Browsing every
+    # place keeps the preference; an explicit empty hobby parameter clears it.
+    if "hobby" in request.GET and not browse_all:
+        if selected_hobby:
+            request.session["selected_hobbies"] = [selected_hobby]
+        else:
+            request.session.pop("selected_hobbies", None)
+
     attractions = published_places
     if selected_category:
         attractions = attractions.filter(category_id=int(selected_category))
@@ -325,6 +335,22 @@ def attraction_carousel(request):
     # Real photos remain authoritative; illustrative samples fill genuine gaps.
     for place in carousel_places:
         place.sample_image = sample_image_for(place) if not (place.cover_image or place.cover_image_url) else ""
+
+    # Every submitted search is written to the query log so the visitor can
+    # see their own search history in My Journey.
+    if "q" in request.GET and search_query:
+        from apps.info.models import QueryLog
+
+        QueryLog.objects.create(
+            user=request.user if request.user.is_authenticated else None,
+            raw_query=search_query,
+            parsed_json={
+                "category": selected_category,
+                "hobby": selected_hobby,
+                "sort": selected_sort,
+            },
+            matched_count=total_matches,
+        )
 
     # exploreanywhere-phase5a2-discovery-clarity-v1
     # Remove-one controls retain the other active filters and clear q from the

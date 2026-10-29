@@ -109,6 +109,18 @@ def nearby_places(request, *, unified=False):
         place.sample_image = sample_image_for(place) if not (place.cover_image or place.cover_image_url) else ""
         results.append(place)
 
+    # A submitted search is written to the query log, so the visitor can see
+    # their own search history in My Journey.
+    if query:
+        from apps.info.models import QueryLog
+
+        QueryLog.objects.create(
+            user=request.user if request.user.is_authenticated else None,
+            raw_query=query,
+            parsed_json={"service": selected_service},
+            matched_count=len(results),
+        )
+
     # Suggestions are real, publicly approved listings, never imported candidates.
     # Only minimal display fields are embedded; no private account data or GPS.
     if full_published is not None:

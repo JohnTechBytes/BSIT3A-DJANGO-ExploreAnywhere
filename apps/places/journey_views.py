@@ -81,6 +81,30 @@ def journey_dashboard(request):
     approved_visit_count = my_checkins.filter(status=VisitCheckIn.Status.APPROVED).count()
     pending_visit_count = my_checkins.filter(status=VisitCheckIn.Status.PENDING).count()
     visit_rewards_data = visit_rewards(approved_visit_count)
+
+    # The visitor's own interests and search history.
+    from apps.core.models import Hobby
+    from apps.info.models import QueryLog, RecommendationRating
+
+    hobby_slugs = [
+        slug for slug in (request.session.get("selected_hobbies") or []) if slug
+    ]
+    hobby_names = {
+        hobby.slug: hobby.name
+        for hobby in Hobby.objects.filter(slug__in=hobby_slugs)
+    }
+    interest_rows = [
+        {"slug": slug, "name": hobby_names.get(slug, slug.replace("-", " ").title())}
+        for slug in hobby_slugs
+    ]
+    recent_searches = list(
+        QueryLog.objects.filter(user=request.user).order_by("-created_at", "-pk")[:5]
+    )
+    relevance_ratings = list(
+        RecommendationRating.objects.filter(user=request.user)
+        .select_related("place")
+        .order_by("-created_at", "-pk")[:5]
+    )
     return render(request, "places/journey_dashboard.html", {
         "saved_count": saved.count(),
         "saved_preview": saved[:4],
@@ -94,4 +118,8 @@ def journey_dashboard(request):
         "visits_preview": my_checkins[:3],
         "my_reviews_preview": (Review.objects.filter(user=request.user, place__city_id=KABANKALAN_CITY_ID)
             .select_related("place").order_by("-created_at")[:4]),  # ExploreAnywhere phase3e reviews v1
+        # Interests, search history and relevance feedback (P2)
+        "interest_rows": interest_rows,
+        "recent_searches": recent_searches,
+        "relevance_ratings": relevance_ratings,
     })
