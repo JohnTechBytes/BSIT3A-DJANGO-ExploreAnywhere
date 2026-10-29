@@ -32,7 +32,9 @@ def ea_admin_summary(context):
             place__city_id=2, status=VisitCheckIn.Status.PENDING
         ).count()
 
-    if request.user.has_perm("auth.view_user") or request.user.has_perm("auth.change_user"):
+    # The active user model is apps.users.User, so the matching permissions
+    # live under the "users" app label (not "auth").
+    if request.user.has_perm("users.view_user") or request.user.has_perm("users.change_user"):
         from django.contrib.auth import get_user_model
         result["users"] = get_user_model().objects.count()
 

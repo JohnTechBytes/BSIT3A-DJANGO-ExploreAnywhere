@@ -1,6 +1,13 @@
-﻿from django import forms
+"""Account forms used by the public sign-up flow and by the staff admin.
+
+``django.contrib.auth.forms.UserCreationForm`` / ``UserChangeForm`` hard-code
+``auth.User`` as their model, which raises *"Cannot use model auth.User because
+it has been swapped out"* once ``AUTH_USER_MODEL`` points at ``users.User``.
+The two admin forms below simply re-bind them to the real user model.
+"""
+from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 
 User = get_user_model()
 
@@ -27,3 +34,19 @@ class ExploreRegistrationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class ExploreUserCreationForm(UserCreationForm):
+    """Admin "add account" form bound to the swapped-in ``users.User`` model."""
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ("username", "email", "password1", "password2")
+
+
+class ExploreUserChangeForm(UserChangeForm):
+    """Admin "change account" form bound to the swapped-in ``users.User`` model."""
+
+    class Meta(UserChangeForm.Meta):
+        model = User
+        fields = "__all__"
