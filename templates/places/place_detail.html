@@ -29,6 +29,15 @@
 .pd-action:hover{background:#f0f6ff}
 .pd-action-primary{background:var(--pd-blue);color:white!important;border-color:var(--pd-blue)}
 .pd-action-primary:hover{background:#064ac0;color:white!important}
+.pd-relevance-options{display:grid;gap:8px;margin-top:12px}
+.pd-relevance-options .pd-action{width:100%}
+.pd-relevance-relevant{border-color:#a7d7b8;background:#eefaf2;color:#14663a!important}
+.pd-relevance-partial{border-color:#e4cd97;background:#fdf6e6;color:#7a5a08!important}
+.pd-relevance-irrelevant{border-color:#e2b3b3;background:#fdefef;color:#8c2f2f!important}
+.pd-relevance-relevant:hover{background:#dcf5e6}
+.pd-relevance-partial:hover{background:#f8edd2}
+.pd-relevance-irrelevant:hover{background:#fadcdc}
+.pd-relevance-options .is-current{box-shadow:0 0 0 2px rgba(12,80,177,.25)}
 .pd-action-saved{background:#eaf4ff;border-color:#99c4f5;color:#1254b3!important}
 .pd-actions-note{margin:0 0 0 auto;color:var(--pd-muted);font-size:12px}
 .pd-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr);gap:23px;align-items:start}
@@ -300,6 +309,30 @@
         {% endfor %}
         <a class="pd-cta" href="{% url 'places:attraction_carousel' %}?browse=all">Explore all destinations ↗</a>
       </section>
+      {% if active_search_query %}
+      <section class="pd-card" id="place-relevance" aria-labelledby="pd-relevance-title">
+        <h2 id="pd-relevance-title">Rate this recommendation</h2>
+        <p class="pd-small" style="margin:0">
+          You reached this destination from the search
+          &ldquo;{{ active_search_query }}&rdquo;. Was the recommendation relevant?
+        </p>
+        <form method="post" action="{% url 'places:rate_relevance' place.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="query_text" value="{{ active_search_query }}">
+          <div class="pd-relevance-options">
+            {% for value, label in relevance_rating_choices %}
+              <button class="pd-action pd-relevance-{{ value }}{% if my_relevance_rating and my_relevance_rating.rating == value %} is-current{% endif %}" type="submit" name="rating" value="{{ value }}">{{ label }}</button>
+            {% endfor %}
+          </div>
+        </form>
+        {% if my_relevance_rating %}
+          <p class="pd-small" style="margin:12px 0 0">
+            You marked this result as {{ my_relevance_rating.get_rating_display|lower }}.
+            Choosing another option replaces your answer.
+          </p>
+        {% endif %}
+      </section>
+      {% endif %}
     </aside>
   </div>
 

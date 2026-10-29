@@ -44,6 +44,8 @@
 .site-dark .ea-page-content { padding-top: 0; }
 .site-dark .ea-site-footer { border-top: 1px solid #27313e; background: #090e15; color: #9cabb9; padding: 26px 32px; font-size: 11px; }
 .site-dark .ea-footer-inner { max-width: 1160px; }
+.site-dark .ea-footer-link { color: #9cabb9; font-size: 11px; text-decoration: none; border-bottom: 1px solid #35434f; padding-bottom: 2px; }
+.site-dark .ea-footer-link:hover { color: var(--sd-teal); border-color: var(--sd-teal); }
 
 /* ---------- Shared page hero, buttons, panels, forms ---------- */
 .site-dark .sd-eyebrow { color: var(--sd-teal); font-size: 10px; font-weight: 750; letter-spacing: 1.5px; }

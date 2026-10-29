@@ -318,6 +318,7 @@
                         <a href="{% url 'itineraries:list' %}">My Itineraries</a>
                         <a href="{% url 'places:my_reviews' %}">My Reviews</a>
                         <a href="{% url 'visits:list' %}">My Visits</a>
+                        <a href="{% url 'evaluation:sus_survey' %}">Usability Survey</a>
                     </div>
                 </details>
             {% endif %}
@@ -349,6 +350,7 @@
     <div class="ea-footer-inner">
         <span>&copy; {% now "Y" %} {% block footer_brand %}ExploreAnywhere{% endblock %}</span>
         <span>{% block footer_tagline %}One City. Your Hobbies. Our Map.{% endblock %}</span>
+        <a class="ea-footer-link" href="{% url 'evaluation:sus_survey' %}">Usability Survey</a>
     </div>
 </footer>
 

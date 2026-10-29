@@ -1,0 +1,100 @@
+{% extends "theme/public_base.html" %}
+{% load static %}
+{% block extra_css %}
+<style>
+/* ExploreAnywhere usability evaluation (SUS) result v1 */
+.eath-page {--eath-panel:#101822;--eath-panel-2:#0c141c;--eath-line:#2a3642;--eath-text:#e7edf1;--eath-muted:#a6b4c2;--eath-teal:#21d9c6;max-width:900px;margin:0 auto;padding:34px 24px 92px;color:var(--eath-text)}
+.eath-page * {box-sizing:border-box}
+.eath-page a {text-decoration:none}
+.eath-hero {position:relative;overflow:hidden;padding:33px 34px;border:1px solid #2a4c47;border-radius:17px;background:linear-gradient(120deg,#112e32,#0c2230 70%);box-shadow:0 18px 45px #0002;color:#eaf4f1;text-align:center}
+.eath-hero::after {content:"";position:absolute;right:-70px;top:-100px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,#21d9c61f,transparent 65%);pointer-events:none}
+.eath-hero > * {position:relative;z-index:1}
+.eath-kicker {margin:0 0 12px;color:var(--eath-teal);font-size:10px;font-weight:750;letter-spacing:1.5px;text-transform:uppercase}
+.eath-hero h1 {margin:0 0 12px;color:#f1f6f3;font-family:Georgia,"Times New Roman",serif;font-size:clamp(28px,4vw,42px);font-weight:600;line-height:1.1;letter-spacing:-1.4px}
+.eath-hero p {margin:0 auto;color:#b6c8c7;font-size:13px;line-height:1.8;max-width:58ch}
+.eath-score {display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;margin:26px 0 0}
+.eath-score strong {font-family:Georgia,"Times New Roman",serif;font-size:62px;line-height:1;color:var(--eath-teal);font-variant-numeric:tabular-nums}
+.eath-score span {display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border:1px solid #2f5a53;border-radius:999px;background:#0f2b27;color:#b4dfd9;font-size:12px;font-weight:750}
+.eath-card {margin-top:22px;background:var(--eath-panel);border:1px solid var(--eath-line);border-radius:16px;padding:22px;box-shadow:0 14px 32px #00000021}
+.eath-card h2 {margin:0 0 12px;color:#f1f6f3;font-family:Georgia,"Times New Roman",serif;font-size:19px;font-weight:600}
+.eath-card p {margin:0;color:#aebdca;font-size:13px;line-height:1.75}
+.eath-answers {list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.eath-answers li {display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:9px 0;border-top:1px solid #1d2833;color:#c7d5e2;font-size:12px;line-height:1.55}
+.eath-answers li:first-child {border-top:0}
+.eath-answers b {flex:none;color:var(--eath-teal);font-size:13px}
+.eath-actions {display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.eath-btn {display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 18px;border-radius:10px;font-weight:750;font-size:13px}
+.eath-btn-teal {color:#061b1c!important;background:linear-gradient(105deg,#10d2bc,#1db7d4 60%,#6863f5)}
+.eath-btn-soft {background:#0f2b27;border:1px solid #2f5a53;color:#b4dfd9!important}
+.eath-foot {margin-top:24px;color:#8296a6;font-size:11px;line-height:1.75}
+@media(max-width:760px){.eath-page{padding:22px 15px 65px}.eath-hero{padding:26px 22px;border-radius:15px}.eath-score strong{font-size:52px}}
+</style>
+{% endblock %}
+{% block title %}Survey Result · ExploreKabankalan{% endblock %}
+{% block body_class %}site-dark{% endblock %}
+{% block skip_link %}<a class="sd-skip" href="#main-content">Skip to content</a>{% endblock %}
+{% block brand_content %}
+  <span class="sd-brand-icon" aria-hidden="true">✺</span>
+  <span class="sd-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
+{% endblock %}
+{% block footer_brand %}ExploreKabankalan{% endblock %}
+{% block footer_tagline %}Local places. Your adventure.{% endblock %}
+{% block extra_css_after %}<link rel="stylesheet" href="{% static 'css/site-dark.css' %}">{% endblock %}
+
+{% block content %}
+<main class="eath-page" id="main-content">
+  {% if response %}
+    <header class="eath-hero">
+      <p class="eath-kicker">Usability Evaluation</p>
+      <h1>Thank you for your answers</h1>
+      <p>
+        Your System Usability Scale score is calculated from the ten statements
+        you answered. It is stored with your account{% if response.user %} ({{ response.user.username }}){% endif %}
+        and is visible to the staff dashboard only.
+      </p>
+      <div class="eath-score">
+        <strong>{{ response.score|floatformat:1 }}</strong>
+        <span>/ 100 &middot; {{ band.label }}</span>
+      </div>
+    </header>
+
+    <section class="eath-card" aria-labelledby="eath-meaning">
+      <h2 id="eath-meaning">What this score means</h2>
+      <p>
+        {{ band.explanation }}
+        The scale runs from 0 to 100, where 68 is the average score reported for
+        established systems.
+      </p>
+    </section>
+
+    <section class="eath-card" aria-labelledby="eath-answers">
+      <h2 id="eath-answers">Your answers</h2>
+      <ul class="eath-answers">
+        {% for answer in answers %}
+          <li><span>{{ answer.label }}</span><b>{{ answer.value }}</b></li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <div class="eath-actions">
+      <a class="eath-btn eath-btn-teal" href="{% url 'places:attraction_carousel' %}?browse=all">Back to Explore Places</a>
+      <a class="eath-btn eath-btn-soft" href="{% url 'evaluation:sus_survey' %}">Answer again</a>
+    </div>
+
+    <p class="eath-foot">
+      Submitted {{ response.created_at|date:"M j, Y, H:i" }}.
+      The response keeps your account reference and the ten answers only.
+    </p>
+  {% else %}
+    <header class="eath-hero">
+      <p class="eath-kicker">Usability Evaluation</p>
+      <h1>No survey answer yet</h1>
+      <p>Answer the ten System Usability Scale statements to see your usability score.</p>
+    </header>
+    <div class="eath-actions">
+      <a class="eath-btn eath-btn-teal" href="{% url 'evaluation:sus_survey' %}">Start the survey</a>
+      <a class="eath-btn eath-btn-soft" href="{% url 'places:attraction_carousel' %}?browse=all">Back to Explore Places</a>
+    </div>
+  {% endif %}
+</main>
+{% endblock %}

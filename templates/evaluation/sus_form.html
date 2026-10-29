@@ -1,0 +1,109 @@
+{% extends "theme/public_base.html" %}
+{% load static %}
+{% block extra_css %}
+<style>
+/* ExploreAnywhere usability evaluation (SUS) v1 */
+.easus-page {--easus-panel:#101822;--easus-panel-2:#0c141c;--easus-line:#2a3642;--easus-text:#e7edf1;--easus-muted:#a6b4c2;--easus-teal:#21d9c6;max-width:980px;margin:0 auto;padding:34px 24px 92px;color:var(--easus-text)}
+.easus-page * {box-sizing:border-box}
+.easus-page a {text-decoration:none}
+.easus-hero {position:relative;overflow:hidden;padding:33px 34px;border:1px solid #2a4c47;border-radius:17px;background:linear-gradient(120deg,#112e32,#0c2230 70%);box-shadow:0 18px 45px #0002;color:#eaf4f1}
+.easus-hero::after {content:"";position:absolute;right:-70px;top:-100px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,#21d9c61f,transparent 65%);pointer-events:none}
+.easus-hero > * {position:relative;z-index:1}
+.easus-kicker {margin:0 0 12px;color:var(--easus-teal);font-size:10px;font-weight:750;letter-spacing:1.5px;text-transform:uppercase}
+.easus-hero h1 {margin:0 0 12px;color:#f1f6f3;font-family:Georgia,"Times New Roman",serif;font-size:clamp(30px,4vw,44px);font-weight:600;line-height:1.1;letter-spacing:-1.4px}
+.easus-hero p {margin:0;color:#b6c8c7;font-size:13px;line-height:1.8;max-width:62ch}
+.easus-note {margin:22px 0 0;padding:15px 17px;border:1px solid #2f5a53;border-radius:12px;background:#0f2b27;color:#b4dfd9;font-size:12px;line-height:1.7}
+.easus-note strong {color:#eaf4f1}
+.easus-form {margin-top:26px;display:flex;flex-direction:column;gap:13px}
+.easus-item {background:var(--easus-panel);border:1px solid var(--easus-line);border-radius:15px;padding:19px 20px;box-shadow:0 12px 28px #00000021}
+.easus-legend {position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.easus-item-head {display:flex;align-items:baseline;gap:10px;margin-bottom:13px}
+.easus-num {flex:none;width:26px;height:26px;border-radius:8px;background:#0f2b27;color:var(--easus-teal);display:grid;place-items:center;font-size:12px;font-weight:800}
+.easus-item label {color:#e7edf1;font-size:14px;line-height:1.55;font-weight:600}
+.easus-scale {display:flex;gap:9px;flex-wrap:wrap}
+.easus-scale label {display:flex;align-items:center;justify-content:center;gap:7px;min-width:74px;padding:9px 12px;border:1px solid var(--easus-line);border-radius:10px;background:var(--easus-panel-2);color:#c7d5e2;font-size:13px;font-weight:700;cursor:pointer;transition:border-color .16s,background .16s}
+.easus-scale label:hover {border-color:var(--easus-teal)}
+.easus-scale input {accent-color:#21d9c6;width:15px;height:15px;margin:0}
+.easus-scale label:has(input:checked) {border-color:var(--easus-teal);background:#0f2b27;color:#eaf4f1}
+.easus-errors {margin:0 0 8px;padding:12px 15px;border:1px solid #7a3b3b;border-radius:12px;background:#2a1616;color:#f0c9c9;font-size:12px;line-height:1.7}
+.easus-errors ul {margin:6px 0 0;padding-left:18px}
+.easus-actions {display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:22px}
+.easus-btn {display:inline-flex;align-items:center;justify-content:center;min-height:43px;padding:11px 20px;border-radius:10px;font-weight:750;font-size:13px;border:0;cursor:pointer}
+.easus-btn-teal {color:#061b1c!important;background:linear-gradient(105deg,#10d2bc,#1db7d4 60%,#6863f5)}
+.easus-btn-soft {background:#0f2b27;border:1px solid #2f5a53;color:#b4dfd9!important}
+.easus-foot {margin-top:26px;color:#8296a6;font-size:11px;line-height:1.75}
+@media(max-width:760px){.easus-page{padding:22px 15px 65px}.easus-hero{padding:26px 22px;border-radius:15px}.easus-scale label{min-width:0;flex:1 1 56px}}
+@media(prefers-reduced-motion:reduce){.easus-scale label{transition:none}}
+</style>
+{% endblock %}
+{% block title %}Usability Survey · ExploreKabankalan{% endblock %}
+{% block body_class %}site-dark{% endblock %}
+{% block skip_link %}<a class="sd-skip" href="#main-content">Skip to content</a>{% endblock %}
+{% block brand_content %}
+  <span class="sd-brand-icon" aria-hidden="true">✺</span>
+  <span class="sd-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
+{% endblock %}
+{% block footer_brand %}ExploreKabankalan{% endblock %}
+{% block footer_tagline %}Local places. Your adventure.{% endblock %}
+{% block extra_css_after %}<link rel="stylesheet" href="{% static 'css/site-dark.css' %}">{% endblock %}
+
+{% block content %}
+<main class="easus-page" id="main-content">
+  <header class="easus-hero">
+    <p class="easus-kicker">Usability Evaluation</p>
+    <h1>System Usability Scale</h1>
+    <p>
+      Ten short statements about how the system feels to use. Every statement is
+      answered on a scale from 1 (strongly disagree) to 5 (strongly agree).
+      The answers are scored with the standard SUS formula, which turns them
+      into a single usability score.
+    </p>
+  </header>
+
+  {% if previous %}
+    <p class="easus-note">
+      <strong>You already answered this survey</strong> with a score of
+      {{ previous.score|floatformat:1 }} / 100 ({{ previous_band.label }}).
+      You may answer again below; the newest answer replaces the previous one on
+      this device.
+    </p>
+  {% endif %}
+
+  <form class="easus-form" method="post" action="{% url 'evaluation:sus_survey' %}" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="easus-errors" role="alert">
+        <strong>The survey could not be submitted:</strong>
+        <ul>{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>
+      </div>
+    {% endif %}
+    {% for field in form %}
+      <fieldset class="easus-item" style="border:0;margin:0;padding:19px 20px">
+        <legend class="easus-legend">{{ field.label }}</legend>
+        <div class="easus-item-head" aria-hidden="true">
+          <span class="easus-num">{{ forloop.counter }}</span>
+          <span>{{ field.label }}</span>
+        </div>
+        <div class="easus-scale">
+          {% for choice in field.subwidgets %}
+            <label>{{ choice.tag }} {{ choice.choice_label }}</label>
+          {% endfor %}
+        </div>
+        {% if field.errors %}
+          <p class="easus-errors" style="margin:12px 0 0" role="alert">{{ field.errors|join:" " }}</p>
+        {% endif %}
+      </fieldset>
+    {% endfor %}
+    <div class="easus-actions">
+      <button class="easus-btn easus-btn-teal" type="submit">Submit my answers</button>
+      <a class="easus-btn easus-btn-soft" href="{% url 'places:attraction_carousel' %}?browse=all">Back to Explore Places</a>
+    </div>
+  </form>
+
+  <p class="easus-foot">
+    The answers are stored with your account when you are signed in, and are
+    visible to the staff dashboard only. The survey is optional and does not
+    affect anything else in the system.
+  </p>
+</main>
+{% endblock %}

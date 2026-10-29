@@ -425,6 +425,21 @@ def place_detail(request, pk):
 
     place.sample_image = sample_image_for(place) if not (place.cover_image or place.cover_image_url) else ""
 
+    # The active search is what makes a relevance rating meaningful, so the
+    # page can offer the rating control and show the visitor's own answer.
+    from apps.info.models import RecommendationRating
+
+    active_search_query = (
+        request.session.get("attraction_search_query") or ""
+    ).strip()[:255]
+    my_relevance_rating = None
+    if request.user.is_authenticated:
+        my_relevance_rating = (
+            RecommendationRating.objects.filter(
+                user=request.user, place=place, query_text=active_search_query,
+            ).order_by("-created_at", "-pk").first()
+        )
+
     return render(
         request,
         "places/place_detail.html",
@@ -439,6 +454,10 @@ def place_detail(request, pk):
             "my_review": Review.objects.filter(user=request.user, place=place).order_by("pk").first(),
             "public_reviews": Review.objects.filter(place=place).select_related("user").order_by("-created_at")[:8],
             "review_rating_options": (5, 4, 3, 2, 1),
+            # Relevance feedback for the active search (P1)
+            "active_search_query": active_search_query,
+            "my_relevance_rating": my_relevance_rating,
+            "relevance_rating_choices": RecommendationRating.RatingChoices.choices,
         },
     )
 
