@@ -233,6 +233,33 @@ body.auth-body {
 
 .auth-field.has-error input { border-color: #8a4450; }
 
+/* The privacy consent is a checkbox, not a text field. */
+.auth-consent {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 0 !important;
+  color: #c8d6dc;
+  font-size: 12.5px;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+.auth-consent input {
+  flex: none;
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  min-height: 0;
+  margin-top: 1px;
+  accent-color: #21d9c6;
+}
+
+.auth-consent a { color: #21d9c6; text-decoration: underline; text-underline-offset: 2px; }
+.auth-consent a:hover { color: #6ff0e1; }
+
 .auth-button {
   width: 100%;
   min-height: 47px;

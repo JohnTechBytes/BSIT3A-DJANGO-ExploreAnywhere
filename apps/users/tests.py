@@ -37,6 +37,47 @@ class AccountUrlTests(TestCase):
         self.assertIn("_auth_user_id", self.client.session)
 
 
+class PrivacyNoticeTests(TestCase):
+    """The privacy notice and the consent on sign-up (P3)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        City.objects.get_or_create(id=2, defaults={"name": "Kabankalan"})
+
+    def test_notice_is_public_and_states_what_is_never_stored(self):
+        response = self.client.get(reverse("core:privacy_notice"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "privacy/notice.html")
+        self.assertContains(response, "Privacy Notice")
+        self.assertContains(response, "Your live GPS position")
+        self.assertContains(response, "not sent to the server")
+        self.assertContains(response, "Who can see it")
+
+    def test_notice_is_linked_from_the_footer(self):
+        response = self.client.get(reverse("core:privacy_notice"))
+        self.assertContains(response, reverse("core:privacy_notice"))
+
+    def test_registration_requires_the_consent(self):
+        response = self.client.post(reverse("register"), {
+            "username": "no_consent", "email": "no_consent@example.com",
+            "password1": "sup3r-secret-pass", "password2": "sup3r-secret-pass",
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(User.objects.filter(username="no_consent").exists())
+        self.assertContains(response, "Privacy Notice")
+
+    def test_registration_stores_the_acceptance_with_a_date(self):
+        response = self.client.post(reverse("register"), {
+            "username": "with_consent", "email": "with_consent@example.com",
+            "password1": "sup3r-secret-pass", "password2": "sup3r-secret-pass",
+            "consent_privacy": "on",
+        })
+        self.assertEqual(response.status_code, 302)
+        created = User.objects.get(username="with_consent")
+        self.assertTrue(created.consent_privacy)
+        self.assertIsNotNone(created.consent_privacy_at)
+
+
 class UserAdminTests(TestCase):
     """The custom user model has to be reachable from the staff dashboard."""
 

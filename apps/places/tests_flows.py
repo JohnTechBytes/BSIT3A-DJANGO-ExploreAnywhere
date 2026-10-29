@@ -117,11 +117,15 @@ class AuthFlowTests(FlowFixture):
         response = self.client.post(reverse("register"), {
             "username": "brand_new", "email": "brand_new@example.com",
             "password1": "sup3r-secret-pass", "password2": "sup3r-secret-pass",
+            "consent_privacy": "on",
         })
         self.assertRedirects(response, "/hobbies/", fetch_redirect_response=False)
         created = User.objects.get(username="brand_new")
         self.assertEqual(created.email, "brand_new@example.com")
         self.assertEqual(int(self.client.session["_auth_user_id"]), created.pk)
+        # The acceptance of the privacy notice is stored with the account.
+        self.assertTrue(created.consent_privacy)
+        self.assertIsNotNone(created.consent_privacy_at)
 
     def test_duplicate_email_is_rejected(self):
         User.objects.create_user(
@@ -129,6 +133,7 @@ class AuthFlowTests(FlowFixture):
         response = self.client.post(reverse("register"), {
             "username": "another", "email": "dup@example.com",
             "password1": "sup3r-secret-pass", "password2": "sup3r-secret-pass",
+            "consent_privacy": "on",
         })
         self.assertEqual(response.status_code, 200)
         self.assertFalse(User.objects.filter(username="another").exists())

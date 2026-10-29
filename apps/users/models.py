@@ -27,6 +27,15 @@ class User(AbstractUser):
     bio = models.TextField(blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    consent_privacy = models.BooleanField(
+        default=False,
+        help_text="The visitor accepted the privacy notice when the account was created.",
+    )
+    consent_privacy_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When the privacy notice was accepted.",
+    )
 
     class Meta:
         db_table = "accounts_user"
