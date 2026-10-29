@@ -313,17 +313,22 @@ import commands need them to match Kabankalan records.
 | Path | Contents |
 |------|----------|
 | `data/boundaries/` | geoBoundaries Philippines ADM2/ADM3 |
-| `data/osm/` | `philippines-261013.osm.pbf` plus `extracted/`, `matching/`, `validation/` |
+| `data/osm/` | `philippines-261013.osm.pbf` (stored in Git LFS, so a clone needs `git lfs pull`) plus `extracted/`, `matching/`, `validation/` |
 | `data/psgc_2026_q3_exploreanywhere.csv` | PSA PSGC place codes |
 
 Loaded through management commands such as:
 
 ```bash
+python manage.py seed_kabankalan        # city, hobbies, categories, published places
+python manage.py seed_city_information   # starter City Information entries
 python manage.py load_psgc
 python manage.py categorize_osm_places
 python manage.py import_wikimedia_photos
-python manage.py seed_city_information   # starter City Information entries
 ```
+
+`seed_kabankalan` loads the real Kabankalan attractions that ship in
+`data/osm/validation/` and publishes them, so a fresh installation shows
+verifiable records rather than invented sample names.
 
 ### Environment variables
 

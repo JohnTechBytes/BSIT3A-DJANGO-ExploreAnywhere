@@ -1,131 +1,203 @@
-from django.core.management.base import BaseCommand
+"""Seed the Kabankalan dataset for a fresh local installation.
+
+The places are the **real** OpenStreetMap attractions of Kabankalan City that
+ship with this repository
+(``data/osm/validation/attractions_full_adm3_validated.csv``), so a new
+installation shows verifiable records instead of invented sample names.
+
+What the command creates:
+
+1. the Kabankalan city row (pk 2 — the id the whole site is locked to),
+2. the interest taxonomy (hobbies) and the place categories,
+3. the published, verified Kabankalan attractions from the OSM extract.
+
+It is idempotent: running it twice does not duplicate anything.
+
+Usage::
+
+    python manage.py seed_kabankalan
+"""
+import csv
+from pathlib import Path
+
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils.text import slugify
-from django.contrib.auth import get_user_model
 
-# Updated import path to apps.core.models (and removed deleted models)
-from apps.core.models import Hobby, Category, Place
+from apps.cities.models import City
+from apps.core.models import Category, Hobby
+from apps.places.management.commands.categorize_osm_places import OSM_CATEGORY_MAP
+from apps.places.models import Place
 
-User = get_user_model()
+CABANKALAN_CITY_ID = 2
+
+# The interests a visitor can filter by.
+HOBBIES = [
+    {"name": "Hiking & Eco-Tourism", "icon": "ti-mountain",
+     "description": "Nature trails, caves, and scenic mountain views"},
+    {"name": "Photography", "icon": "ti-camera",
+     "description": "Picturesque landscapes, heritage spots, and aesthetic spots"},
+    {"name": "Culture & Heritage", "icon": "ti-building-arch",
+     "description": "Museums, churches, monuments, and the city's history"},
+    {"name": "Billiards", "icon": "ti-ball-8",
+     "description": "Cue sports and pool halls"},
+    {"name": "Coffee & Cafe Hopping", "icon": "ti-coffee",
+     "description": "Cozy spots for specialty coffee and casual hangouts"},
+    {"name": "Dining & Foodie", "icon": "ti-utensils",
+     "description": "Local delicacies, chicken inasal, and dining spots"},
+    {"name": "Karaoke & Nightlife", "icon": "ti-microphone",
+     "description": "KTV bars, live music, and evening entertainment"},
+]
+
+# Which interests fit a category.
+CATEGORY_HOBBIES = {
+    "mountain-peak": ["Hiking & Eco-Tourism", "Photography"],
+    "waterfall": ["Hiking & Eco-Tourism", "Photography"],
+    "tourist-attraction": ["Hiking & Eco-Tourism", "Photography"],
+    "museum": ["Culture & Heritage", "Photography"],
+    "scenic-viewpoint": ["Photography", "Hiking & Eco-Tourism"],
+    "park": ["Hiking & Eco-Tourism", "Photography"],
+    "garden": ["Photography"],
+}
+
+FALLBACK_CATEGORY = ("Tourist Attraction", "tourist-attraction")
+
+# The OSM extract with the Kabankalan rows, most specific file first.
+SOURCE_FILES = (
+    "data/osm/validation/attractions_full_adm3_validated.csv",
+    "data/osm/matching/attractions_unique_matched.csv",
+)
 
 
 class Command(BaseCommand):
-    help = "Seeds initial hobbies, categories, and places for ExploreKabankalan"
+    help = "Seeds the Kabankalan city, the interest taxonomy and the published OSM places"
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--csv",
+            dest="csv",
+            default=None,
+            help="Optional path to an OSM attractions CSV (defaults to the shipped extract).",
+        )
+
+    def _source_path(self, option):
+        if option:
+            path = Path(option)
+            if not path.is_file():
+                raise CommandError(f"CSV not found: {path}")
+            return path
+        base = Path(__file__).resolve().parents[4]
+        for relative in SOURCE_FILES:
+            candidate = base / relative
+            if candidate.is_file():
+                return candidate
+        raise CommandError(
+            "No OSM attractions CSV found. Expected one of: "
+            + ", ".join(SOURCE_FILES)
+        )
 
     @transaction.atomic
     def handle(self, *args, **options):
-        self.stdout.write(self.style.WARNING("Starting database seed for ExploreKabankalan..."))
+        self.stdout.write(self.style.WARNING("Seeding Kabankalan..."))
 
-        # 1. Seed Hobbies
-        hobbies_data = [
-            {"name": "Billiards", "icon": "ti-ball-8", "description": "Cue sports and pool halls"},
-            {"name": "Coffee & Cafe Hopping", "icon": "ti-coffee", "description": "Cozy spots for specialty coffee and casual hangouts"},
-            {"name": "Hiking & Eco-Tourism", "icon": "ti-mountain", "description": "Nature trails, caves, and scenic mountain views"},
-            {"name": "Karaoke & Nightlife", "icon": "ti-microphone", "description": "KTV bars, live music, and evening entertainment"},
-            {"name": "Photography", "icon": "ti-camera", "description": "Picturesque landscapes, heritage spots, and aesthetic spots"},
-            {"name": "Dining & Foodie", "icon": "ti-utensils", "description": "Local delicacies, chicken inasal, and dining spots"},
-        ]
+        city, created = City.objects.get_or_create(
+            pk=CABANKALAN_CITY_ID,
+            defaults={
+                "name": "Kabankalan",
+                "slug": "kabankalan",
+                "province": "Negros Occidental",
+                "country": "Philippines",
+                "latitude": 9.9889,
+                "longitude": 122.8142,
+            },
+        )
+        if created:
+            self.stdout.write(self.style.SUCCESS(f"Created city {city.name} (pk={city.pk})."))
+        else:
+            self.stdout.write(f"City {city.name} already exists (pk={city.pk}).")
 
-        hobby_instances = {}
-        for h_data in hobbies_data:
-            hobby, created = Hobby.objects.get_or_create(
-                slug=slugify(h_data["name"]),
+        hobbies = {}
+        for entry in HOBBIES:
+            hobby, _ = Hobby.objects.get_or_create(
+                slug=slugify(entry["name"]),
                 defaults={
-                    "name": h_data["name"],
-                    "icon": h_data["icon"],
-                    "description": h_data["description"]
-                }
+                    "name": entry["name"],
+                    "icon": entry["icon"],
+                    "description": entry["description"],
+                },
             )
-            hobby_instances[h_data["name"]] = hobby
+            hobbies[entry["name"]] = hobby
+        self.stdout.write(self.style.SUCCESS(f"Seed {len(hobbies)} hobbies."))
 
-        self.stdout.write(self.style.SUCCESS(f"Seeded {len(hobby_instances)} Hobbies."))
-
-        # 2. Seed Categories
-        categories_data = [
-            {"name": "Food & Dining", "description": "Restaurants, cafes, and local food spots"},
-            {"name": "Sports & Recreation", "description": "Billiard halls, gyms, and sports venues"},
-            {"name": "Tourist Attraction", "description": "Natural wonders, parks, and cultural sites"},
-            {"name": "Accommodation", "description": "Hotels, inns, and staycations in Kabankalan"},
-            {"name": "Transport Hub", "description": "Bus terminals, jeepney terminals, and transport stops"},
-        ]
-
-        category_instances = {}
-        for c_data in categories_data:
-            category, created = Category.objects.get_or_create(
-                name=c_data["name"],
-                defaults={"description": c_data["description"]}
+        categories = {}
+        for name, slug in set(OSM_CATEGORY_MAP.values()) | {FALLBACK_CATEGORY}:
+            category, _ = Category.objects.get_or_create(
+                slug=slug, defaults={"name": name}
             )
-            category_instances[c_data["name"]] = category
+            categories[slug] = category
+        self.stdout.write(self.style.SUCCESS(f"Seed {len(categories)} categories."))
 
-        self.stdout.write(self.style.SUCCESS(f"Seeded {len(category_instances)} Categories."))
-
-        # 3. Seed Sample Kabankalan Places
-        places_data = [
-            {
-                "title": "Mag-Aso Falls",
-                "category": category_instances["Tourist Attraction"],
-                "hobbies": [hobby_instances["Hiking & Eco-Tourism"], hobby_instances["Photography"]],
-                "description": "Famous natural waterfall surrounded by lush green landscapes and turquoise natural swimming pools.",
-                "address": "Sitio Mag-aso, Barangay Oringao, Kabankalan City",
-                "barangay": "Barangay Oringao",
-                "latitude": 9.923400,
-                "longitude": 122.861100,
-                "operating_hours": "Mon-Sun: 7:00 AM - 5:00 PM",
-                "contact_number": "+63 912 345 6789",
-                "ai_keywords": "waterfall, swimming, nature, eco-tourism, hiking, scenic view, picnic, oringao",
-                "is_verified": True
-            },
-            {
-                "title": "Balicaocao Highland Resort",
-                "category": category_instances["Tourist Attraction"],
-                "hobbies": [hobby_instances["Photography"], hobby_instances["Coffee & Cafe Hopping"], hobby_instances["Hiking & Eco-Tourism"]],
-                "description": "Highland resort sitting 500 feet above sea level offering panoramic views of Kabankalan and nearby towns.",
-                "address": "Barangay Orong, Kabankalan City",
-                "barangay": "Barangay Orong",
-                "latitude": 9.967800,
-                "longitude": 122.845000,
-                "operating_hours": "Mon-Sun: 8:00 AM - 7:00 PM",
-                "contact_number": "+63 998 765 4321",
-                "ai_keywords": "highland, mountain view, resort, swimming pool, breeze, sunset photo spot, relaxing",
-                "is_verified": True
-            },
-            {
-                "title": "Cue & Break Billiard Center",
-                "category": category_instances["Sports & Recreation"],
-                "hobbies": [hobby_instances["Billiards"], hobby_instances["Karaoke & Nightlife"]],
-                "description": "Spacious billiard hall located near the city center equipped with standard pool tables and refreshments.",
-                "address": "Guanzon Street, Barangay 1, Kabankalan City",
-                "barangay": "Barangay 1",
-                "latitude": 9.988200,
-                "longitude": 122.815500,
-                "operating_hours": "Mon-Sun: 1:00 PM - 11:00 PM",
-                "contact_number": "+63 930 111 2233",
-                "ai_keywords": "billiards, pool hall, cue sports, aircon, barkada hangout, night activity, play pool tonight",
-                "is_verified": True
-            },
-            {
-                "title": "Central City Cafe & Lounge",
-                "category": category_instances["Food & Dining"],
-                "hobbies": [hobby_instances["Coffee & Cafe Hopping"], hobby_instances["Dining & Foodie"]],
-                "description": "Modern cafe offering brewed coffee, cold drinks, pasta, and pastries. Great environment for students and workers.",
-                "address": "Near City Public Plaza, Barangay 2, Kabankalan City",
-                "barangay": "Barangay 2",
-                "latitude": 9.989100,
-                "longitude": 122.816200,
-                "operating_hours": "Mon-Sat: 9:00 AM - 9:00 PM",
-                "contact_number": "+63 945 999 8877",
-                "ai_keywords": "coffee, wifi, aircon, study spot, espresso, pastries, snacks, central kabankalan",
-                "is_verified": True
-            }
-        ]
-
-        for p_data in places_data:
-            assigned_hobbies = p_data.pop("hobbies")
-            place, created = Place.objects.get_or_create(
-                title=p_data["title"],
-                defaults=p_data
+        source = self._source_path(options.get("csv"))
+        places = self._load_places(city, categories, hobbies, source)
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Seed {len(places)} published Kabankalan places from {source.name}."
             )
-            place.hobbies.set(assigned_hobbies)
+        )
+        self.stdout.write(
+            "The OSM records carry no opening hours; add them in the staff dashboard "
+            "if you want the \"open now\" badge."
+        )
 
-        self.stdout.write(self.style.SUCCESS(f"Seeded {len(places_data)} Places in Kabankalan City."))
-        self.stdout.write(self.style.SUCCESS("All seed data successfully injected!"))
+    def _load_places(self, city, categories, hobbies, source):
+        places = []
+        with source.open(encoding="utf-8-sig", newline="") as handle:
+            for row in csv.DictReader(handle):
+                if (row.get("city_name") or "").strip().lower() != "kabankalan":
+                    continue
+                name = (row.get("name") or "").strip()
+                if not name:
+                    continue
+
+                osm_key = (row.get("category") or "", row.get("subcategory") or "")
+                category_name, category_slug = OSM_CATEGORY_MAP.get(
+                    osm_key, FALLBACK_CATEGORY
+                )
+                category = categories.get(category_slug)
+                if category is None:
+                    category, _ = Category.objects.get_or_create(
+                        slug=category_slug, defaults={"name": category_name}
+                    )
+                    categories[category_slug] = category
+
+                description = (row.get("description") or "").strip()
+                if not description:
+                    description = (
+                        f"{name} is a {category_name.lower()} in Kabankalan City, "
+                        "Negros Occidental. The record comes from the OpenStreetMap "
+                        "extract that ships with this project."
+                    )
+
+                place, _ = Place.objects.get_or_create(
+                    city=city,
+                    slug=slugify(name),
+                    defaults={
+                        "title": name,
+                        "category": category,
+                        "description": description,
+                        "address": (row.get("address") or "").strip()
+                        or "Kabankalan City, Negros Occidental",
+                        "barangay": "",
+                        "latitude": row.get("latitude") or None,
+                        "longitude": row.get("longitude") or None,
+                        "website": (row.get("website") or "").strip(),
+                        "is_verified": True,
+                        "is_active": True,
+                    },
+                )
+                hobby_names = CATEGORY_HOBBIES.get(category_slug, ["Photography"])
+                place.hobbies.set(
+                    [hobbies[hobby_name] for hobby_name in hobby_names if hobby_name in hobbies]
+                )
+                places.append(place)
+        return places

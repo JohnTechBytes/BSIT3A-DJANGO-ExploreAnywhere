@@ -80,11 +80,24 @@ python manage.py migrate
 ## 4. Load the data
 
 ```bash
-python manage.py seed_cities              # provinces and cities
-python manage.py seed_kabankalan          # hobbies, categories and the published places
+python manage.py seed_kabankalan          # city, hobbies, categories, published places
 python manage.py seed_city_information    # the entries shown on /info/
 python manage.py createsuperuser          # your own staff login for /admin/
 ```
+
+`seed_kabankalan` loads the **six real Kabankalan attractions** that ship with
+the project (Mag Aso Falls, Amyan Hill, Maronggues Hill, Mount Luyang,
+Mount Nai-guin and the CPSU Museum) from the OpenStreetMap extract in
+`data/osm/`, publishes them, and gives each one a category and interests.
+
+> The much larger extract `data/osm/philippines-261013.osm.pbf` (610 MB) is
+> stored in **Git LFS**, so the archive contains only its pointer. Clone the
+> repository with `git lfs pull` if you want to rebuild the full published
+> set from the raw extract; for a local look at the site the six shipped
+> places are enough.
+
+The OSM records do not contain opening hours, so the place page shows
+"Not yet provided" until you add hours in the staff dashboard.
 
 ---
 
@@ -96,6 +109,11 @@ python manage.py runserver
 
 Open <http://127.0.0.1:8000/>.
 
+**The Explore Places directory needs an account.** Sign in with the superuser
+you created (`/accounts/login/`), or register a new one at
+`/accounts/register/` — the sign-up form asks you to accept the privacy
+notice, and that acceptance is stored with the account.
+
 ---
 
 ## 6. What to check, page by page
@@ -103,7 +121,8 @@ Open <http://127.0.0.1:8000/>.
 | URL | What to look for |
 |---|---|
 | `/` | Landing page with the animation, the published places and the three scrolling sections. |
-| `/places/` | The Explore Places carousel. Use the arrows, the search box and the category/hobby filters. The map panel opens on a card. |
+| `/accounts/register/` | Sign-up with the required privacy-notice checkbox. |
+| `/places/` | The Explore Places carousel (sign in first). Use the arrows, the search box and the category/hobby filters. The map panel opens on a card. |
 | `/places/?q=falls` | Natural-language search ("coffee shops", "mag aso falls", "places in Kabankalan"). |
 | `/places/?mode=nearby` | Nearby tab: "Use my location", the radius filter and the landmark selector. |
 | `/places/<id>/` | Place details: photos, opening hours, reviews, the relevance control, save and visit buttons. |
@@ -111,7 +130,6 @@ Open <http://127.0.0.1:8000/>.
 | `/info/` | City Information page with the type filter and the search box. |
 | `/evaluation/sus/` | The usability survey: ten 1–5 scales, then the 0–100 score and its band. |
 | `/privacy/` | The privacy notice. |
-| `/accounts/register/` | Sign-up: the "I have read and accept the Privacy Notice" checkbox is required. |
 | `/accounts/login/` | Sign in. |
 | `/admin/` | The staff panel: places, OSM review queue, visit moderation, city information, survey answers, search logs and accounts. |
 
@@ -142,6 +160,9 @@ specification for that module.
 python manage.py check                 # configuration sanity
 python manage.py makemigrations --check --dry-run   # "No changes detected"
 ```
+
+Both must report no problems: `check` prints "System check identified no
+issues" and the second prints "No changes detected".
 
 Set a MapTiler token for the tiles:
 
