@@ -1,6 +1,6 @@
 import re
 
-from django.db.models import Case, IntegerField, Q, Value, When
+from django.db.models import Case, Count, IntegerField, Q, Value, When
 from django.shortcuts import render
 
 from apps.cities.locking import LOCKED_CITY_PK
@@ -48,13 +48,18 @@ def home(request):
         (place for place in featured_places if place.cover_image or place.cover_image_url),
         featured_places[0] if featured_places else None,
     )
+    # One aggregate query for both counters instead of two separate counts.
+    totals = published.aggregate(
+        published=Count("id"),
+        osm=Count("id", filter=Q(slug__startswith="osm-")),
+    )
     return render(request, "home.html", {
         "featured_places": featured_places,
         "hero_place": hero_place,
         "categories": categories,
         "selected_category": selected_category,
-        "published_count": published.count(),
-        "osm_count": published.filter(slug__startswith="osm-").count(),
+        "published_count": totals["published"],
+        "osm_count": totals["osm"],
     })
 
 

@@ -61,6 +61,9 @@ def nearby_places(request, *, unified=False):
     # Explicit suggestions and exact-name searches take priority over a generic
     # service intent. A business named "Coffee & Talk" must not return all cafes.
     # Every branch begins from the same independently publication-checked queryset.
+    # When the complete published set has to be loaded anyway, it is kept so the
+    # suggestion list below can reuse it instead of scanning the table twice.
+    full_published = None
     selected_place_key = (request.GET.get("place") or "").strip()[:15]
     if selected_place_key.isascii() and selected_place_key.isdecimal():
         selected_service = ""
@@ -71,17 +74,28 @@ def nearby_places(request, *, unified=False):
             matched = iter(exact)
             selected_service = ""
         elif selected_service:
-            matched = (place for place in published if matches_service(place, selected_service))
+            full_published = list(published)
+            matched = (
+                place for place in full_published
+                if matches_service(place, selected_service)
+            )
         else:
             from .views import build_attraction_filter
             predicate = build_attraction_filter(query)
             if predicate is not None:
-                published = published.filter(predicate).distinct()
-            matched = iter(published)
+                matched = iter(published.filter(predicate).distinct())
+            else:
+                full_published = list(published)
+                matched = iter(full_published)
     elif selected_service:
-        matched = (place for place in published if matches_service(place, selected_service))
+        full_published = list(published)
+        matched = (
+            place for place in full_published
+            if matches_service(place, selected_service)
+        )
     else:
-        matched = iter(published)
+        full_published = list(published)
+        matched = iter(full_published)
 
     # Limit only the display; avoid falsely claiming "all nearest" when capped.
     MAX_RESULTS = 250
@@ -97,9 +111,20 @@ def nearby_places(request, *, unified=False):
 
     # Suggestions are real, publicly approved listings, never imported candidates.
     # Only minimal display fields are embedded; no private account data or GPS.
-    approved_suggestions = list(Place.objects.filter(
-        city=city, is_active=True, is_verified=True,
-    ).order_by("title", "pk").values("pk", "title", "category__name")[:250])
+    if full_published is not None:
+        # The complete set is already in memory: reuse it, no second scan.
+        approved_suggestions = [
+            {
+                "pk": place.pk,
+                "title": place.title,
+                "category__name": place.category.name if place.category else None,
+            }
+            for place in full_published[:250]
+        ]
+    else:
+        approved_suggestions = list(Place.objects.filter(
+            city=city, is_active=True, is_verified=True,
+        ).order_by("title", "pk").values("pk", "title", "category__name")[:250])
 
     # ExploreAnywhere Phase 6K: curated Kabankalan reference landmarks
     # The fallback must not become a dropdown of every future business.

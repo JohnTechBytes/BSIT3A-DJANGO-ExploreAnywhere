@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.shortcuts import redirect, render
 
 from apps.cities.models import City
+from apps.core.models import Category, Hobby
 from .models import Place, SavedPlace, Review
 from .sample_images import sample_image_for
 
@@ -237,20 +238,29 @@ def attraction_carousel(request):
             )
 
     # Only offer category/hobby filters used by published Kabankalan places.
-    published_places = (
-        Place.objects.filter(city=city, is_active=True, is_verified=True)
-        .select_related("city", "category")
+    # Performance: the option lists are built with small aggregate queries
+    # instead of loading every published place (and all of its hobby rows) a
+    # second time. The complete set is still loaded once, for the carousel.
+    published_scope = Place.objects.filter(
+        city=city, is_active=True, is_verified=True,
     )
-    available_categories = {}
-    available_hobbies = {}
-    published_total = 0
-    for published_place in published_places.prefetch_related("hobbies"):
-        published_total += 1
-        if published_place.category_id and published_place.category:
-            available_categories[str(published_place.category_id)] = str(published_place.category)
-        for hobby in published_place.hobbies.all():
-            if hobby.slug:
-                available_hobbies[hobby.slug] = str(hobby)
+    published_total = published_scope.count()
+    available_categories = {
+        str(category_id): name
+        for category_id, name in Category.objects
+            .filter(places__in=published_scope)
+            .values_list("id", "name")
+            .distinct()
+    }
+    available_hobbies = {
+        slug: name
+        for slug, name in Hobby.objects
+            .filter(places__in=published_scope)
+            .exclude(slug="")
+            .values_list("slug", "name")
+            .distinct()
+    }
+    published_places = published_scope.select_related("city", "category")
 
     category_options = sorted(
         ({"value": key, "label": value} for key, value in available_categories.items()),

@@ -86,7 +86,16 @@ class Place(models.Model):
         now = timezone.localtime(timezone.now())
         current_weekday = now.weekday()  # 0=Monday, 6=Sunday
         current_time = now.time()
-        hours = self.opening_hours.filter(weekday=current_weekday).first()
+        # Reuse the prefetched opening hours when the view already loaded them,
+        # so rendering a list of places does not trigger one query per place.
+        prefetched = getattr(self, "_prefetched_objects_cache", {}).get("opening_hours")
+        if prefetched is not None:
+            hours = next(
+                (entry for entry in prefetched if entry.weekday == current_weekday),
+                None,
+            )
+        else:
+            hours = self.opening_hours.filter(weekday=current_weekday).first()
         if not hours:
             return None  # No hours specified
         if hours.is_closed:
