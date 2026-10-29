@@ -370,6 +370,7 @@ project dependency; use the Django runner.
 ### Documentation
 
 - `docs/LOCAL_TEST_CHECKLIST.md` — unpack, run and verify the project locally
+- `docs/VERIFICATION.md` — the verification record: test suite, browser audits, query and timing budget
 - `docs/QUICK_REFERENCE.md` — day-to-day commands and troubleshooting
 - `docs/PHASE6P_OPTIMIZATION_GUIDE.md` — photo discovery setup
 - `docs/PHASE7_FEATURES_PLAN.md` — feature roadmap
