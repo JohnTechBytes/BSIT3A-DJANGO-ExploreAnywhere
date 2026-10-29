@@ -4,7 +4,7 @@ All public place collections are restricted to verified, active Kabankalan place
 Saving and unsaving use POST + CSRF, with data scoped to the current user.
 """
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
@@ -78,8 +78,13 @@ def journey_dashboard(request):
     from apps.visits.services import visit_rewards
     my_checkins = (VisitCheckIn.objects.filter(user=request.user, place__city_id=2)
                    .select_related("place").order_by("-submitted_at"))
-    approved_visit_count = my_checkins.filter(status=VisitCheckIn.Status.APPROVED).count()
-    pending_visit_count = my_checkins.filter(status=VisitCheckIn.Status.PENDING).count()
+    # One aggregate instead of two separate count() queries.
+    visit_counts = my_checkins.aggregate(
+        approved=Count("id", filter=Q(status=VisitCheckIn.Status.APPROVED)),
+        pending=Count("id", filter=Q(status=VisitCheckIn.Status.PENDING)),
+    )
+    approved_visit_count = visit_counts["approved"]
+    pending_visit_count = visit_counts["pending"]
     visit_rewards_data = visit_rewards(approved_visit_count)
 
     # The visitor's own interests and search history.

@@ -16,7 +16,7 @@ from django.utils import timezone
 
 from apps.cities.models import City
 from apps.core.models import Category, Hobby
-from .models import OpeningHours, Place
+from .models import OpeningHours, Place, SavedPlace
 
 
 class CarouselQueryTests(TestCase):
@@ -103,6 +103,54 @@ class CarouselQueryTests(TestCase):
         self.assertTrue(response.context["approved_suggestions"])
         # The suggestion list is built from the already loaded published set.
         self.assertLessEqual(len(context.captured_queries), 12)
+
+
+class JourneyDashboardQueryTests(TestCase):
+    """The My Journey dashboard must not run one query per saved place or visit.
+
+    It shows four panels of collections plus the interests/search panel, so a
+    naive implementation would query once per row. The panels are sliced to a
+    fixed number of rows, so the query count must stay flat as the visitor's
+    own data grows.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.city = City.objects.create(pk=2, name="Kabankalan", slug="kabankalan")
+        cls.visitor = get_user_model().objects.create_user(
+            username="journey_perf", password="test-pass"
+        )
+        cls.category = Category.objects.create(name="Nature", slug="nature")
+        cls.hobby = Hobby.objects.create(name="Hiking", slug="hiking")
+
+    def setUp(self):
+        self.client.force_login(self.visitor)
+        self.url = reverse("places:journey_dashboard")
+
+    def _place(self, index):
+        place = Place.objects.create(
+            city=self.city, title=f"Destination {index:02d}", slug=f"dest-{index:02d}",
+            category=self.category, address="Kabankalan", is_active=True, is_verified=True,
+        )
+        place.hobbies.add(self.hobby)
+        return place
+
+    def test_query_count_does_not_grow_with_the_number_of_saved_places(self):
+        for index in range(1, 4):
+            SavedPlace.objects.create(user=self.visitor, place=self._place(index))
+        self.client.get(self.url)  # warm up so the session write is not measured
+        with CaptureQueriesContext(connection) as small:
+            self.client.get(self.url)
+        small_count = len(small.captured_queries)
+
+        for index in range(4, 13):
+            SavedPlace.objects.create(user=self.visitor, place=self._place(index))
+        with CaptureQueriesContext(connection) as large:
+            self.client.get(self.url)
+        large_count = len(large.captured_queries)
+
+        self.assertEqual(large_count, small_count)
+        self.assertLessEqual(large_count, 16)
 
 
 class OpeningHoursPrefetchTests(TestCase):
