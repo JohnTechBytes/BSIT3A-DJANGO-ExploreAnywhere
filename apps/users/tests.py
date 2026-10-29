@@ -93,6 +93,15 @@ class UserAdminTests(TestCase):
         self.assertIn(User, admin.site._registry)
         self.assertEqual(admin.site._registry[User].__class__.__name__, "ExploreUserAdmin")
 
+    def test_admin_index_hides_the_authentication_group_editor(self):
+        # Accounts are managed through the project's own Users section, so the
+        # default "Authentication and Authorization" block is not listed.
+        response = self.client.get("/admin/")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Authentication and Authorization")
+        # ... but the native group editor is still reachable for a superuser.
+        self.assertEqual(self.client.get("/admin/auth/group/").status_code, 200)
+
     def test_admin_index_shows_the_manage_users_shortcut(self):
         response = self.client.get("/admin/")
         self.assertEqual(response.status_code, 200)

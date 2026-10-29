@@ -51,7 +51,7 @@ If a future change reintroduces a per-row query, the suite fails.
 |---|---|---|
 | Navigation sweep | **24/24** | Every header link, the "More" menu, the footer links, the mobile menu, landing-page anchors, zero JavaScript errors |
 | Public flows | **22/22** | Search, category/hobby filters, sort, save → unsave → save, review, itinerary create, visit check-in, "use my location", radius filter, quick-search chips, landmark selector |
-| Admin panel | **54/54** | Every model page, filters, bulk actions, the OSM review queue, photo actions, account management, log out |
+| Admin panel | **54/54** | Every model page, filters, bulk actions, the OSM review queue, photo actions, account management, log out. The index lists only the seven modules the city office uses (Destinations, Business review, City information, Visit approvals, Sus responses, Recommendation ratings, Query logs, Users); Django's group editor is hidden from the index but still reachable at `/admin/auth/group/` |
 | Clean-install smoke test | **13/13** | Registration with the privacy checkbox on a fresh database, carousel, search, `/info/`, SUS survey, `/privacy/`, My Journey, admin login, zero JavaScript errors |
 
 The clean-install smoke test is the one that matters for a fresh download: it
