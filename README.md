@@ -38,7 +38,9 @@ verified, published places of Kabankalan, filter them by category and hobby,
 search in natural language, view results on an interactive map, sort and filter
 nearby places by straight-line distance from the device's GPS position or from a
 chosen city landmark, read and write reviews, save places, build itineraries,
-and track visits on a personal dashboard called **My Journey**. City staff
+read the city's public information page, answer a short usability survey, and
+track visits, interests and searches on a personal dashboard called
+**My Journey**. City staff
 manage the same records through a customized administrative panel that includes
 an OpenStreetMap review queue, so unverified imports never reach the public
 directory.
@@ -86,8 +88,8 @@ Specifically, the project accomplishes the following technical objectives:
    Stops are chosen manually; the system does not generate suggested
    itineraries.
 6. **My Journey dashboard.** Organize a visitor's saved places, itinerary
-   plans, reviews and verified visit check-ins in one page, with visit points
-   and badges.
+   plans, reviews, verified visit check-ins, remembered interests and recent
+   searches in one page, with visit points and badges.
 7. **Administrative panel and data import.** Provide city administrators and
    staff with a customized Django admin for place listings, verification,
    photo management, bulk publication actions, visit moderation, a business
@@ -103,7 +105,12 @@ Specifically, the project accomplishes the following technical objectives:
    instrument and a recommendation-relevance instrument into the system's data
    model, including the standard 0–100 SUS scoring, so that a usability
    evaluation can be administered with residents, visitors, and city or
-   business representatives.
+   business representatives. Both instruments are reachable by respondents: the
+   survey at `/evaluation/sus/` and the relevance control on a destination
+   reached from a search.
+10. **Privacy and data protection.** Publish a privacy notice that states what
+    the system stores and what it deliberately does not store, and record a
+    visitor's acceptance of it when an account is created.
 
 ### Significance of the Project
 
@@ -150,8 +157,8 @@ development and verification process.
 |---|---|
 | **Setting and Coverage** | Kabankalan City, Negros Occidental only. `KabankalanOnlyMiddleware` pins every session to Kabankalan (city pk 2), and the public and administrative querysets filter to that city. Places, information, users and evaluation activities are limited to Kabankalan. |
 | **Accounts and Roles** | Custom user model with the four roles required by the system — user, business owner, city administrator, system administrator — plus a managed-city field, avatar, bio and coordinates. Registration creates a `user`. Administrative access is governed by Django's staff, superuser and model permissions. |
-| **Kabankalan City Information** | `CityInformation` records (title, type, description, thumbnail, display order) are maintained through the administrative panel. The public City Information page is **not enabled in this build**; the legacy information routes are disabled in `apps/info/urls.py`. |
-| **Hobbies and Hobby Selection** | Hobbies are attached to places. Visitors filter the directory by category and by a single hobby from the search panel, and the chosen hobby is kept for the session. The earlier standalone hobby-selection route now redirects to the place directory. |
+| **Kabankalan City Information** | `CityInformation` records (title, type, description, thumbnail, display order) are maintained through the administrative panel and shown on the public City Information page (`/info/`), grouped by type with a type filter and a free-text search. The page publishes only what the city administration has entered and says so when nothing is published yet. |
+| **Hobbies and Hobby Selection** | Hobbies are attached to places. Visitors filter the directory by category and by a single hobby from the search panel, and the chosen hobby is kept in the session, so it also shapes the recommendation score on later pages and is listed in My Journey. The earlier standalone hobby-selection route now redirects to the place directory. |
 | **Places Directory with Details and Map Location** | Verified, published Kabankalan places with category, hobbies, description, address, coordinates, cover photo and gallery. The public listing is a looping carousel with list and map views and a details panel. Cover-photo labels indicate whether an image is set, not whether its usage rights were verified. |
 | **Natural-Language Search** | A local intent-and-keyword parser handles queries such as "coffee shops", "mag aso falls" or "places in Kabankalan", ignoring filler words and matching named Kabankalan places. No external AI service is called. |
 | **Recommendation Engine** | Deterministic ranking: hobby fit 60%, average rating 20% where reviews exist, with missing signals excluded from the denominator. Results are ordered by score, then by number of matched hobbies, then by title. Match percentages are not displayed to visitors. |
@@ -160,12 +167,13 @@ development and verification process.
 | **Reviews and Ratings** | One review per user per place, 1–5 stars plus an optional comment; reviews can be updated or deleted; the average rating feeds both the place page and the recommender. Reviews are opinions and do not by themselves prove an in-person visit. |
 | **Saved Places** | Visitors save and unsave places; saved places appear on a dedicated page and on the My Journey dashboard. |
 | **Itinerary Builder** | Trips with a title and day number. Stops can be added from the directory, time-stamped, reordered and removed, and trips can be deleted. Itinerary suggestions are not generated by the system. |
-| **My Journey Dashboard** | One page aggregating saved places, itinerary plans, the visitor's reviews and visit check-ins, with visit points and badges. Hobby selections and search history are not displayed. |
+| **My Journey Dashboard** | One page aggregating saved places, itinerary plans, the visitor's reviews and visit check-ins, with visit points and badges, plus a panel with the visitor's interests, the five most recent searches and the relevance feedback given so far. |
 | **Visit Check-ins and Rewards** | A visitor reports a visit with a date and a corroborating note. Staff approve or reject the check-in in the administrative panel; only approved visits count toward points and badges. |
-| **Administrative Panel** | Customized Django admin with destination management (search, category/verification/publication filters), bulk publication actions, per-place verification, photo actions, a business review queue for OSM imports, visit moderation, city information records, and the evaluation records. Native Django permissions and safeguards are preserved. |
+| **Administrative Panel** | Customized Django admin with destination management (search, category/verification/publication filters), bulk publication actions, per-place verification, photo actions, a business review queue for OSM imports, visit moderation, city information records, the evaluation records and account management (role and managed city). Native Django permissions and safeguards are preserved. |
 | **Data Import** | Management commands import PSA PSGC codes, an OpenStreetMap extract and Wikimedia imagery, and enrich, categorize or attach photos to imported places. |
-| **Evaluation Instruments** | `SusResponse` stores the ten standard SUS items and computes the 0–100 score; `RecommendationRating` stores relevant, partially relevant or irrelevant ratings for a query and place. Both are managed through the administrative panel; a respondent-facing survey page is not yet built. |
-| **Technology Stack** | Python 3 and Django 5.2.18 for the server; MySQL for storage, accessed through the PyMySQL driver; HTML5, CSS3 and JavaScript with Bootstrap 5.3.3 for the interface; Leaflet 1.9.4 with MapTiler tiles for maps; Pillow for image handling. |
+| **Evaluation Instruments** | The public System Usability Scale survey (`/evaluation/sus/`) asks the ten standard items on a 1–5 scale and scores them with the standard 0–100 formula, then shows the score and the interpretation band. `RecommendationRating` stores relevant, partially relevant or irrelevant ratings for a query and place; a destination reached from a search offers that control. Both records are also managed in the administrative panel. |
+| **Privacy and Data Protection** | A public privacy notice (`/privacy/`) states what the system stores, what it never stores (the live GPS position is calculated in the browser and never sent to the server), who can see the data and how to have it deleted. Creating an account requires accepting the notice, and the acceptance and its date are stored with the account. |
+| **Technology Stack** | Python 3 and Django 5.2.18 for the server; MySQL for storage, accessed through the PyMySQL driver; HTML5, CSS3 and JavaScript with Bootstrap 5.3.3 for the interface; Leaflet 1.9.4 with MapTiler tiles for maps; Pillow for image handling. Deployment values (secret key, debug flag, allowed hosts, database credentials, MapTiler token) are read from environment variables with development defaults. |
 | **Target Users** | Residents, visitors and tourists who look for places that match their hobbies; business owners whose listings appear in the directory; city administrators and tourism personnel who verify and publish places and maintain city information records; and system administrators. |
 
 ### Implementation Status
@@ -182,15 +190,18 @@ development and verification process.
 | Saved places | Implemented | — |
 | Itinerary builder | Implemented | Manual stops only |
 | Itinerary suggestions | Planned | Not present |
-| My Journey dashboard | Partially implemented | Saved places, trips, reviews and visits; no hobbies or search history |
+| My Journey dashboard | Implemented | Saved places, trips, reviews, visits, interests, search history and relevance feedback |
 | Visit check-ins and rewards | Implemented | Staff approval required |
 | Administrative panel and OSM review queue | Implemented | Bulk approval refuses unverified OSM imports |
 | Data import commands | Implemented | PSGC, OSM extract, Wikimedia imagery |
-| City information records | Partially implemented | Admin only; public page disabled |
+| City information records | Implemented | Public page at `/info/`; entries are published from the admin panel |
 | Roles and access control | Partially implemented | Four roles defined; enforced through Django permissions; no business-owner portal and no city-level scoping |
-| SUS instrument | Partially implemented | Model and scoring built; no survey page |
-| Recommendation relevance rating | Partially implemented | Model and admin only; no in-page control |
-| Privacy notice and registration consent | Planned | Not present |
+| SUS instrument | Implemented | Public survey at `/evaluation/sus/` with the standard 0–100 scoring |
+| Recommendation relevance rating | Implemented | In-page control on a destination reached from a search |
+| Privacy notice and registration consent | Implemented | Public notice at `/privacy/`; the acceptance and its date are stored with the account |
+| Search history and remembered interests | Implemented | Every submitted search is logged with the account; the chosen hobby is kept in the session |
+| Account management in the staff dashboard | Implemented | Roles and managed city are editable at `/admin/users/user/` |
+| Environment-driven deployment configuration | Implemented | Secret key, debug flag, allowed hosts, database and MapTiler token come from environment variables |
 | Distance in the ranking score | Planned | Distance is used by the Nearby view only |
 
 ### Limitations
@@ -211,14 +222,20 @@ development and verification process.
 - Recommendations and search are implemented with **rule-based logic, not
   machine learning or a language model**. The Claude API layer described in the
   project title is not yet implemented.
-- The public **City Information page** is not enabled; records exist in the
-  administrative panel only.
-- The **SUS survey** and the in-page **recommendation relevance rating** are not
-  yet exposed to respondents; only the data models, scoring and admin views
-  exist.
+- The public **City Information page** shows only what the city administration
+  has published, so it stays empty until entries are entered. The starter set
+  created by `manage.py seed_city_information` is an example that has to be
+  reviewed against the official city record before it is used.
+- The **SUS survey** can be answered more than once and an anonymous answer is
+  not linked to a person. A signed-in answer is stored with the account.
+- The **chosen hobby is held in the browser session** and is lost when the
+  session ends; the search history and the relevance ratings are stored with
+  the account.
 - **Business-owner self-service** and **city-level administrative scoping** are
   not implemented.
-- A **privacy notice and registration consent step** are not yet present.
+- The **privacy notice** describes the behaviour of this implementation. It has
+  not been reviewed by a legal adviser and no formal data-processing agreement
+  is signed.
 - **Online booking, reservations, payment integration, and native mobile
   applications** are excluded from the current development phase.
 
@@ -263,8 +280,8 @@ Virtual environments are gitignored under any name (`venv*`, `.venv/`).
 ```
 manage.py
 mysite/      settings, urls, wsgi, compat (Django/Python context-copy shim)
-apps/        cities, core, dashboard, evaluation, hobbies, imports, info,
-             itineraries, places, reviews, search, users, visits
+apps/        cities, core, evaluation, hobbies, info, itineraries, places,
+             users, visits
 templates/   Django templates
 static/      css, js, images, third-party libraries  (served at /static/)
 media/       uploaded images                        (served at /media/)
@@ -290,6 +307,7 @@ Loaded through management commands such as:
 python manage.py load_psgc
 python manage.py categorize_osm_places
 python manage.py import_wikimedia_photos
+python manage.py seed_city_information   # starter City Information entries
 ```
 
 ### Environment variables
@@ -316,15 +334,18 @@ Optional, read at runtime with safe defaults:
 ### Tests
 
 ```bash
-python manage.py test          # Django runner
-pytest                         # pytest.ini points at mysite.settings
+python manage.py test          # Django runner: 179 tests, 15 skipped
 ```
 
 The suite covers the public flows (search, filters, save/unsave, reviews,
-itineraries, check-ins, nearby) and the administrative screens. Fifteen tests
-for the retired legacy city-information CRUD routes are skipped: those routes
-are disabled, and the tests are kept as the specification for the City
-Information module.
+itineraries, check-ins, nearby, the city information page, the usability
+survey and the relevance feedback), the discovery query behaviour and the
+administrative screens. Fifteen tests for the retired legacy city-information
+CRUD routes are skipped: those routes were replaced by the public City
+Information page, and the tests are kept as the specification for that module.
+
+A `pytest.ini` is included for tooling that expects it, but pytest is not a
+project dependency; use the Django runner.
 
 ### Documentation
 
