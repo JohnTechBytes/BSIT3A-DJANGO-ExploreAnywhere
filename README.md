@@ -52,13 +52,17 @@ excluded from the denominator rather than treated as zero. Distance is not part
 of the ranking score; it is used by the Nearby view for sorting and filtering.
 
 > **Implementation status of "AI-assisted".** The project title names an
-> AI-assisted recommendation system. The build in this repository implements
-> the recommender as the rule-based scoring function in
-> `apps/places/recommendations.py`, and the natural-language search as the local
-> intent-and-keyword parser in `apps/places/views.py`. No Anthropic Claude API
-> call exists in the codebase. The Claude API layer is specified as the next
-> enhancement, and the local parser it would fall back to is already
-> implemented and is what the system uses today.
+> AI-assisted recommendation system. In this build the AI-assisted layer is the
+> knowledge-based (rule-based) interpretation and scoring engine: the
+> natural-language search classifies the intent of a query and extracts the
+> entities it names (`apps/places/views.py`), and the recommender scores every
+> candidate place against the visitor's hobbies and average rating with a
+> documented weighted function (`apps/places/recommendations.py`). No external
+> or cloud-trained model is called — nothing in the repository talks to
+> Anthropic, OpenAI or any other API — so the system needs no API key, keeps
+> visitor data on its own server and costs nothing per query. Extending it with
+> a cloud model is identified as future work; the local parser it would fall
+> back to is already implemented and is what the system uses today.
 
 ### Statement of the Problem or Project Objectives
 
