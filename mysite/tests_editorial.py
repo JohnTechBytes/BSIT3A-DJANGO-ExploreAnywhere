@@ -1,5 +1,6 @@
 """The remaining redesigned screens retain their forms and admin controls."""
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.test import TestCase
 from django.urls import reverse
 
@@ -69,3 +70,31 @@ class EditorialScreenTests(TestCase):
         response = self.client.get(reverse("admin:places_place_change", args=[self.place.pk]))
         self.assertContains(response, 'name="_save"')
         self.assertContains(response, 'name="csrfmiddlewaretoken"')
+
+    def test_staff_dashboard_displays_real_summary_and_management_links(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("admin:index"))
+        self.assertContains(response, 'ea-admin-home')
+        self.assertContains(response, 'Staff dashboard')
+        self.assertContains(response, 'Published places')
+        self.assertContains(response, reverse("admin:places_place_changelist"))
+        self.assertContains(response, reverse("admin:places_place_osm_review"))
+        self.assertContains(response, reverse("admin:users_user_changelist"))
+        self.assertContains(response, 'All permitted admin modules')
+
+    def test_staff_dashboard_hides_unpermitted_metrics_and_shortcuts(self):
+        limited = get_user_model().objects.create_user(
+            username="limited_staff", password="test-password-123", is_staff=True
+        )
+        limited.user_permissions.add(Permission.objects.get(
+            content_type__app_label="places", codename="view_place"
+        ))
+        self.client.force_login(limited)
+        response = self.client.get(reverse("admin:index"))
+        self.assertContains(response, 'Published places')
+        self.assertContains(response, reverse("admin:places_place_changelist"))
+        self.assertContains(response, reverse("admin:places_place_osm_review"))
+        self.assertNotContains(response, 'Pending visits')
+        self.assertNotContains(response, 'User accounts')
+        self.assertNotContains(response, reverse("admin:users_user_changelist"))
+        self.assertNotContains(response, reverse("admin:visits_visitcheckin_changelist"))
