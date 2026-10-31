@@ -136,3 +136,17 @@ class NearbyRedesignTests(TestCase):
         self.client.logout()
         response = self.client.get(self.url, {"mode": "nearby"})
         self.assertRedirects(response, "/accounts/login/?next=/places/%3Fmode%3Dnearby", fetch_redirect_response=False)
+
+    def test_browse_only_offers_map_for_places_with_coordinates(self):
+        Place.objects.create(
+            city=self.city, title="Unmapped Bookstore", slug="unmapped-bookstore",
+            address="Kabankalan", is_verified=True, is_active=True,
+        )
+        unmapped = self.client.get(self.url, {"q": "Unmapped Bookstore"})
+        self.assertContains(unmapped, "Unmapped Bookstore")
+        self.assertNotContains(unmapped, 'class="ea-card-map-hint"')
+        mapped = self.client.get(self.url, {"q": "CPSU Museum"})
+        self.assertContains(mapped, 'class="ea-card-map-hint"')
+        self.assertContains(mapped, 'vendor/leaflet/leaflet.js')
+        self.assertContains(mapped, 'vendor/leaflet/leaflet.css')
+        self.assertNotContains(mapped, 'unpkg.com/leaflet@1.9.4')

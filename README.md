@@ -215,8 +215,9 @@ development and verification process.
 - The system covers **Kabankalan City only**. Places, information and evaluation
   involving other cities are not included.
 - An **internet connection is required for the interactive map and live GPS**:
-  Leaflet is loaded from a CDN and map tiles come from MapTiler. Search and
-  recommendation logic run on the server and need no external service.
+  Browse loads a bundled copy of Leaflet on demand; other map pages may load
+  Leaflet from a CDN. Map tiles come from MapTiler and require connectivity.
+  Search and recommendation logic run on the server and need no external service.
 - Map tiles require a **MapTiler API key**, which is currently embedded in the
   page template and should be moved to server-side configuration before public
   deployment.
@@ -375,7 +376,7 @@ Optional, read at runtime with safe defaults:
 ### Tests
 
 ```bash
-python manage.py test          # Django runner: 232 tests, 15 skipped
+python manage.py test          # Django runner: 233 tests, 15 skipped
 ```
 
 The suite covers the public flows (search, filters, save/unsave, reviews,

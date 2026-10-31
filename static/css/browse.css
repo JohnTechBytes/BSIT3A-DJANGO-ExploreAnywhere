@@ -221,7 +221,9 @@
 }
 .browse-page .ea-carousel .ea-card-body { display: flex; flex-direction: column; flex: 1; }
 .browse-page .ea-carousel .ea-card-footer { margin-top: auto; }
-.browse-page .ea-carousel.is-cloned .ea-clone { pointer-events: none; }
+/* Loop copies are visible and must respond to touch just like the originals.
+   Their duplicate controls remain outside the keyboard/accessibility tree. */
+.browse-page .ea-carousel.is-cloned .ea-clone { pointer-events: auto; }
 
 /* Fewer than four results: a plain grid reads better than a loop. */
 .browse-page .ea-carousel--compact { -webkit-mask-image: none; mask-image: none; cursor: default; }

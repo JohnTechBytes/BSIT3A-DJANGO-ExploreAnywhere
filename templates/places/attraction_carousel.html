@@ -455,6 +455,7 @@
     }
 }
 
+#ea-map-panel { scroll-margin-top: 20px; }
 #ea-attraction-map {
     height: 460px;
     width: 100%;
@@ -636,7 +637,7 @@
 }
 
 </style>
-<link rel="stylesheet" href="{% static 'css/browse.css' %}">
+<link rel="stylesheet" href="{% static 'css/browse.css' %}?v=20261031-2">
 {% endblock %}
 
 {% block content %}
@@ -921,10 +922,10 @@
                 </div>
               {% endif %}
 
-              <span class="ea-card-map-hint" aria-hidden="true">
+              {% if place.latitude != None and place.longitude != None %}<span class="ea-card-map-hint" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" fill="currentColor"/></svg>
                 View on map
-              </span>
+              </span>{% endif %}
             </div>
 
             <div class="ea-card-body">
@@ -988,7 +989,7 @@
 
 </div>
 
-<section id="ea-map-panel" hidden
+<section id="ea-map-panel" hidden tabindex="-1"
          aria-label="Attractions map">
 
     <div id="ea-attraction-map"></div>
@@ -1061,8 +1062,8 @@
 
     // ExploreAnywhere Phase 5E.1: load Leaflet only when Map View is requested.
     // Keep the original Leaflet version, MapTiler layers and marker logic.
-    const leafletCssUrl = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-    const leafletJsUrl = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    const leafletCssUrl = "{% static 'vendor/leaflet/leaflet.css' %}";
+    const leafletJsUrl = "{% static 'vendor/leaflet/leaflet.js' %}";
     let leafletAssetsPromise = null;
 
     function loadLeafletAssets() {
@@ -1182,7 +1183,7 @@
     function marqueeRunning() {
         return marquee.ready && marquee.playing &&
             !marquee.hovering && !marquee.focusing &&
-            !marquee.dragging && !document.hidden &&
+            !marquee.dragging && !document.hidden && !listPanel.hidden &&
             !reduceMotionQuery.matches;
     }
 
@@ -1225,6 +1226,7 @@
         if (!playing) marquee.tween = null;
     }
 
+    let resumeMarquee = function () {};
     function setupMarquee() {
         if (!carousel || !track) return;
 
@@ -1253,8 +1255,11 @@
                 element.tabIndex = -1;
             });
             track.appendChild(clone);
-            if (attractions[index]) {
-                bindCard(clone, attractions[index], index);
+            // Coordinate-less cards are not present in attractions. Match the
+            // original card, not its position in the filtered marker array.
+            const markerIndex = attractions.findIndex(item => item.card === cards[index]);
+            if (markerIndex !== -1) {
+                bindCard(clone, attractions[markerIndex], markerIndex, true);
             }
         }
 
@@ -1266,8 +1271,11 @@
         applyMarqueeOffset();
 
         let lastFrame = 0;
+        let frameRequest = 0;
 
         function frame(timestamp) {
+            frameRequest = 0;
+            if (listPanel.hidden) { lastFrame = 0; return; }
             const delta = lastFrame ? Math.min(64, timestamp - lastFrame) : 16;
             lastFrame = timestamp;
 
@@ -1295,10 +1303,13 @@
                 applyMarqueeOffset();
             }
 
-            requestAnimationFrame(frame);
+            frameRequest = requestAnimationFrame(frame);
         }
 
-        requestAnimationFrame(frame);
+        resumeMarquee = function () {
+            if (!frameRequest) frameRequest = requestAnimationFrame(frame);
+        };
+        resumeMarquee();
 
         // Pause while the visitor is reading or interacting.
         carousel.addEventListener("pointerenter", function (event) {
@@ -1422,6 +1433,7 @@
         ".ea-card[data-lat][data-lng]"
     ).forEach(card => {
 
+        if (!card.dataset.lat.trim() || !card.dataset.lng.trim()) return;
         const lat = Number(card.dataset.lat);
         const lng = Number(card.dataset.lng);
 
@@ -1511,15 +1523,6 @@
             zoomControl: true
         });
 
-        L.Icon.Default.mergeOptions({
-            iconUrl:
-                "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-            iconRetinaUrl:
-                "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-            shadowUrl:
-                "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png"
-        });
-
         const attribution =
             '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> ' +
             '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
@@ -1561,6 +1564,11 @@
             )
         ]);
 
+        [streets, satellite, ...hybrid.getLayers()].forEach(function (layer) {
+            layer.on("tileerror", function () {
+                if (mapNote) mapNote.textContent = "Some map tiles could not load. Check your connection or try another map style.";
+            });
+        });
         streets.addTo(map);
 
         L.control.layers(
@@ -1661,7 +1669,12 @@
             "aria-pressed", String(showingMap)
         );
 
-        if (!showingMap) return Promise.resolve(null);
+        if (!showingMap) {
+            selectionVersion += 1;
+            clearFlight();
+            resumeMarquee();
+            return Promise.resolve(null);
+        }
 
         if (!attractions.length) {
             mapElement.hidden = true;
@@ -1720,6 +1733,20 @@
     const droneTarget = document.getElementById("ea-drone-target");
     let droneRing = null;
     let droneTimer = null;
+    let ringTimer = null;
+    let flightEnd = null;
+    let selectionVersion = 0;
+
+    function clearFlight() {
+        if (map && flightEnd) map.off("moveend", flightEnd);
+        flightEnd = null;
+        if (map) map.stop();
+        clearTimeout(ringTimer);
+        clearTimeout(droneTimer);
+        if (droneRing) droneRing.remove();
+        droneRing = null;
+        if (droneHud) droneHud.hidden = true;
+    }
 
     function showDroneHud(attraction) {
         if (!droneHud) return;
@@ -1732,66 +1759,53 @@
     }
 
     function flyDrone(attraction, index) {
+        const selection = ++selectionVersion;
+        clearFlight();
         showDroneHud(attraction);
 
-        showView("map").then(function (readyMap) {
-            if (!readyMap || mapPanel.hidden) return;
+        const mapReady = showView("map");
+        mapPanel.focus({preventScroll: true});
+        mapPanel.scrollIntoView({behavior: reduceMotionQuery.matches ? "auto" : "smooth", block: "start"});
+        mapReady.then(function (readyMap) {
+            if (!readyMap || mapPanel.hidden || selection !== selectionVersion) return;
 
-            readyMap.invalidateSize();
-
-            if (droneRing) {
-                droneRing.remove();
-                droneRing = null;
-            }
-
-            if (window.L) {
-                droneRing = L.circleMarker(
-                    [attraction.lat, attraction.lng],
-                    {
-                        radius: 26,
-                        color: "#21d9c6",
-                        weight: 2,
-                        opacity: 0.95,
-                        fillColor: "#21d9c6",
-                        fillOpacity: 0.14,
-                        className: "ea-drone-ring",
-                        interactive: false
-                    }
-                ).addTo(readyMap);
-            }
-
-            const duration = reduceMotionQuery.matches ? 0 : 2.6;
-
-            readyMap.flyTo(
-                [attraction.lat, attraction.lng],
-                16.5,
-                {
-                    animate: duration > 0,
-                    duration: duration,
-                    easeLinearity: 0.22
-                }
-            );
-
-            readyMap.once("moveend", function () {
-                markers.get(index)?.openPopup();
-                if (droneRing) {
-                    setTimeout(function () {
-                        if (droneRing) {
-                            droneRing.remove();
-                            droneRing = null;
-                        }
-                    }, 2600);
-                }
-            });
-
+            readyMap.invalidateSize({animate: false});
             showDetails(attraction);
+            const ring = L.circleMarker([attraction.lat, attraction.lng], {
+                radius: 26, color: "#21d9c6", weight: 2, opacity: 0.95,
+                fillColor: "#21d9c6", fillOpacity: 0.14,
+                className: "ea-drone-ring", interactive: false
+            }).addTo(readyMap);
+            droneRing = ring;
+
+            function finishFlight() {
+                if (selection !== selectionVersion || mapPanel.hidden) return;
+                flightEnd = null;
+                markers.get(index)?.openPopup();
+                ringTimer = setTimeout(function () {
+                    ring.remove();
+                    if (droneRing === ring) droneRing = null;
+                }, 2600);
+            }
+
+            const target = [attraction.lat, attraction.lng];
+            if (reduceMotionQuery.matches) {
+                readyMap.setView(target, 16.5, {animate: false});
+                finishFlight();
+            } else {
+                flightEnd = finishFlight;
+                readyMap.once("moveend", flightEnd);
+                readyMap.flyTo(target, 16.5, {
+                    animate: true, duration: 1.5, easeLinearity: 0.22
+                });
+            }
         });
     }
 
-    function bindCard(card, attraction, index) {
+    function bindCard(card, attraction, index, isClone) {
         if (!card || !attraction) return;
 
-        card.tabIndex = 0;
+        if (!isClone) card.tabIndex = 0;
         card.setAttribute(
             "aria-label",
             "Fly to " + attraction.title + " on the map"
@@ -1802,6 +1816,7 @@
             flyDrone(attraction, index);
         });
 
+        if (isClone) return;
         card.addEventListener("keydown", function (event) {
             if (
                 event.key === "Enter" ||
