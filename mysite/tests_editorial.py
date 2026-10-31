@@ -115,3 +115,23 @@ class EditorialScreenTests(TestCase):
         token = csrf_client.cookies["csrftoken"].value
         self.assertEqual(csrf_client.post(reverse("admin:logout"), {"csrfmiddlewaretoken": token}).status_code, 302)
         self.assertNotIn("_auth_user_id", csrf_client.session)
+
+    def test_sidebar_sections_load_shared_workspace_styles_and_native_controls(self):
+        self.client.force_login(self.user)
+        for name in ("admin:places_place_changelist", "admin:places_place_osm_review",
+                     "admin:info_cityinformation_changelist", "admin:visits_visitcheckin_changelist",
+                     "admin:users_user_changelist"):
+            with self.subTest(name=name):
+                response = self.client.get(reverse(name))
+                self.assertContains(response, "css/admin-workspace.css")
+                self.assertContains(response, 'id="ea-admin-sidebar"')
+        for name in ("admin:info_cityinformation_changelist", "admin:visits_visitcheckin_changelist",
+                     "admin:users_user_changelist"):
+            with self.subTest(name=name):
+                response = self.client.get(reverse(name))
+                self.assertContains(response, 'name="q"')
+        # Django shows bulk actions only when there are rows to act on.
+        self.assertContains(self.client.get(reverse("admin:users_user_changelist")), 'name="action"')
+        response = self.client.get(reverse("admin:places_place_change", args=[self.place.pk]))
+        self.assertContains(response, "css/admin-workspace.css")
+        self.assertContains(response, 'name="_save"')

@@ -39,6 +39,11 @@
 <link rel="stylesheet" href="{% static 'css/admin-editorial.css' %}?v=20261031-11">
 {% endblock %}
 
+{% block extrahead %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin-workspace.css' %}?v=20261101-3">
+{% endblock %}
+
 {% block nav-global %}
 {{ block.super }}
 <button type="button" class="ea-mobile-toggle" id="ea-mobile-toggle" aria-controls="ea-admin-sidebar" aria-expanded="false"><span aria-hidden="true">☰</span><span>Menu</span></button>
