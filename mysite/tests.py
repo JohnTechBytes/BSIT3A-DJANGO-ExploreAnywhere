@@ -38,6 +38,7 @@ class HomepageTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Existing local place")
         self.assertContains(response, "Existing description")
+        self.assertContains(response, "css/design-craft.css")
         self.assertContains(response, "4.5")
         self.assertNotContains(response, "Unverified place")
         self.assertNotContains(response, "Inactive place")

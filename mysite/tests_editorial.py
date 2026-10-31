@@ -28,6 +28,7 @@ class EditorialScreenTests(TestCase):
                 response = self.client.get(reverse(name))
                 self.assertContains(response, "css/auth-editorial.css")
                 self.assertContains(response, "css/auth-guide.css")
+                self.assertContains(response, "css/design-craft.css")
                 self.assertContains(response, 'name="csrfmiddlewaretoken"')
 
     def test_public_screens_retain_their_editorial_scope(self):
@@ -46,6 +47,7 @@ class EditorialScreenTests(TestCase):
                 self.assertContains(response, 'site-dark refresh-page')
                 self.assertContains(response, 'css/public-refresh.css')
                 self.assertContains(response, 'css/system-guide.css')
+                self.assertContains(response, 'css/design-craft.css')
         self.assertContains(self.client.get(reverse("itineraries:create")), 'name="title"')
         self.assertContains(self.client.get(reverse("itineraries:builder", args=[self.trip.pk])), 'name="place_id"')
         self.assertContains(self.client.get(reverse("visits:check_in", args=[self.place.pk])), 'name="visit_note"')
@@ -67,6 +69,7 @@ class EditorialScreenTests(TestCase):
                 response = self.client.get(reverse(name))
                 self.assertContains(response, "css/admin-editorial.css")
                 self.assertContains(response, "css/admin-guide.css")
+                self.assertContains(response, "css/design-craft.css")
         response = self.client.get(reverse("admin:places_place_changelist"))
         self.assertContains(response, 'id="ea-dest-filter-form"')
         self.assertContains(response, 'name="action"')
