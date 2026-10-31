@@ -7,7 +7,7 @@
     <meta name="description" content="Discover Kabankalan places for your hobbies, save favorites, and plan your next local adventure.">
     <meta name="theme-color" content="#173d50">
     <title>ExploreKabankalan | Discover your next adventure</title>
-    <link rel="stylesheet" href="{% static 'css/landing.css' %}?v=20261031-5">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}?v=20261031-6">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -29,7 +29,7 @@
                 <p class="hero-description">Find a place for your next coffee, walk, food trip, or favorite hobby—right here in Kabankalan.</p>
                 <form class="search" action="{% url 'places:smart_search' %}" method="get" role="search">
                     <label class="search-label" for="home-search">What are you looking for?</label>
-                    <div class="search-row"><input id="home-search" name="q" type="search" placeholder="Try coffee, hiking, or a place name" required><button type="submit">Explore <span aria-hidden="true">↗</span></button></div>
+                    <div class="search-row"><svg class="search-icon" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.8"/><path d="m15.5 15.5 4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input id="home-search" name="q" type="search" placeholder="Try coffee, hiking, or a place name" required><button type="submit">Explore <span aria-hidden="true">↗</span></button></div>
                 </form>
                 <div class="suggestions"><span>Try a search:</span><a href="{% url 'places:smart_search' %}?q=coffee%20shops">Coffee shops</a><a href="{% url 'places:smart_search' %}?q=hiking">Hiking</a><a href="{% url 'places:smart_search' %}?q=food%20trips">Food trips</a></div>
             </div>

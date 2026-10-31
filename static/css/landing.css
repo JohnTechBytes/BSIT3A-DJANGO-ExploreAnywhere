@@ -403,3 +403,58 @@ h2 { font-size: clamp(38px, 4vw, 58px); line-height: 1.02; }
     .main-nav a { min-height: 40px; }
     .search button { min-width: 90px; }
 }
+
+/* The guide stays readable and usable first; motion gives feedback, not delay. */
+.hero-inner { align-items: stretch; }
+.hero-copy { padding-top: clamp(38px, 5vw, 72px); }
+.guide-heading span:first-child { color: #d1ebac; }
+.hero h1 { letter-spacing: -.04em; }
+.hero-description { max-width: 40ch; }
+.search-row { align-items: center; border-radius: 6px; }
+.search-icon { flex: none; margin-left: 13px; color: #496963; }
+.search input { font-size: 16px; padding-inline: 10px; }
+.search button { align-self: stretch; border-radius: 3px; }
+.hero-visual { overflow: hidden; border-radius: 6px; }
+.hero-photo-caption strong { max-width: 25ch; overflow-wrap: anywhere; }
+.quick-explore { gap: 8px; }
+.quick-explore a { border-radius: 4px; }
+.quick-explore-label { padding-right: 14px; }
+.carousel-controls button { border-radius: 4px; }
+.filters { gap: 8px; }
+.filters a { border-radius: 4px; }
+.interest-links a { border-radius: 4px; }
+.suggestions a, .main-nav a { min-height: 44px; }
+
+/* The hero image has a single, non-blocking arrival; no text or controls wait. */
+@media (prefers-reduced-motion: no-preference) {
+    .hero-photo img { animation: guide-photo-arrival 450ms cubic-bezier(.23, 1, .32, 1) both; }
+    @keyframes guide-photo-arrival { from { opacity: .65; } to { opacity: 1; } }
+}
+/* Hover effects are for devices that can hover; taps never leave a stuck state. */
+@media (hover: hover) and (pointer: fine) {
+    .hero-photo img, .card-image img { transition: transform 200ms cubic-bezier(.23, 1, .32, 1); }
+    .hero-photo:hover img, .card-image:hover img { transform: scale(1.015); }
+    .quick-explore a span:last-child { transition: transform 150ms cubic-bezier(.23, 1, .32, 1); }
+    .quick-explore a:hover span:last-child { transform: translate(3px, -3px); }
+}
+@media (hover: none) {
+    .hero-photo:hover img, .card-image:hover img { transform: none; }
+    .quick-explore a:hover { background: #285b59; }
+    .interest-links a:hover { background: #f7f6ef; }
+    .text-link:hover span, .interest-links a:hover span { transform: none; }
+    .search button:hover { background: #d1ebac; }
+}
+/* Instant color feedback also works for keyboard activation and reduced motion. */
+.search button:active { background: #a7d079; }
+.quick-explore a:active { background: #39736a; }
+.interest-links a:active { background: #c8ded3; }
+@media (max-width: 720px) {
+    .hero-copy { padding-top: 38px; }
+    .search-icon { margin-left: 10px; }
+    .search input { padding-inline: 8px; }
+    .hero-visual { border-radius: 6px; }
+}
+@media (max-width: 420px) {
+    .main-nav a { min-height: 44px; }
+    .search input { font-size: 16px; }
+}
