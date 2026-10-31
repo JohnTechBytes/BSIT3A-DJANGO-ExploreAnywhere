@@ -272,6 +272,7 @@
     {# Bump this version when changing editorial.css so browsers fetch updated styles. #}
     <link rel="stylesheet" href="{% static 'css/editorial.css' %}?v=20261031-10">
     <link rel="stylesheet" href="{% static 'css/public-refresh.css' %}?v=20261031-3">
+    {% block page_styles %}{% endblock %}
 </head>
 
 <body class="{% block body_class %}{% endblock %}">

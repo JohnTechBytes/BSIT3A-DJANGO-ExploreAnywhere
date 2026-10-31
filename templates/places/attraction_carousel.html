@@ -7,6 +7,7 @@
 {% block brand_content %}{% include "theme/_brand.html" %}{% endblock %}
 {% block footer_brand %}ExploreKabankalan{% endblock %}
 {% block footer_tagline %}Local places. Your adventure.{% endblock %}
+{% block page_styles %}<link rel="stylesheet" href="{% static 'css/browse-guide.css' %}?v=20261031-1">{% endblock %}
 
 {% block extra_css %}
 
@@ -666,6 +667,7 @@
 
   <header class="ea-attractions-header">
     <div>
+      <p class="ea-guide-kicker">THE LOCAL GUIDE <span aria-hidden="true"> / </span> EXPLORE PLACES</p>
       <h1>Explore places in <span>{{ selected_city.name }}</span><b>.</b></h1>
 
       <p class="ea-subtitle">
