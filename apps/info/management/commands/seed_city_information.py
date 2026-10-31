@@ -3,7 +3,9 @@
 The entries describe widely documented, publicly known facts about
 Kabankalan City. They are a starting point for a new installation: review and
 edit them in the staff dashboard (Admin > City information) so that the public
-page matches the official city record before it is used in a deployment.
+page matches the official city record. The entries are created **published**,
+because they are the curated starter content of the city; unpublish any of
+them that should not be public.
 
     python manage.py seed_city_information           # only when the table is empty
     python manage.py seed_city_information --force   # replace the existing entries
@@ -124,12 +126,15 @@ class Command(BaseCommand):
 
         created = 0
         for entry in STARTER_ENTRIES:
-            CityInformation.objects.create(city=city, **entry)
+            CityInformation.objects.create(
+                city=city, is_published=True, **entry
+            )
             created += 1
 
         self.stdout.write(
             self.style.SUCCESS(
-                "Created %s City Information entries for %s. Review them in the "
-                "staff dashboard before publishing." % (created, city.name)
+                "Created %s published City Information entries for %s. Review "
+                "them in the staff dashboard and unpublish anything that should "
+                "not be public." % (created, city.name)
             )
         )

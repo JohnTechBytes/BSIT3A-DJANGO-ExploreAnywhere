@@ -21,14 +21,21 @@ class CityInformationPageTests(TestCase):
         cls.attraction = CityInformation.objects.create(
             city=cls.city, title="City Government Center", info_type="attraction",
             description="The administrative seat of Kabankalan City.", order=1,
+            is_published=True,
         )
         cls.food = CityInformation.objects.create(
             city=cls.city, title="Local dining", info_type="food",
             description="Restaurants and inasal stalls across the city.", order=1,
+            is_published=True,
+        )
+        cls.draft = CityInformation.objects.create(
+            city=cls.city, title="Draft transport note", info_type="transport",
+            description="Still being written.", order=2, is_published=False,
         )
         cls.other_city_entry = CityInformation.objects.create(
             city=City.objects.create(name="Other City", slug="other-city"),
             title="Other city notice", info_type="attraction", description="Hidden.",
+            is_published=True,
         )
 
     def test_page_is_public_and_lists_the_published_entries(self):
@@ -40,6 +47,8 @@ class CityInformationPageTests(TestCase):
         self.assertContains(response, "Local dining")
         # Records of another city are never shown.
         self.assertNotContains(response, "Other city notice")
+        # Unpublished entries stay in the staff dashboard.
+        self.assertNotContains(response, "Draft transport note")
 
     def test_entries_are_grouped_by_their_published_type(self):
         response = self.client.get(reverse("info:city_information"))
