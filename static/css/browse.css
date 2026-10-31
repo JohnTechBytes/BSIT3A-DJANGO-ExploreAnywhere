@@ -382,15 +382,23 @@
 @keyframes ea-drone-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 @keyframes ea-drone-scan { from { left: -40%; } to { left: 110%; } }
 
-/* Drone marker pulse placed on the Leaflet map. */
-.browse-page .ea-drone-ring {
-  animation: ea-drone-ring-pulse 1.6s ease-out infinite;
-  transform-origin: center;
+/* Fixed-size pins stay legible while Leaflet zooms the map beneath them. */
+.browse-page .ea-map-pin {
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #21d9c6;
+  box-shadow: 0 1px 5px #102b5359;
 }
+.browse-page .ea-map-pin:focus-visible { outline: 3px solid #174f70; outline-offset: 2px; }
+/* The highlight is created after the flight. Animate opacity only so the SVG
+   path never scales around the map's centre or grows over the map. */
+.browse-page .ea-drone-ring { animation: ea-drone-ring-pulse 1.6s ease-out infinite; }
 @keyframes ea-drone-ring-pulse {
-  0% { opacity: .85; transform: scale(.65); }
-  70% { opacity: 0; transform: scale(1.6); }
-  100% { opacity: 0; transform: scale(1.6); }
+  0% { opacity: .85; }
+  70%, 100% { opacity: .15; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -637,7 +637,7 @@
 }
 
 </style>
-<link rel="stylesheet" href="{% static 'css/browse.css' %}?v=20261031-2">
+<link rel="stylesheet" href="{% static 'css/browse.css' %}?v=20261031-3">
 {% endblock %}
 
 {% block content %}
@@ -1592,18 +1592,19 @@
 
 
 
+        // A DOM marker keeps its pixel size during Leaflet's zooming flight.
+        // SVG circle markers scale with the map and briefly become enormous.
+        const placePin = L.divIcon({
+            className: "ea-map-pin",
+            html: '<span aria-hidden="true"></span>',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10],
+            popupAnchor: [0, -10]
+        });
         attractions.forEach((attraction, index) => {
-
-            const marker = L.circleMarker(
-    [attraction.lat, attraction.lng],
-    {
-        radius: 9,
-        color: "#ffffff",
-        weight: 3,
-        fillColor: "#21d9c6",
-        fillOpacity: 1
-    }
-).addTo(map);
+            const marker = L.marker([attraction.lat, attraction.lng], {
+                icon: placePin, title: attraction.title, alt: attraction.title
+            }).addTo(map);
             // Safe popup text, without injecting
             // attraction titles as HTML.
             const popup = document.createElement("div");
@@ -1771,16 +1772,17 @@
 
             readyMap.invalidateSize({animate: false});
             showDetails(attraction);
-            const ring = L.circleMarker([attraction.lat, attraction.lng], {
-                radius: 26, color: "#21d9c6", weight: 2, opacity: 0.95,
-                fillColor: "#21d9c6", fillOpacity: 0.14,
-                className: "ea-drone-ring", interactive: false
-            }).addTo(readyMap);
-            droneRing = ring;
-
             function finishFlight() {
                 if (selection !== selectionVersion || mapPanel.hidden) return;
                 flightEnd = null;
+                // Add the highlight only after zooming ends; a vector drawn
+                // during flight is scaled along with the map and looks huge.
+                const ring = L.circleMarker([attraction.lat, attraction.lng], {
+                    radius: 26, color: "#21d9c6", weight: 2, opacity: 0.95,
+                    fillColor: "#21d9c6", fillOpacity: 0.14,
+                    className: "ea-drone-ring", interactive: false
+                }).addTo(readyMap);
+                droneRing = ring;
                 markers.get(index)?.openPopup();
                 ringTimer = setTimeout(function () {
                     ring.remove();

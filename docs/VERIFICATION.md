@@ -21,7 +21,7 @@ python manage.py test
 ```
 
 ```
-Ran 233 tests in 30.153s
+Ran 233 tests in 31.873s
 OK (skipped=15)
 ```
 

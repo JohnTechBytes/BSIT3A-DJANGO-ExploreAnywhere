@@ -131,6 +131,10 @@ class NearbyRedesignTests(TestCase):
         self.assertContains(response, "ExploreAnywhere")
         self.assertNotContains(response, 'class="nearby-page"')
         self.assertNotContains(response, "css/nearby.css")
+        # The marker icon stays a fixed pixel size while Leaflet animates zoom.
+        self.assertContains(response, 'className: "ea-map-pin"')
+        self.assertContains(response, 'iconSize: [20, 20]')
+        self.assertContains(response, 'const marker = L.marker(')
 
     def test_unauthenticated_discovery_still_requires_login(self):
         self.client.logout()
