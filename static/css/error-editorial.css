@@ -15,3 +15,10 @@ body { background:#f7faf8; color:#0e3042; font-family:EKArchivo,system-ui,sans-s
 .error-btn.primary { border-color:#173d50; background:#173d50; color:#fff; }
 .error-btn.primary:hover { border-color:#295b6c; background:#295b6c; color:#fff; }
 .error-shell :focus-visible { outline:2px solid #b6532c; outline-offset:3px; }
+/* Use the same local-guide ink and paper as the public journey. */
+body, .error-shell { background: #f8f8f2; color: #153f43; }
+.error-shell::after { border-color: #d5e6d8; box-shadow: 0 0 0 70px #e6f1e7, 0 0 0 150px #f0f6ec; }
+.error-brand-mark, .error-btn.primary { background: #153f43; border-color: #153f43; color: #fff; border-radius: 4px; }
+.error-btn { border-color: #a7bfb5; border-radius: 4px; }
+.error-btn.primary:hover { background: #285e58; border-color: #285e58; }
+.error-shell :focus-visible { outline: 3px solid #b6532c; outline-offset: 3px; }
