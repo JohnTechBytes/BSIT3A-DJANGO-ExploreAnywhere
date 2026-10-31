@@ -32,7 +32,7 @@ STARTER_ENTRIES = [
         "title": "New Kabankalan Cathedral",
         "description": (
             "The Roman Catholic cathedral of Kabankalan City and one of the "
-            "recognisable landmarks of the city centre."
+            "recognisable landmarks in Barangay Talubangi."
         ),
         "order": 2,
     },

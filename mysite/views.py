@@ -43,11 +43,6 @@ def home(request):
         place.osm_source_url = (
             f"https://www.openstreetmap.org/{match[1]}/{match[2]}" if match else ""
         )
-    # Prefer a real photo for the hero even when the first OSM record has none.
-    hero_place = next(
-        (place for place in featured_places if place.cover_image or place.cover_image_url),
-        featured_places[0] if featured_places else None,
-    )
     # One aggregate query for both counters instead of two separate counts.
     totals = published.aggregate(
         published=Count("id"),
@@ -55,7 +50,6 @@ def home(request):
     )
     return render(request, "home.html", {
         "featured_places": featured_places,
-        "hero_place": hero_place,
         "categories": categories,
         "selected_category": selected_category,
         "published_count": totals["published"],

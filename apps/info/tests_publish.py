@@ -117,6 +117,8 @@ class SeedCityInformationPublishTests(TestCase):
 
         self.assertEqual(CityInformation.objects.count(), 7)
         self.assertFalse(CityInformation.objects.filter(title="Central Philippine University").exists())
+        cathedral = CityInformation.objects.get(title="New Kabankalan Cathedral")
+        self.assertIn("Talubangi", cathedral.description)
         self.assertEqual(
             CityInformation.objects.filter(is_published=True).count(), 7,
         )

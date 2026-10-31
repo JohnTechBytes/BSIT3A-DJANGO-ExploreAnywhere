@@ -7,7 +7,7 @@
     <meta name="description" content="Discover Kabankalan places for your hobbies, save favorites, and plan your next local adventure.">
     <meta name="theme-color" content="#173d50">
     <title>ExploreKabankalan | Discover your next adventure</title>
-    <link rel="stylesheet" href="{% static 'css/landing.css' %}?v=20261031-6">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}?v=20261031-7">
     <link rel="stylesheet" href="{% static 'css/design-craft.css' %}?v=20261101-2">
 </head>
 <body class="landing-page">
@@ -35,11 +35,12 @@
                 <div class="suggestions"><span>Try a search:</span><a href="{% url 'places:smart_search' %}?q=coffee%20shops">Coffee shops</a><a href="{% url 'places:smart_search' %}?q=hiking">Hiking</a><a href="{% url 'places:smart_search' %}?q=food%20trips">Food trips</a></div>
             </div>
             <div class="hero-visual">
-                <a class="hero-photo" href="{% if hero_place %}{% url 'places:place_detail' hero_place.pk %}{% else %}{% url 'places:attraction_carousel' %}?browse=all{% endif %}">
-                    {% if hero_place.cover_image %}<img src="{{ hero_place.cover_image.url }}" alt="{{ hero_place.title }}" fetchpriority="high">{% elif hero_place.cover_image_url %}<img src="{{ hero_place.cover_image_url }}" alt="{{ hero_place.title }}" fetchpriority="high">{% elif hero_place.sample_image %}<img src="{% static hero_place.sample_image %}" alt="Illustrative category sample, not an actual photo of {{ hero_place.title }}" fetchpriority="high"><span class="sample-badge hero-sample">Illustrative category sample</span>{% else %}<img src="{% static 'img/landing-background.webp' %}" alt="Explore Kabankalan" fetchpriority="high">{% endif %}
-                    <span class="hero-photo-caption"><span><small>FEATURED IN KABANKALAN</small><strong>{% if hero_place %}{{ hero_place.title }}{% else %}Explore Kabankalan{% endif %}</strong></span><span aria-hidden="true">↗</span></span>
+                <a class="hero-photo" href="{% url 'info:city_information' %}?q=New%20Kabankalan%20Cathedral" aria-label="Find New Kabankalan Cathedral in City Information">
+                    <span class="hero-image-frame"><img src="{% static 'img/places/new-kabankalan-cathedral.jpg' %}" width="1378" height="767" alt="The facade of the new Saint Francis Xavier Cathedral in Kabankalan" fetchpriority="high"></span>
+                    <span class="hero-photo-caption"><span><small>FEATURED IN KABANKALAN</small><strong>New Kabankalan Cathedral</strong></span><span aria-hidden="true">↗</span></span>
                 </a>
-                <p class="photo-index"><span>Kabankalan, Negros Occidental</span><span>Explore local places</span></p>
+                <p class="photo-index"><span>Talubangi, Kabankalan City</span><span>Explore local places</span></p>
+                <p class="hero-photo-credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:New_Kabankalan_Cathedral.jpg" target="_blank" rel="noopener noreferrer">Lightningscale / Wikimedia Commons</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · Unmodified</p>
             </div>
         </div>
         <nav class="quick-explore wrap" aria-label="Ways to explore Kabankalan">

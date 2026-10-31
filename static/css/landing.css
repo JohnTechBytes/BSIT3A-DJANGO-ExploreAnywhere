@@ -458,3 +458,22 @@ h2 { font-size: clamp(38px, 4vw, 58px); line-height: 1.02; }
     .main-nav a { min-height: 44px; }
     .search input { font-size: 16px; }
 }
+
+/* The cathedral photograph is displayed in its original aspect ratio: do not
+   crop the facade or associate the image with an unrelated Place record. */
+.hero-visual { align-self: center; }
+.hero-photo { display: block; flex: 0 0 auto; min-height: 0; height: auto; aspect-ratio: auto; }
+.hero-photo::after { display: none; }
+.hero-image-frame { display: block; aspect-ratio: 1378 / 767; overflow: hidden; background: #315c59; }
+.hero-image-frame img { width: 100%; height: 100%; object-fit: contain; }
+.hero-photo-caption { position: static; display: flex; padding: 19px 22px; background: #234e4b; }
+.photo-index { border-top: 1px solid #6c9183; }
+.hero-photo-credit { margin: 0; padding: 0 20px 14px; color: #e0eee5; font-size: 11px; line-height: 1.5; }
+.hero-photo-credit a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 720px) {
+    .hero-photo { min-height: 0; height: auto; aspect-ratio: auto; }
+    .hero-photo-caption { padding: 16px; }
+    .hero-photo-credit { padding-inline: 16px; }
+}
+/* Keep the complete facade in view even on hover and focus. */
+.hero-photo:hover .hero-image-frame img, .hero-photo:focus-visible .hero-image-frame img { transform: none; }

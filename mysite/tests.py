@@ -90,7 +90,19 @@ class HomepageTests(TestCase):
         response = self.render_home()
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Find your kind of local adventure.")
-        self.assertContains(response, "landing-background.webp")
+        self.assertContains(response, "img/places/new-kabankalan-cathedral.jpg")
+        self.assertContains(response, "New Kabankalan Cathedral")
+
+    def test_cathedral_hero_is_credited_and_not_linked_to_an_unrelated_place(self):
+        for query in ({}, {"category": "missing"}):
+            with self.subTest(query=query):
+                response = self.render_home(query)
+                self.assertContains(response, "img/places/new-kabankalan-cathedral.jpg")
+                self.assertContains(response, "New Kabankalan Cathedral")
+                self.assertContains(response, 'href="/info/?q=New%20Kabankalan%20Cathedral"')
+                self.assertContains(response, "Lightningscale / Wikimedia Commons")
+                self.assertContains(response, "https://creativecommons.org/licenses/by/4.0/")
+                self.assertNotContains(response, 'class="sample-badge hero-sample"')
 
     def test_content_is_escaped(self):
         self.place.title = '<script>alert("test")</script>'
