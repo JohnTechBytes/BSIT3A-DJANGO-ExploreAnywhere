@@ -101,6 +101,8 @@
 .browse-page .ea-card-location > span { margin-right: 4px; color: var(--br-teal); }
 .browse-page .ea-card-description { margin: 0; color: #b2c0ca; font-size: 12px; line-height: 1.7; }
 .browse-page .ea-search-relevance { color: #8fdcb9; font-size: 11px; }
+/* Explains where an answer came from, e.g. a match by category. */
+.browse-page .ea-search-note { margin: 8px 0 0; color: #9fd9ff; font-size: 12px; line-height: 1.6; }
 .browse-page .ea-card-footer { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding-top: 15px; border-top: 1px solid #2a3740; }
 .browse-page .ea-card-footer .ea-map-link { min-height: 42px; padding: 9px; border: 1px solid #39514f; border-radius: 9px; background: transparent; color: #cadbdc; font-size: 11px; font-weight: 700; }
 .browse-page .ea-card-footer .ea-map-link.ea6n-primary { border-color: transparent; background: linear-gradient(105deg, #10d2bc, #1db7d4); color: #061b1c !important; }

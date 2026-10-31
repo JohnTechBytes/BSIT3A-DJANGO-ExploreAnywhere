@@ -64,6 +64,7 @@ def nearby_places(request, *, unified=False):
     # When the complete published set has to be loaded anyway, it is kept so the
     # suggestion list below can reuse it instead of scanning the table twice.
     full_published = None
+    search_note = ""
     selected_place_key = (request.GET.get("place") or "").strip()[:15]
     if selected_place_key.isascii() and selected_place_key.isdecimal():
         selected_service = ""
@@ -81,7 +82,14 @@ def nearby_places(request, *, unified=False):
             )
         else:
             from .views import build_attraction_filter
-            predicate = build_attraction_filter(query)
+            from .search_intents import question_matches
+
+            # A buying question ("where to buy a phone case") is answered by
+            # the business category that sells such things. The note tells the
+            # visitor that the answer came from the category.
+            predicate, search_note = question_matches(query, published)
+            if predicate is None:
+                predicate = build_attraction_filter(query)
             if predicate is not None:
                 matched = iter(published.filter(predicate).distinct())
             else:
@@ -162,6 +170,7 @@ def nearby_places(request, *, unified=False):
     return render(request, "places/nearby_places.html", {
         "selected_city": city,
         "query": query,
+        "search_note": search_note,
         "selected_service": selected_service,
         "selected_service_label": valid_services.get(selected_service, ""),
         "service_categories": SERVICE_CATEGORIES,
