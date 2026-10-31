@@ -54,6 +54,13 @@ class HomepageTests(TestCase):
         self.assertContains(response, f'href="{reverse("login")}"')
         self.assertContains(response, f'href="{reverse("register")}"')
 
+    def test_landing_quick_explore_links_use_existing_routes(self):
+        response = self.render_home()
+        self.assertContains(response, 'aria-label="Ways to explore Kabankalan"')
+        self.assertContains(response, f'href="{reverse("places:attraction_carousel")}?browse=all"><span>Explore places</span>')
+        self.assertContains(response, f'href="{reverse("places:attraction_carousel")}?mode=nearby"><span>Find nearby</span>')
+        self.assertContains(response, f'href="{reverse("info:city_information")}"><span>City information</span>')
+
     def test_landing_carousel_contains_all_published_places(self):
         for number in range(12):
             Place.objects.create(city=self.city, title=f"Published {number:02}", address="Local",

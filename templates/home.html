@@ -7,7 +7,7 @@
     <meta name="description" content="Discover Kabankalan places for your hobbies, save favorites, and plan your next local adventure.">
     <meta name="theme-color" content="#173d50">
     <title>ExploreKabankalan | Discover your next adventure</title>
-    <link rel="stylesheet" href="{% static 'css/landing.css' %}?v=20261031-4">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}?v=20261031-5">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -24,7 +24,7 @@
     <section class="hero" aria-labelledby="hero-title">
         <div class="hero-inner wrap">
             <div class="hero-copy">
-                <div class="guide-heading"><span>THE LOCAL GUIDE</span><span>Kabankalan City, Negros Occidental</span></div>
+                <div class="guide-heading"><span>YOUR LOCAL GUIDE</span><span>Kabankalan City, Negros Occidental</span></div>
                 <h1 id="hero-title">Explore Kabankalan<br><em>your way.</em></h1>
                 <p class="hero-description">Find a place for your next coffee, walk, food trip, or favorite hobby—right here in Kabankalan.</p>
                 <form class="search" action="{% url 'places:smart_search' %}" method="get" role="search">
@@ -41,6 +41,12 @@
                 <p class="photo-index"><span>Kabankalan, Negros Occidental</span><span>Explore local places</span></p>
             </div>
         </div>
+        <nav class="quick-explore wrap" aria-label="Ways to explore Kabankalan">
+            <span class="quick-explore-label">Where will you start?</span>
+            <a href="{% url 'places:attraction_carousel' %}?browse=all"><span>Explore places</span><span aria-hidden="true">↗</span></a>
+            <a href="{% url 'places:attraction_carousel' %}?mode=nearby"><span>Find nearby</span><span aria-hidden="true">↗</span></a>
+            <a href="{% url 'info:city_information' %}"><span>City information</span><span aria-hidden="true">↗</span></a>
+        </nav>
     </section>
 
     <section class="discover" id="discover" aria-labelledby="discover-title"><div class="wrap">
