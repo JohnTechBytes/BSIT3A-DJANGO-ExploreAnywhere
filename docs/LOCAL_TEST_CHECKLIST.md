@@ -124,14 +124,17 @@ notice, and that acceptance is stored with the account.
 | `/accounts/register/` | Sign-up with the required privacy-notice checkbox. |
 | `/places/` | The Explore Places carousel (sign in first). Use the arrows, the search box and the category/hobby filters. The map panel opens on a card. |
 | `/places/?q=falls` | Natural-language search ("coffee shops", "mag aso falls", "places in Kabankalan"). |
+| `/places/?q=Kabankalan+Plaza` | A named place: only that place is listed. |
+| `/places/?q=where+to+buy+a+phone+case` | A buying question: the shops and malls are listed, with the note that the match came from the category. |
 | `/places/?mode=nearby` | Nearby tab: "Use my location", the radius filter and the landmark selector. |
 | `/places/<id>/` | Place details: photos, opening hours, reviews, the relevance control, save and visit buttons. |
 | `/places/journey/` | My Journey: saved places, trips, reviews, visits and the **Interests & Recent Searches** panel. |
-| `/info/` | City Information page with the type filter and the search box. |
+| `/info/` | City Information page with the type filter and the search box. Only published entries are shown. |
 | `/evaluation/sus/` | The usability survey: ten 1–5 scales, then the 0–100 score and its band. |
 | `/privacy/` | The privacy notice. |
 | `/accounts/login/` | Sign in. |
 | `/admin/` | The staff panel: places, OSM review queue, visit moderation, city information, survey answers, search logs and accounts. |
+| `/admin/info/cityinformation/` | City Information: select entries and use **Publish** or **Unpublish**. |
 
 ---
 
@@ -144,7 +147,7 @@ python manage.py test
 Expected result:
 
 ```
-Ran 181 tests in ...s
+Ran 216 tests in ...s
 OK (skipped=15)
 ```
 
@@ -158,6 +161,9 @@ specification for that module.
 
 ```bash
 python manage.py check                 # configuration sanity
+python manage.py check --database default           # the content scope system check
+python manage.py check_content_scope                # the scope audit
+python manage.py verify_enrichment                  # the completeness report
 python manage.py makemigrations --check --dry-run   # "No changes detected"
 ```
 
