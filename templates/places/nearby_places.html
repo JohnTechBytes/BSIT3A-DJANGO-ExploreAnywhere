@@ -120,6 +120,9 @@
     </div>
     <span class="ea6-pill" id="ea6h-result-count">{{ result_count }} matching listing{{ result_count|pluralize }}</span>
   </div>
+  {% if search_note %}
+    <p class="ea-search-note" role="status">{{ search_note }}</p>
+  {% endif %}
   {% if results %}
     <div class="ea6g-controls" aria-label="Nearby results viewing options">
       <button class="ea6g-map-button" id="ea6g-toggle" type="button" aria-controls="ea6g-map-shell" aria-expanded="false">View nearby results on map ↗</button>
@@ -136,7 +139,7 @@
           <div class="ea6-cover" role="button" tabindex="0" aria-label="Fly to {{ place.title }} on the map">
             {% if place.cover_image %}<img loading="lazy" decoding="async" width="640" height="360" alt="{{ place.title }}" src="{{ place.cover_image.url }}">
             {% elif place.cover_image_url %}<img loading="lazy" decoding="async" width="640" height="360" alt="{{ place.title }}" src="{{ place.cover_image_url }}" onerror="this.closest('.ea6-cover').classList.add('ea6-photo-failed'); this.remove();">
-            {% elif place.sample_image %}<img loading="lazy" decoding="async" width="640" height="360" alt="Illustrative category sample, not an actual photo of {{ place.title }}" src="{% static place.sample_image %}"><span class="ea6-sample-badge">AI-generated category sample</span>
+            {% elif place.sample_image %}<img loading="lazy" decoding="async" width="640" height="360" alt="Illustrative category sample, not an actual photo of {{ place.title }}" src="{% static place.sample_image %}"><span class="ea6-sample-badge">Illustrative category sample</span>
             {% else %}<span class="ea6n-no-photo" role="img" aria-label="No verified photograph available"><span class="ea6n-no-photo-icon" aria-hidden="true">⌖</span><span>PHOTO NOT YET AVAILABLE</span></span>{% endif %}
             <span class="ea6-card-map-hint" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" fill="currentColor"/></svg>View on map</span>
           </div>
@@ -184,7 +187,7 @@
   {% else %}
     <section class="ea6-empty" role="status">
       <h2>No verified matches yet</h2>
-      <p>{% if selected_service_label %}There are currently no verified {{ selected_service_label|lower }} in ExploreKabankalan's database matching this search.{% else %}No published Kabankalan places matched that search.{% endif %} Nearby business results will become available as administrators add and verify real establishments and coordinates.</p>
+      <p>{% if search_note %}{{ search_note }} No published Kabankalan place is filed under that category at the moment, so there is nothing to show for this question yet.{% elif selected_service_label %}There are currently no verified {{ selected_service_label|lower }} in ExploreKabankalan's database matching this search.{% else %}No published Kabankalan places matched that search.{% endif %} Nearby business results will become available as administrators add and verify real establishments and coordinates.</p>
       <a class="ea6-back" href="{% url 'places:attraction_carousel' %}?browse=all">Browse existing destinations →</a>
     </section>
   {% endif %}

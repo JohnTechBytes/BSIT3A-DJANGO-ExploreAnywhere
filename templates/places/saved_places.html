@@ -129,7 +129,7 @@
           <img src="{{ entry.place.cover_image_url }}" alt="{{ entry.place.title }}" loading="lazy" decoding="async">
         {% elif entry.place.sample_image %}
           <img src="{% static entry.place.sample_image %}" alt="Illustrative category sample, not an actual photo of {{ entry.place.title }}" loading="lazy" decoding="async">
-          <span class="ea-saved-sample">AI-generated category sample</span>
+          <span class="ea-saved-sample">Illustrative category sample</span>
         {% else %}
           <div class="ea-c-photo-empty"><span class="ea-c-photo-icon" aria-hidden="true">&#128205;</span><span>No destination photo available</span></div>
         {% endif %}

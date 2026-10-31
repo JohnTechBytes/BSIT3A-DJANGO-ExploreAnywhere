@@ -703,6 +703,9 @@
     {% else %}
       <p class="ea-summary-note">All verified, published Kabankalan places and businesses.</p>
     {% endif %}
+    {% if search_note %}
+      <p class="ea-search-note" role="status">{{ search_note }}</p>
+    {% endif %}
 
     <p>
       {{ selected_city.name }}
@@ -917,7 +920,7 @@
                   width="640"
                   height="360"
                 >
-                <span class="ea-card-sample">AI-generated category sample</span>
+                <span class="ea-card-sample">Illustrative category sample</span>
 
               {% else %}
                 <div class="ea-photo-empty" role="img" aria-label="No verified photo available for {{ place.title }}">
@@ -1018,7 +1021,11 @@
   {% else %}
 
     <section class="ea-empty">
-      {% if search_query or selected_category or selected_hobby %}
+      {% if search_note %}
+        <div class="ea-empty-icon">🔍</div>
+        <h2>No published place in that category yet</h2>
+        <p>{{ search_note }} No published Kabankalan place is filed under that category at the moment, so there is nothing to show for this question yet.</p>
+      {% elif search_query or selected_category or selected_hobby %}
         <div class="ea-empty-icon">🔍</div>
         <h2>No matching places found</h2>
         <p>No published Kabankalan places matched the current search and filters. Try a different term or remove a filter.</p>

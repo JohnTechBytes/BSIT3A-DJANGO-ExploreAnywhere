@@ -101,7 +101,7 @@ class HomepageTests(TestCase):
     def test_missing_nature_photo_uses_labeled_sample(self):
         response = self.render_home()
         self.assertContains(response, 'img/samples/nature.jpg')
-        self.assertContains(response, 'AI-generated category sample')
+        self.assertContains(response, 'Illustrative category sample')
         self.assertContains(response, 'not an actual photo of Existing local place')
 
     def test_real_photo_always_takes_priority_over_sample(self):
@@ -110,7 +110,7 @@ class HomepageTests(TestCase):
         response = self.render_home()
         self.assertContains(response, self.place.cover_image_url)
         self.assertNotContains(response, 'img/samples/nature.jpg')
-        self.assertNotContains(response, 'AI-generated category sample')
+        self.assertNotContains(response, 'Illustrative category sample')
 
     def test_samples_match_category_and_do_not_guess_unknown_venues(self):
         from .views import sample_image_for

@@ -81,7 +81,7 @@ class NearbyRedesignTests(TestCase):
         self.assertContains(response, 'name="service"')
         self.assertContains(response, 'aria-current="true"')
         self.assertContains(response, 'img/samples/coffee.jpg')
-        self.assertContains(response, 'AI-generated category sample')
+        self.assertContains(response, 'Illustrative category sample')
         self.assertContains(response, 'not an actual photo of Local Café')
         # Other published places remain available as landmark/autocomplete options,
         # but must not appear as cards in this filtered result set.
@@ -96,7 +96,7 @@ class NearbyRedesignTests(TestCase):
         self.assertContains(response, self.cafe.cover_image_url)
         self.assertContains(response, "Original photographer")
         self.assertContains(response, self.cafe.photo_source_url)
-        self.assertNotContains(response, "AI-generated category sample")
+        self.assertNotContains(response, "Illustrative category sample")
         self.assertNotContains(response, "img/samples/coffee.jpg")
 
     def test_unknown_category_uses_neutral_placeholder(self):
@@ -104,7 +104,7 @@ class NearbyRedesignTests(TestCase):
                                      is_verified=True, is_active=True)
         response = self.client.get(self.url, {"mode": "nearby", "place": place.pk})
         self.assertContains(response, "PHOTO NOT YET AVAILABLE")
-        self.assertNotContains(response, "AI-generated category sample")
+        self.assertNotContains(response, "Illustrative category sample")
         self.assertContains(response, "Precise map coordinates unavailable")
         self.assertNotContains(response, "Show on map ↗")
 
