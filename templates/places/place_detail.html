@@ -117,10 +117,7 @@
 {% block title %}{{ place.title }} · ExploreKabankalan{% endblock %}
 {% block body_class %}site-dark detail-page{% endblock %}
 {% block skip_link %}<a class="sd-skip" href="#main-content">Skip to content</a>{% endblock %}
-{% block brand_content %}
-  <span class="sd-brand-icon" aria-hidden="true">✺</span>
-  <span class="sd-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
-{% endblock %}
+{% block brand_content %}{% include "theme/_brand.html" %}{% endblock %}
 {% block footer_brand %}ExploreKabankalan{% endblock %}
 {% block footer_tagline %}Local places. Your adventure.{% endblock %}
 {% block extra_css_after %}<link rel="stylesheet" href="{% static 'css/site-dark.css' %}"><link rel="stylesheet" href="{% static 'css/place-detail-dark.css' %}">{% endblock %}
@@ -202,7 +199,7 @@
             </a>
           {% elif place.sample_image %}
             <img src="{% static place.sample_image %}" alt="Illustrative category sample, not an actual photo of {{ place.title }}" fetchpriority="high">
-            <span class="pd-sample-note">AI-generated category sample · not an actual photo of this place</span>
+            <span class="pd-sample-note">Illustrative category sample · not an actual photo of this place</span>
           {% else %}
             <div class="pd-no-photo">
               <span class="pd-no-photo-icon" aria-hidden="true">▣</span>

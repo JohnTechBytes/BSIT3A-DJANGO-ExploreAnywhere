@@ -9,6 +9,7 @@ from django.db.models import Count, Q
 from django.shortcuts import render
 
 from apps.cities.locking import LOCKED_CITY_PK, locked_city
+from apps.cities.models import City
 
 from .models import CityInformation
 
@@ -19,7 +20,7 @@ def city_information(request):
     if city is None:
         entries = CityInformation.objects.none()
     else:
-        entries = CityInformation.objects.filter(city=city)
+        entries = CityInformation.objects.filter(city=city, is_published=True)
 
     # Type filter (one of the published categories).
     selected_type = (request.GET.get("type") or "").strip()
@@ -51,7 +52,7 @@ def city_information(request):
     else:
         type_counts = {
             row["info_type"]: row["total"]
-            for row in CityInformation.objects.filter(city=city)
+            for row in CityInformation.objects.filter(city=city, is_published=True)
             .values("info_type")
             .annotate(total=Count("id"))
         }

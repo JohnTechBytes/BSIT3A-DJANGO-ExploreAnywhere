@@ -2,6 +2,7 @@ from copy import copy
 
 from django.template.context import Context, RequestContext
 from django.test import RequestFactory, SimpleTestCase, TestCase
+from django.urls import reverse
 from django.contrib.auth.models import AnonymousUser
 
 from apps.cities.models import City
@@ -37,10 +38,45 @@ class HomepageTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Existing local place")
         self.assertContains(response, "Existing description")
+        self.assertContains(response, "css/design-craft.css")
         self.assertContains(response, "4.5")
         self.assertNotContains(response, "Unverified place")
         self.assertNotContains(response, "Inactive place")
         self.assertNotContains(response, "Outside city")
+
+    def test_landing_search_and_main_links_use_existing_routes(self):
+        response = self.render_home()
+        self.assertContains(response, f'action="{reverse("places:smart_search")}"')
+        self.assertContains(response, 'name="q"')
+        self.assertContains(response, f'href="{reverse("info:city_information")}"')
+        self.assertContains(response, f'href="{reverse("places:attraction_carousel")}?mode=nearby"')
+        self.assertContains(response, f'href="{reverse("places:attraction_carousel")}?browse=all"')
+        self.assertContains(response, f'href="{reverse("itineraries:list")}"')
+        self.assertContains(response, f'href="{reverse("login")}"')
+        self.assertContains(response, f'href="{reverse("register")}"')
+
+    def test_landing_quick_explore_links_use_existing_routes(self):
+        response = self.render_home()
+        self.assertContains(response, 'aria-label="Ways to explore Kabankalan"')
+        self.assertContains(response, f'href="{reverse("places:attraction_carousel")}?browse=all"><span>Explore places</span>')
+        self.assertContains(response, f'href="{reverse("places:attraction_carousel")}?mode=nearby"><span>Find nearby</span>')
+        self.assertContains(response, f'href="{reverse("info:city_information")}"><span>City information</span>')
+
+    def test_landing_carousel_contains_all_published_places(self):
+        for number in range(12):
+            Place.objects.create(city=self.city, title=f"Published {number:02}", address="Local",
+                                 is_verified=True, is_active=True)
+        response = self.render_home()
+        for number in range(12):
+            self.assertContains(response, f"Published {number:02}")
+        self.assertContains(response, 'data-carousel-toggle')
+        self.assertContains(response, 'landing-carousel.js')
+        self.assertNotContains(response, "Unverified place")
+
+    def test_landing_place_links_still_point_to_the_record(self):
+        response = self.render_home()
+        self.assertContains(response, f'href="{reverse("places:place_detail", args=[self.place.pk])}"')
+        self.assertContains(response, 'Illustrative category sample')
 
     def test_category_filter(self):
         self.assertContains(self.render_home({"category": "nature"}), "Existing local place")
@@ -54,7 +90,19 @@ class HomepageTests(TestCase):
         response = self.render_home()
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Find your kind of local adventure.")
-        self.assertContains(response, "landing-background.webp")
+        self.assertContains(response, "img/places/new-kabankalan-cathedral.jpg")
+        self.assertContains(response, "New Kabankalan Cathedral")
+
+    def test_cathedral_hero_is_credited_and_not_linked_to_an_unrelated_place(self):
+        for query in ({}, {"category": "missing"}):
+            with self.subTest(query=query):
+                response = self.render_home(query)
+                self.assertContains(response, "img/places/new-kabankalan-cathedral.jpg")
+                self.assertContains(response, "New Kabankalan Cathedral")
+                self.assertContains(response, 'href="/info/?q=New%20Kabankalan%20Cathedral"')
+                self.assertContains(response, "Lightningscale / Wikimedia Commons")
+                self.assertContains(response, "https://creativecommons.org/licenses/by/4.0/")
+                self.assertNotContains(response, 'class="sample-badge hero-sample"')
 
     def test_content_is_escaped(self):
         self.place.title = '<script>alert("test")</script>'
@@ -101,7 +149,7 @@ class HomepageTests(TestCase):
     def test_missing_nature_photo_uses_labeled_sample(self):
         response = self.render_home()
         self.assertContains(response, 'img/samples/nature.jpg')
-        self.assertContains(response, 'AI-generated category sample')
+        self.assertContains(response, 'Illustrative category sample')
         self.assertContains(response, 'not an actual photo of Existing local place')
 
     def test_real_photo_always_takes_priority_over_sample(self):
@@ -110,7 +158,7 @@ class HomepageTests(TestCase):
         response = self.render_home()
         self.assertContains(response, self.place.cover_image_url)
         self.assertNotContains(response, 'img/samples/nature.jpg')
-        self.assertNotContains(response, 'AI-generated category sample')
+        self.assertNotContains(response, 'Illustrative category sample')
 
     def test_samples_match_category_and_do_not_guess_unknown_venues(self):
         from .views import sample_image_for

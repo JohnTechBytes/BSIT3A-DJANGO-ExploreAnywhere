@@ -12,12 +12,16 @@ paper about "the system works" can be re-run in a few minutes.
 
 ## 1. Automated test suite
 
+The result below was refreshed on 31 October 2026 against the current redesign
+working tree using SQLite. Other historical audit results retain their original
+build and date.
+
 ```bash
 python manage.py test
 ```
 
 ```
-Ran 183 tests in 2.0s
+Ran 235 tests in 30.714s
 OK (skipped=15)
 ```
 
@@ -28,7 +32,10 @@ OK (skipped=15)
 | My Journey dashboard (interests, search log, privacy between accounts) | 11 | `apps/places/tests_journey.py` |
 | Relevance ratings | 8 | `apps/places/tests_relevance.py` |
 | Usability survey (SUS scoring, storage, result page) | 8 | `apps/evaluation/tests.py` |
-| City Information module | 9 | `apps/info/tests_info.py` |
+| City Information module | 10 | `apps/info/tests_info.py` |
+| City Information publish workflow | 8 | `apps/info/tests_publish.py` |
+| Question-search accuracy (named place, buying question) | 13 | `apps/places/tests_search_accuracy.py` |
+| Content scope rules and guardrail | 11 | `apps/core/tests_scope.py` |
 | Account routes, privacy notice, admin | 12 | `apps/users/tests.py` |
 | Photo handling and licensing | 9 | `apps/places/tests_photos.py` |
 | Configuration and environment | 6 | `apps/core/tests_config.py` |
@@ -106,7 +113,26 @@ What the optimisation pass changed:
 
 ---
 
-## 5. Reproducing everything
+## 5. Question search, content scope and the publish workflow
+
+| Check | Result | What it proves |
+|---|---|---|
+| Named place (`"Kabankalan Plaza"`) | 1 match | A query that names a place returns that place, not every record that contains one of its words |
+| Named place with another spelling (`"Mag Aso Falls"`) | 1 match | The comparison ignores punctuation and spacing |
+| Buying question (`"where to buy a phone case"`) | the published shops and malls, with the note *"Matched by category: the shops and malls of Kabankalan are where a phone case is sold. No listing names a phone case directly."* | A question about a product is answered by the category that sells such things, and the page states where the answer came from |
+| Buying question for any other product | the same category | The answer does not depend on a hard-coded list of products |
+| Buying question for a haircut | the barbershop only | A product that belongs to one category uses that category |
+| Content scope (`check_content_scope`) | 0 off-pillar records | Records outside the two pillars (educational institutions, for example) are reported, and `purge_off_scope_places` unpublishes them |
+| City Information publish workflow | only published entries are public | Staff publish and unpublish entries from the staff dashboard; the public page and the type counts use published entries only |
+
+These checks are automated (`apps/places/tests_search_accuracy.py`,
+`apps/core/tests_scope.py`, `apps/info/tests_publish.py`). The browser audits
+in section 2 were recorded before these three features and were not re-run for
+them.
+
+---
+
+## 6. Reproducing everything
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
@@ -121,10 +147,18 @@ python manage.py seed_kabankalan
 python manage.py seed_city_information
 python manage.py createsuperuser
 
-python manage.py test          # 183 tests, 15 skipped
+python manage.py test          # 235 tests, 15 skipped
 python manage.py check         # System check identified no issues
+python manage.py check --database default          # the content scope system check
+python manage.py check_content_scope              # the scope audit
+python manage.py verify_enrichment                # the completeness report
+python manage.py check_search "where to buy a phone case"
 python manage.py makemigrations --check --dry-run   # No changes detected
 python manage.py runserver
 ```
 
 `docs/LOCAL_TEST_CHECKLIST.md` lists every page to open and what to look for.
+
+### City Information starter-data correction
+
+The starter seed no longer creates the incorrectly located “Central Philippine University” entry. This change does not modify existing databases. If that entry exists locally, review and unpublish it in **Admin → City information**. Migration `info.0004` publishes existing entries, so review the entry after applying it as well. Do not use `seed_city_information --force` to correct this: it replaces all City Information entries.

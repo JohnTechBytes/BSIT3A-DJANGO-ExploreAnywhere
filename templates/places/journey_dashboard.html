@@ -80,12 +80,9 @@
 </style>
 {% endblock %}
 {% block title %}My Journey · ExploreKabankalan{% endblock %}
-{% block body_class %}site-dark{% endblock %}
+{% block body_class %}site-dark journey-page{% endblock %}
 {% block skip_link %}<a class="sd-skip" href="#main-content">Skip to content</a>{% endblock %}
-{% block brand_content %}
-  <span class="sd-brand-icon" aria-hidden="true">✺</span>
-  <span class="sd-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
-{% endblock %}
+{% block brand_content %}{% include "theme/_brand.html" %}{% endblock %}
 {% block footer_brand %}ExploreKabankalan{% endblock %}
 {% block footer_tagline %}Local places. Your adventure.{% endblock %}
 {% block extra_css_after %}<link rel="stylesheet" href="{% static 'css/site-dark.css' %}">{% endblock %}
@@ -94,8 +91,7 @@
 <main class="ea4b-page" id="main-content">
   <header class="ea4b-hero">
     <div class="ea4b-hero-content">
-      <p class="ea4b-kicker">One City. Your Hobbies. Our Map.</p>
-      <h1>My Kabankalan Journey</h1>
+      <h1>My Journey</h1>
       <p>Welcome back{% if request.user.first_name %}, {{ request.user.first_name }}{% endif %}! Keep your saved places, plans, reviews, and staff-reviewed visits together.</p>
     </div>
     <nav class="ea4b-hero-actions" aria-label="Journey quick navigation">
@@ -124,7 +120,7 @@
   </section>
 
   <div class="ea4b-section-intro">
-    <div><h2>Keep your adventure organized</h2><p>Everything in one place, with direct links to the features you already use.</p></div>
+    <div><h2>Your activity</h2><p>Find your saved places, plans, reviews and visit history.</p></div>
   </div>
   <div class="ea4b-layout">
     <section class="ea4b-panel" aria-labelledby="ea4b-saved-heading">

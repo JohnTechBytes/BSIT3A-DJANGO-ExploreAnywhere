@@ -28,12 +28,9 @@
 </style>
 {% endblock %}
 {% block title %}Privacy Notice · ExploreKabankalan{% endblock %}
-{% block body_class %}site-dark{% endblock %}
+{% block body_class %}site-dark refresh-page{% endblock %}
 {% block skip_link %}<a class="sd-skip" href="#main-content">Skip to content</a>{% endblock %}
-{% block brand_content %}
-  <span class="sd-brand-icon" aria-hidden="true">✺</span>
-  <span class="sd-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
-{% endblock %}
+{% block brand_content %}{% include "theme/_brand.html" %}{% endblock %}
 {% block footer_brand %}ExploreKabankalan{% endblock %}
 {% block footer_tagline %}Local places. Your adventure.{% endblock %}
 {% block extra_css_after %}<link rel="stylesheet" href="{% static 'css/site-dark.css' %}">{% endblock %}
@@ -83,8 +80,8 @@
   <section class="eapriv-card" aria-labelledby="eapriv-map">
     <h2 id="eapriv-map">Maps and external services</h2>
     <p>
-      The interactive map loads its tiles from MapTiler and its code from a
-      public content delivery network. Those requests reveal the map area you
+      The interactive maps load tiles from MapTiler. The Nearby map also loads
+      its code from a public content delivery network. Tile requests reveal the map area you
       are looking at, in the same way as any website that shows a map. They do
       not receive your account, your searches or your saved places.
     </p>

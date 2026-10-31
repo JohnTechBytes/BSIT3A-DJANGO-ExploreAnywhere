@@ -161,10 +161,11 @@ development and verification process.
 |---|---|
 | **Setting and Coverage** | Kabankalan City, Negros Occidental only. `KabankalanOnlyMiddleware` pins every session to Kabankalan (city pk 2), and the public and administrative querysets filter to that city. Places, information, users and evaluation activities are limited to Kabankalan. |
 | **Accounts and Roles** | Custom user model with the four roles required by the system — user, business owner, city administrator, system administrator — plus a managed-city field, avatar, bio and coordinates. Registration creates a `user`. Administrative access is governed by Django's staff, superuser and model permissions. |
-| **Kabankalan City Information** | `CityInformation` records (title, type, description, thumbnail, display order) are maintained through the administrative panel and shown on the public City Information page (`/info/`), grouped by type with a type filter and a free-text search. The page publishes only what the city administration has entered and says so when nothing is published yet. |
+| **Kabankalan City Information** | `CityInformation` records (title, type, description, thumbnail, photo credit, display order) are maintained through the administrative panel and shown on the public City Information page (`/info/`), grouped by type with a type filter and a free-text search. Each entry carries a publish flag: staff publish and unpublish entries with the bulk actions in the staff dashboard, and only published entries are public. The page says so when nothing is published yet. |
 | **Hobbies and Hobby Selection** | Hobbies are attached to places. Visitors filter the directory by category and by a single hobby from the search panel, and the chosen hobby is kept in the session, so it also shapes the recommendation score on later pages and is listed in My Journey. The earlier standalone hobby-selection route now redirects to the place directory. |
 | **Places Directory with Details and Map Location** | Verified, published Kabankalan places with category, hobbies, description, address, coordinates, cover photo and gallery. The public listing is a looping carousel with list and map views and a details panel. Cover-photo labels indicate whether an image is set, not whether its usage rights were verified. |
-| **Natural-Language Search** | A local intent-and-keyword parser handles queries such as "coffee shops", "mag aso falls" or "places in Kabankalan", ignoring filler words and matching named Kabankalan places. No external AI service is called. |
+| **Natural-Language Search** | A local intent-and-keyword parser handles queries such as "coffee shops", "mag aso falls" or "places in Kabankalan", ignoring filler words and matching named Kabankalan places. A query that names a place ("Kabankalan Plaza") returns that place only; a question that asks for a product ("where to buy a phone case") is answered by the business category that sells such things, and the page states that the match came from the category instead of from a listing name. No external AI service is called. |
+| **Content Scope and Guardrail** | The catalogue has two pillars: **Places** (a real destination a visitor chooses for a hobby or a local errand, filed under an existing category and at least one hobby) and **City Information** (an editorial fact published by staff). The rules live in `apps/core/scope.py` and are enforced by code: `manage.py check_content_scope` audits the published catalogue, `manage.py purge_off_scope_places` unpublishes records outside the scope (dry run by default) and `manage.py check --database default` reports them as a system check. Records that are educational institutions are outside the scope: they are not destinations a visitor picks for a hobby and the recommendation score can never rank them, so they belong in City Information as a single curated fact instead. |
 | **Recommendation Engine** | Deterministic ranking: hobby fit 60%, average rating 20% where reviews exist, with missing signals excluded from the denominator. Results are ordered by score, then by number of matched hobbies, then by title. Match percentages are not displayed to visitors. |
 | **Interactive Map** | Leaflet 1.9.4, loaded on demand, with streets, satellite and hybrid layers from MapTiler (built on OpenStreetMap data) and OpenStreetMap/MapTiler attribution. Markers open a title and category popup; selecting a card flies the map to the place. |
 | **Nearby Search and Live GPS** | The Nearby view reads the browser's geolocation, computes straight-line distance to each place, and filters or sorts results by distance (any distance, 1, 3, 5, 10 or 25 km). A curated Kabankalan landmark can serve as the reference point when GPS is unavailable or declined. Distances are straight-line estimates, not driving routes or travel times. |
@@ -186,7 +187,7 @@ development and verification process.
 |---|---|---|
 | Places directory, carousel, details panel | Implemented | Verified, published places only; the carousel loops through every match (capped at 500 as a guard) |
 | Hobby filtering and recommendation engine | Implemented | Rule-based; 60% hobby, 20% rating |
-| Natural-language search (local parser) | Implemented | No external service |
+| Natural-language search (local parser) | Implemented | No external service; a named place returns that place, a buying question returns the business category and says so |
 | Claude API interpretation layer | Planned | Not present in the codebase |
 | Leaflet map, drone fly-to | Implemented | Needs a network connection and a MapTiler key |
 | Nearby search, live GPS, radius filter | Implemented | Straight-line distance |
@@ -198,7 +199,7 @@ development and verification process.
 | Visit check-ins and rewards | Implemented | Staff approval required |
 | Administrative panel and OSM review queue | Implemented | Bulk approval refuses unverified OSM imports |
 | Data import commands | Implemented | PSGC, OSM extract, Wikimedia imagery |
-| City information records | Implemented | Public page at `/info/`; entries are published from the admin panel |
+| City information records | Implemented | Public page at `/info/`; entries are published and unpublished with the bulk actions in the admin panel |
 | Roles and access control | Partially implemented | Four roles defined; enforced through Django permissions; no business-owner portal and no city-level scoping |
 | SUS instrument | Implemented | Public survey at `/evaluation/sus/` with the standard 0–100 scoring |
 | Recommendation relevance rating | Implemented | In-page control on a destination reached from a search |
@@ -206,6 +207,7 @@ development and verification process.
 | Search history and remembered interests | Implemented | Every submitted search is logged with the account; the chosen hobby is kept in the session |
 | Account management in the staff dashboard | Implemented | Roles and managed city are editable at `/admin/users/user/` |
 | Environment-driven deployment configuration | Implemented | Secret key, debug flag, allowed hosts, database and MapTiler token come from environment variables |
+| Content scope guardrail | Implemented | `apps/core/scope.py` holds the two pillars; `check_content_scope`, `purge_off_scope_places` and a database-scoped system check enforce them |
 | Distance in the ranking score | Planned | Distance is used by the Nearby view only |
 
 ### Limitations
@@ -213,8 +215,9 @@ development and verification process.
 - The system covers **Kabankalan City only**. Places, information and evaluation
   involving other cities are not included.
 - An **internet connection is required for the interactive map and live GPS**:
-  Leaflet is loaded from a CDN and map tiles come from MapTiler. Search and
-  recommendation logic run on the server and need no external service.
+  Browse loads a bundled copy of Leaflet on demand; other map pages may load
+  Leaflet from a CDN. Map tiles come from MapTiler and require connectivity.
+  Search and recommendation logic run on the server and need no external service.
 - Map tiles require a **MapTiler API key**, which is currently embedded in the
   page template and should be moved to server-side configuration before public
   deployment.
@@ -228,8 +231,9 @@ development and verification process.
   project title is not yet implemented.
 - The public **City Information page** shows only what the city administration
   has published, so it stays empty until entries are entered. The starter set
-  created by `manage.py seed_city_information` is an example that has to be
-  reviewed against the official city record before it is used.
+  created by `manage.py seed_city_information` is published, because it is the
+  curated starter content of the city, and it still has to be reviewed against
+  the official city record before it is used.
 - The **SUS survey** can be answered more than once and an anonymous answer is
   not linked to a person. A signed-in answer is stored with the account.
 - The **chosen hobby is held in the browser session** and is lost when the
@@ -276,6 +280,20 @@ python manage.py seed_city_information # the entries shown on /info/
 python manage.py createsuperuser       # staff login for /admin/
 python manage.py runserver
 ```
+
+Three read-only audits keep the installation inside the scope of the system
+and show how a question is answered:
+
+```bash
+python manage.py check_content_scope   # the two pillars and any record outside them
+python manage.py verify_enrichment     # how complete the published catalogue is
+python manage.py check_search "where to buy a phone case"
+```
+
+`check_content_scope --strict` exits with status 1 when a published record is
+outside the scope, and `purge_off_scope_places` unpublishes those records
+(a dry run until `--apply` is given). `manage.py check --database default`
+reports the same records as a Django system check.
 
 Database settings come from the environment with development defaults
 (`exploreanywhere`, user `root`, no password, `127.0.0.1:3306`, `utf8mb4`).
@@ -358,12 +376,14 @@ Optional, read at runtime with safe defaults:
 ### Tests
 
 ```bash
-python manage.py test          # Django runner: 179 tests, 15 skipped
+python manage.py test          # Django runner: 235 tests, 15 skipped
 ```
 
 The suite covers the public flows (search, filters, save/unsave, reviews,
 itineraries, check-ins, nearby, the city information page, the usability
-survey and the relevance feedback), the discovery query behaviour and the
+survey and the relevance feedback), the discovery query behaviour, the
+accuracy of the question search (a named place returns that place, a buying
+question returns the business category), the content scope rules and the
 administrative screens. Fifteen tests for the retired legacy city-information
 CRUD routes are skipped: those routes were replaced by the public City
 Information page, and the tests are kept as the specification for that module.

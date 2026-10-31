@@ -63,8 +63,8 @@ class NearbyRedesignTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "places/nearby_places.html")
         for content in [
-            'class="nearby-page"', 'css/nearby.css', 'LOCAL PLACES. YOUR ADVENTURE.',
-            'Discover <span>Kabankalan</span>', 'Find your next stop',
+            'class="nearby-page"', 'css/nearby.css', 'css/editorial.css', 'class="ek-brand-name"',
+            'Find places near you.', 'Find your next stop',
             'id="ea6-search-form"', 'id="ea6-use-gps"', 'id="ea6-origin"',
             'id="ea6h-distance"', 'id="ea6g-toggle"', 'id="ea6g-map-shell"',
             'id="ea6-results"', 'View details', 'Directions', 'Show on map',
@@ -81,7 +81,7 @@ class NearbyRedesignTests(TestCase):
         self.assertContains(response, 'name="service"')
         self.assertContains(response, 'aria-current="true"')
         self.assertContains(response, 'img/samples/coffee.jpg')
-        self.assertContains(response, 'AI-generated category sample')
+        self.assertContains(response, 'Illustrative category sample')
         self.assertContains(response, 'not an actual photo of Local Café')
         # Other published places remain available as landmark/autocomplete options,
         # but must not appear as cards in this filtered result set.
@@ -96,7 +96,7 @@ class NearbyRedesignTests(TestCase):
         self.assertContains(response, self.cafe.cover_image_url)
         self.assertContains(response, "Original photographer")
         self.assertContains(response, self.cafe.photo_source_url)
-        self.assertNotContains(response, "AI-generated category sample")
+        self.assertNotContains(response, "Illustrative category sample")
         self.assertNotContains(response, "img/samples/coffee.jpg")
 
     def test_unknown_category_uses_neutral_placeholder(self):
@@ -104,7 +104,7 @@ class NearbyRedesignTests(TestCase):
                                      is_verified=True, is_active=True)
         response = self.client.get(self.url, {"mode": "nearby", "place": place.pk})
         self.assertContains(response, "PHOTO NOT YET AVAILABLE")
-        self.assertNotContains(response, "AI-generated category sample")
+        self.assertNotContains(response, "Illustrative category sample")
         self.assertContains(response, "Precise map coordinates unavailable")
         self.assertNotContains(response, "Show on map ↗")
 
@@ -131,8 +131,28 @@ class NearbyRedesignTests(TestCase):
         self.assertContains(response, "ExploreAnywhere")
         self.assertNotContains(response, 'class="nearby-page"')
         self.assertNotContains(response, "css/nearby.css")
+        self.assertContains(response, "css/browse-guide.css")
+        self.assertContains(response, "THE LOCAL GUIDE")
+        # The marker icon stays a fixed pixel size while Leaflet animates zoom.
+        self.assertContains(response, 'className: "ea-map-pin"')
+        self.assertContains(response, 'iconSize: [20, 20]')
+        self.assertContains(response, 'const marker = L.marker(')
 
     def test_unauthenticated_discovery_still_requires_login(self):
         self.client.logout()
         response = self.client.get(self.url, {"mode": "nearby"})
         self.assertRedirects(response, "/accounts/login/?next=/places/%3Fmode%3Dnearby", fetch_redirect_response=False)
+
+    def test_browse_only_offers_map_for_places_with_coordinates(self):
+        Place.objects.create(
+            city=self.city, title="Unmapped Bookstore", slug="unmapped-bookstore",
+            address="Kabankalan", is_verified=True, is_active=True,
+        )
+        unmapped = self.client.get(self.url, {"q": "Unmapped Bookstore"})
+        self.assertContains(unmapped, "Unmapped Bookstore")
+        self.assertNotContains(unmapped, 'class="ea-card-map-hint"')
+        mapped = self.client.get(self.url, {"q": "CPSU Museum"})
+        self.assertContains(mapped, 'class="ea-card-map-hint"')
+        self.assertContains(mapped, 'vendor/leaflet/leaflet.js')
+        self.assertContains(mapped, 'vendor/leaflet/leaflet.css')
+        self.assertNotContains(mapped, 'unpkg.com/leaflet@1.9.4')
