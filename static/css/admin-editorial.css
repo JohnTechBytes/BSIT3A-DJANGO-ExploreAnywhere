@@ -1,0 +1,53 @@
+/* Admin remains an operational, dark workspace; only visual treatments are
+   overridden here, so Django's permission-aware controls remain intact. */
+@font-face { font-family:EKArchivo; src:url('../fonts/archivo-variable.ttf') format('truetype'); font-weight:100 900; font-display:swap; }
+:root { --ea-bg:#0c1924; --ea-bg-deep:#091520; --ea-panel:#142734; --ea-panel-2:#10212d; --ea-line:#304955; --ea-line-soft:#253b48; --ea-text:#e9f2f2; --ea-text-soft:#c3d4d8; --ea-muted:#a7bbc2; --ea-teal:#8ed3c6; --ea-teal-deep:#214b50; }
+body { background:var(--ea-bg); font-family:EKArchivo,system-ui,sans-serif; }
+h1,h2,h3,h4,caption,.ea-dash-hero h1,#content h1 { font-family:EKArchivo,system-ui,sans-serif; font-weight:650; letter-spacing:-.025em; }
+#header,.ea-admin-sidebar { background:#0c1d29; }
+.breadcrumbs,#breadcrumbs { background:#10212d; }
+.ea-side-head a::before { content:'EK'; border-radius:0; background:#8ed3c6; color:#0c1d29; font-size:11px; }
+.ea-side-link { border-radius:3px; }
+.ea-side-link:hover,.ea-side-link:focus-visible { background:#1c3743; border-color:#41646e; }
+.ea-side-link.ea-side-active { background:#20434b; border-color:#537e7c; box-shadow:inset 3px 0 0 #8ed3c6; }
+.ea-side-link.ea-side-active .ea-side-dot { background:#2a5459; color:#b6e8dc; }
+.ea-dash-hero { border-color:#42686e; border-radius:4px; background:#1a3943; box-shadow:none; }
+.ea-dash-hero h1 { font-family:EKArchivo,system-ui,sans-serif !important; }
+.ea-metric,.ea-shortcut,.ea-modules { border-radius:4px; box-shadow:none; }
+.ea-metric strong { font-family:EKArchivo,system-ui,sans-serif; font-weight:650; }
+.ea-shortcut:hover,.ea-shortcut:focus-visible { border-color:#699a9b; background:#1b3943; transform:none; }
+#content .module,#content fieldset.module,.inline-group,#toolbar,#changelist-filter,.submit-row { border-radius:4px; box-shadow:none; }
+#content .module h2,#content .module caption,.inline-group h2,fieldset h2,#changelist-filter h2 { background:#1c3743; }
+.results table tbody tr:hover,#changelist table tbody tr:hover { background:#1d3844 !important; }
+.results table tbody tr.selected,#changelist table tbody tr.selected { background:#244b50 !important; }
+.button,input[type=submit],input[type=button],button.button,.submit-row input,a.button,.object-tools a { border-radius:3px !important; }
+.button.default,input[type=submit].default,.submit-row input.default,.object-tools a,.object-tools a:link,.object-tools a:visited { background:#8ed3c6 !important; border-color:#8ed3c6 !important; color:#102b33 !important; }
+.button.default:hover,input[type=submit].default:hover,.object-tools a:hover { background:#b6e8dc !important; color:#102b33 !important; }
+#content a:focus-visible,#header a:focus-visible,.ea-admin-sidebar a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible { outline:2px solid #e9bd7a; outline-offset:2px; }
+/* Project-specific change lists and queues use inline light colors; pin
+   contrast without changing their controls or permission-dependent content. */
+html body #header { background:#0c1d29 !important; }
+html body .breadcrumbs,html body #breadcrumbs { background:#10212d !important; }
+html body .ea-dest-heading .ea-dest-object-tools a,
+html body .object-tools a,html body .object-tools a:link,html body .object-tools a:visited,
+html body .button.default,html body input[type=submit].default,
+html body .ea-dest-filter-actions button,html body .ea-review-filter button { background:#8ed3c6 !important; border-color:#8ed3c6 !important; color:#102b33 !important; }
+html body .ea-dest-heading .ea-dest-object-tools a:hover,html body .object-tools a:hover,
+html body .button.default:hover,html body input[type=submit].default:hover,
+html body .ea-dest-filter-actions button:hover,html body .ea-review-filter button:hover { background:#b6e8dc !important; }
+html body #result_list tbody th a span { color:#a7e3d8 !important; }
+html body #result_list tbody th a small { color:#a7bbc2 !important; }
+html body #result_list td.field-publication span { color:#8ce0b7 !important; }
+html body #result_list td.field-content_status span { color:#ffd18a !important; }
+body .selector .selector-available-title,body .selector .selector-chosen-title { background:#1c3743; border-color:#304955; color:#e9f2f2; }
+body .selector .selector-available-title label,body .selector .selector-chosen-title label { color:#e9f2f2 !important; }
+body .selector .selector-available-title .helptext,body .selector .selector-chosen-title .helptext { color:#c3d4d8; }
+body .selector .selector-filter,body .selector .list-footer-display { background:#10212d; border-color:#304955; color:#c3d4d8; }
+body .ea-review-wrap { grid-template-columns:minmax(0,1fr); min-width:0; }
+body .ea-review-panel { min-width:0; border-radius:4px; }
+body .ea-review-hero { border-color:#42686e; border-radius:4px; background:#1a3943; }
+body .ea-review-stat { border-radius:4px; }
+body .ea-review-stat strong { font-family:EKArchivo,system-ui,sans-serif; font-weight:650; }
+html body #content .ea-review-panel .ea-review-table tbody td { background:#142734 !important; color:#c3d4d8 !important; }
+html body #content .ea-review-panel .ea-review-table tbody td a { color:#a7e3d8 !important; }
+html body #content .ea-review-panel .ea-review-table tbody td small { color:#a7bbc2; }

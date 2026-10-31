@@ -269,6 +269,9 @@
 
     {% block extra_css %}{% endblock %}
     {% block extra_css_after %}{% endblock %}
+    {# Bump this version when changing editorial.css so browsers fetch updated styles. #}
+    <link rel="stylesheet" href="{% static 'css/editorial.css' %}?v=20261031-10">
+    <link rel="stylesheet" href="{% static 'css/public-refresh.css' %}?v=20261031-3">
 </head>
 
 <body class="{% block body_class %}{% endblock %}">
@@ -278,21 +281,7 @@
     <nav class="ea-nav-container" aria-label="Main navigation">
 
         <a href="/" class="ea-site-logo">
-            {% block brand_content %}
-            <span class="ea-logo-icon">
-                <svg viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="2"
-                     stroke-linecap="round"
-                     stroke-linejoin="round"
-                     aria-hidden="true">
-                    <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 0 1 16 0Z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                </svg>
-            </span>
-            ExploreAnywhere
-            {% endblock %}
+            {% block brand_content %}{% include "theme/_brand.html" %}{% endblock %}
         </a>
 
         <button type="button"

@@ -4,10 +4,7 @@
 {% block title %}Explore Places · ExploreKabankalan{% endblock %}
 {% block body_class %}browse-page{% endblock %}
 {% block skip_link %}<a class="browse-skip" href="#browse-main">Skip to content</a>{% endblock %}
-{% block brand_content %}
-  <span class="browse-brand-icon" aria-hidden="true">✺</span>
-  <span class="browse-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
-{% endblock %}
+{% block brand_content %}{% include "theme/_brand.html" %}{% endblock %}
 {% block footer_brand %}ExploreKabankalan{% endblock %}
 {% block footer_tagline %}Local places. Your adventure.{% endblock %}
 
@@ -668,15 +665,10 @@
 
   <header class="ea-attractions-header">
     <div>
-      <span class="ea-eyebrow"><span aria-hidden="true">✦</span> YOUR LOCAL GUIDE TO KABANKALAN</span>
-
-      <h1>
-        Discover <span>{{ selected_city.name }}</span><b>.</b>
-      </h1>
+      <h1>Explore places in <span>{{ selected_city.name }}</span><b>.</b></h1>
 
       <p class="ea-subtitle">
-        Find verified destinations and local businesses, follow your interests,
-        and discover what’s around the corner.
+        Search local places by name, category, or hobby and find somewhere that fits your day.
       </p>
     </div>
 

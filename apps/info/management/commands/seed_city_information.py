@@ -55,15 +55,6 @@ STARTER_ENTRIES = [
         "order": 4,
     },
     {
-        "info_type": CityInformation.InfoType.ATTRACTION,
-        "title": "Central Philippine University",
-        "description": (
-            "A private university whose main campus is located in Kabankalan "
-            "City, Negros Occidental."
-        ),
-        "order": 5,
-    },
-    {
         "info_type": CityInformation.InfoType.FOOD,
         "title": "Local dining",
         "description": (

@@ -115,9 +115,10 @@ class SeedCityInformationPublishTests(TestCase):
     def test_the_starter_entries_are_published(self):
         call_command("seed_city_information", verbosity=0)
 
-        self.assertEqual(CityInformation.objects.count(), 8)
+        self.assertEqual(CityInformation.objects.count(), 7)
+        self.assertFalse(CityInformation.objects.filter(title="Central Philippine University").exists())
         self.assertEqual(
-            CityInformation.objects.filter(is_published=True).count(), 8,
+            CityInformation.objects.filter(is_published=True).count(), 7,
         )
 
 

@@ -63,8 +63,8 @@ class NearbyRedesignTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "places/nearby_places.html")
         for content in [
-            'class="nearby-page"', 'css/nearby.css', 'LOCAL PLACES. YOUR ADVENTURE.',
-            'Discover <span>Kabankalan</span>', 'Find your next stop',
+            'class="nearby-page"', 'css/nearby.css', 'css/editorial.css', 'class="ek-brand-name"',
+            'Find places near you.', 'Find your next stop',
             'id="ea6-search-form"', 'id="ea6-use-gps"', 'id="ea6-origin"',
             'id="ea6h-distance"', 'id="ea6g-toggle"', 'id="ea6g-map-shell"',
             'id="ea6-results"', 'View details', 'Directions', 'Show on map',

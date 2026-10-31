@@ -1,0 +1,71 @@
+"""The remaining redesigned screens retain their forms and admin controls."""
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+from django.urls import reverse
+
+from apps.cities.models import City
+from apps.itineraries.models import Itinerary
+from apps.places.models import Place
+
+
+class EditorialScreenTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        city = City.objects.create(pk=2, name="Kabankalan", slug="kabankalan")
+        cls.user = get_user_model().objects.create_superuser(
+            username="editorial_staff", password="test-password-123", email="staff@example.test"
+        )
+        cls.place = Place.objects.create(
+            city=city, title="Published destination", slug="published-destination",
+            is_active=True, is_verified=True,
+        )
+        cls.trip = Itinerary.objects.create(user=cls.user, city=city, title="Trip", day_number=1)
+
+    def test_account_forms_load_the_editorial_styles(self):
+        for name in ("login", "register"):
+            with self.subTest(name=name):
+                response = self.client.get(reverse(name))
+                self.assertContains(response, "css/auth-editorial.css")
+                self.assertContains(response, 'name="csrfmiddlewaretoken"')
+
+    def test_public_screens_retain_their_editorial_scope(self):
+        self.client.force_login(self.user)
+        routes = [
+            reverse("itineraries:create"), reverse("itineraries:builder", args=[self.trip.pk]),
+            reverse("itineraries:choose_for_place", args=[self.place.pk]),
+            reverse("places:my_reviews"), reverse("visits:list"),
+            reverse("visits:check_in", args=[self.place.pk]),
+            reverse("evaluation:sus_survey"), reverse("evaluation:sus_thanks"),
+            reverse("core:privacy_notice"),
+        ]
+        for url in routes:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                self.assertContains(response, 'site-dark refresh-page')
+                self.assertContains(response, 'css/public-refresh.css')
+        self.assertContains(self.client.get(reverse("itineraries:create")), 'name="title"')
+        self.assertContains(self.client.get(reverse("itineraries:builder", args=[self.trip.pk])), 'name="place_id"')
+        self.assertContains(self.client.get(reverse("visits:check_in", args=[self.place.pk])), 'name="visit_note"')
+        self.assertContains(self.client.get(reverse("evaluation:sus_survey")), 'name="q10"')
+
+    def test_city_discovery_keeps_its_listing_and_pagination(self):
+        Place.objects.create(city=self.place.city, title="Unpublished candidate",
+                             slug="unpublished-candidate", is_active=False, is_verified=False)
+        response = self.client.get(reverse("places:city_discover"))
+        self.assertContains(response, 'browse-page discovery-page')
+        self.assertContains(response, self.place.title)
+        self.assertNotContains(response, 'Unpublished candidate')
+        self.assertContains(response, 'Page 1 of 1')
+
+    def test_staff_admin_keeps_forms_filters_and_actions(self):
+        self.client.force_login(self.user)
+        for name in ("admin:index", "admin:places_place_changelist", "admin:places_place_osm_review"):
+            with self.subTest(name=name):
+                response = self.client.get(reverse(name))
+                self.assertContains(response, "css/admin-editorial.css")
+        response = self.client.get(reverse("admin:places_place_changelist"))
+        self.assertContains(response, 'id="ea-dest-filter-form"')
+        self.assertContains(response, 'name="action"')
+        response = self.client.get(reverse("admin:places_place_change", args=[self.place.pk]))
+        self.assertContains(response, 'name="_save"')
+        self.assertContains(response, 'name="csrfmiddlewaretoken"')

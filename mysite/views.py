@@ -35,7 +35,7 @@ def home(request):
     ).select_related("category").prefetch_related("hobbies").order_by(
         "-osm_priority", "-photo_priority", "-avg_rating", "-review_count", "title", "pk",
     )
-    featured_places = list(places[:9])
+    featured_places = list(places)
     for place in featured_places:
         place.sample_image = sample_image_for(place) if not (place.cover_image or place.cover_image_url) else ""
         # The importer's osm-type-id slug is the existing provenance identifier.

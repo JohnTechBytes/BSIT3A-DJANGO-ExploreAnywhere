@@ -3,10 +3,7 @@
 {% load static %}
 {% block body_class %}nearby-page{% endblock %}
 {% block skip_link %}<a class="ea6-skip" href="#nearby-main">Skip to content</a>{% endblock %}
-{% block brand_content %}
-  <span class="ea6-brand-icon" aria-hidden="true">✺</span>
-  <span class="ea6-brand-name">Explore<span>Kabankalan</span><small>LOCAL PLACES. YOUR ADVENTURE.</small></span>
-{% endblock %}
+{% block brand_content %}{% include "theme/_brand.html" %}{% endblock %}
 {% block footer_brand %}ExploreKabankalan{% endblock %}
 {% block footer_tagline %}Local places. Your adventure.{% endblock %}
 {% block extra_css %}<link rel="stylesheet" href="{% static 'css/nearby.css' %}">{% endblock %}
@@ -14,19 +11,14 @@
 <main class="ea6-main" id="nearby-main">
   <header class="ea6-top">
     <div class="ea6-intro">
-      <span class="ea6-eyebrow"><span aria-hidden="true">✦</span> YOUR LOCAL GUIDE TO KABANKALAN</span>
-      <h1>Discover <span>Kabankalan</span><b>.</b></h1>
-      <p class="ea6-muted">Find verified destinations and local businesses, follow your interests, and discover what’s around the corner.</p>
-    </div>
-    <div class="ea6-intro-note" aria-hidden="true">
-      <span class="ea6-compass"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/><circle cx="12" cy="12" r="2"/></svg></span>
-      <div><small>ONE CITY, MANY STORIES</small><strong>Your next stop starts here.</strong><span>NEGROS OCCIDENTAL, PH</span></div>
+      <h1>Find places near you.</h1>
+      <p class="ea6-muted">Explore Kabankalan places by name or type, and optionally sort them by distance.</p>
     </div>
   </header>
   {% include "places/_discovery_modes.html" %}
   <section class="ea6-box ea6-search-box" aria-labelledby="ea6-search-title">
     <div class="ea6-panel-heading">
-      <div><span class="ea6-panel-eyebrow">01 / EXPLORE YOUR WAY</span><h2 id="ea6-search-title">Find your next stop</h2><p>Search by place or browse a local category.</p></div>
+      <div><h2 id="ea6-search-title">Find your next stop</h2><p>Search by place or browse a local category.</p></div>
       <span class="ea6-panel-symbol" aria-hidden="true">✧</span>
     </div>
     <form method="get" action="{% url 'places:attraction_carousel' %}" class="ea6-search" id="ea6-search-form" autocomplete="off">
@@ -69,7 +61,7 @@
     <div class="ea6k-location-top">
       <div class="ea6-location-title">
         <span class="ea6-location-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
-        <div><span class="ea6-panel-eyebrow">NEAR ME</span><h2 id="ea6-nearby-title">Find places near you</h2>
+        <div><h2 id="ea6-nearby-title">Find places near you</h2>
         <p>Optional: sort these results by distance from your location.</p></div>
       </div>
       <button id="ea6-use-gps" class="ea6-btn ea6-location-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg> Use my location</button>
@@ -114,7 +106,7 @@
     <p class="ea6-fineprint">Your location stays in this browser tab; distances are straight-line estimates, not driving times.</p>
   </section>
   <div class="ea6-heading">
-    <div><span class="ea6-panel-eyebrow">PLACES TO EXPLORE</span>
+    <div>
       <h2>{% if selected_service_label %}{{ selected_service_label }}{% elif query %}Results for “{{ query }}”{% else %}Discover local places{% endif %}</h2>
       <p>Thoughtfully collected places in Kabankalan, ready for your next stop.</p>
     </div>

@@ -2,6 +2,7 @@ from copy import copy
 
 from django.template.context import Context, RequestContext
 from django.test import RequestFactory, SimpleTestCase, TestCase
+from django.urls import reverse
 from django.contrib.auth.models import AnonymousUser
 
 from apps.cities.models import City
@@ -41,6 +42,33 @@ class HomepageTests(TestCase):
         self.assertNotContains(response, "Unverified place")
         self.assertNotContains(response, "Inactive place")
         self.assertNotContains(response, "Outside city")
+
+    def test_landing_search_and_main_links_use_existing_routes(self):
+        response = self.render_home()
+        self.assertContains(response, f'action="{reverse("places:smart_search")}"')
+        self.assertContains(response, 'name="q"')
+        self.assertContains(response, f'href="{reverse("info:city_information")}"')
+        self.assertContains(response, f'href="{reverse("places:attraction_carousel")}?mode=nearby"')
+        self.assertContains(response, f'href="{reverse("places:attraction_carousel")}?browse=all"')
+        self.assertContains(response, f'href="{reverse("itineraries:list")}"')
+        self.assertContains(response, f'href="{reverse("login")}"')
+        self.assertContains(response, f'href="{reverse("register")}"')
+
+    def test_landing_carousel_contains_all_published_places(self):
+        for number in range(12):
+            Place.objects.create(city=self.city, title=f"Published {number:02}", address="Local",
+                                 is_verified=True, is_active=True)
+        response = self.render_home()
+        for number in range(12):
+            self.assertContains(response, f"Published {number:02}")
+        self.assertContains(response, 'data-carousel-toggle')
+        self.assertContains(response, 'landing-carousel.js')
+        self.assertNotContains(response, "Unverified place")
+
+    def test_landing_place_links_still_point_to_the_record(self):
+        response = self.render_home()
+        self.assertContains(response, f'href="{reverse("places:place_detail", args=[self.place.pk])}"')
+        self.assertContains(response, 'Illustrative category sample')
 
     def test_category_filter(self):
         self.assertContains(self.render_home({"category": "nature"}), "Existing local place")

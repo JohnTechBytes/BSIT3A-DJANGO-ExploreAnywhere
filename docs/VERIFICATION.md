@@ -12,12 +12,16 @@ paper about "the system works" can be re-run in a few minutes.
 
 ## 1. Automated test suite
 
+The result below was refreshed on 31 October 2026 against the current redesign
+working tree using SQLite. Other historical audit results retain their original
+build and date.
+
 ```bash
 python manage.py test
 ```
 
 ```
-Ran 216 tests in 28.8s
+Ran 228 tests in 42.583s
 OK (skipped=15)
 ```
 
@@ -28,7 +32,7 @@ OK (skipped=15)
 | My Journey dashboard (interests, search log, privacy between accounts) | 11 | `apps/places/tests_journey.py` |
 | Relevance ratings | 8 | `apps/places/tests_relevance.py` |
 | Usability survey (SUS scoring, storage, result page) | 8 | `apps/evaluation/tests.py` |
-| City Information module | 9 | `apps/info/tests_info.py` |
+| City Information module | 10 | `apps/info/tests_info.py` |
 | City Information publish workflow | 8 | `apps/info/tests_publish.py` |
 | Question-search accuracy (named place, buying question) | 13 | `apps/places/tests_search_accuracy.py` |
 | Content scope rules and guardrail | 11 | `apps/core/tests_scope.py` |
@@ -143,7 +147,7 @@ python manage.py seed_kabankalan
 python manage.py seed_city_information
 python manage.py createsuperuser
 
-python manage.py test          # 216 tests, 15 skipped
+python manage.py test          # 228 tests, 15 skipped
 python manage.py check         # System check identified no issues
 python manage.py check --database default          # the content scope system check
 python manage.py check_content_scope              # the scope audit
@@ -154,3 +158,7 @@ python manage.py runserver
 ```
 
 `docs/LOCAL_TEST_CHECKLIST.md` lists every page to open and what to look for.
+
+### City Information starter-data correction
+
+The starter seed no longer creates the incorrectly located “Central Philippine University” entry. This change does not modify existing databases. If that entry exists locally, review and unpublish it in **Admin → City information**. Migration `info.0004` publishes existing entries, so review the entry after applying it as well. Do not use `seed_city_information --force` to correct this: it replaces all City Information entries.

@@ -438,6 +438,19 @@ class SavedPlacesFlowTests(FlowFixture):
         self.assertContains(response, "Published Falls")
         self.assertNotContains(response, "Published Cafe")
 
+    def test_saved_page_labels_remove_action_and_keeps_details_and_itinerary_links(self):
+        SavedPlace.objects.create(user=self.user, place=self.place)
+        response = self.client.get(reverse("places:saved_places"))
+        self.assertContains(response, '1 saved destination')
+        self.assertContains(response, f'Remove {self.place.title} from saved places')
+        self.assertContains(response, reverse("places:place_detail", args=[self.place.pk]))
+        self.assertContains(response, reverse("itineraries:choose_for_place", args=[self.place.pk]))
+
+    def test_empty_saved_page_offers_a_way_to_explore(self):
+        response = self.client.get(reverse("places:saved_places"))
+        self.assertContains(response, 'No saved places yet')
+        self.assertContains(response, reverse("places:attraction_carousel") + '?browse=all')
+
     def test_journey_dashboard_counts_reflect_saved_itinerary_and_review(self):
         SavedPlace.objects.create(user=self.user, place=self.place)
         Review.objects.create(user=self.user, place=self.place, rating=4, comment="Good")
@@ -591,6 +604,19 @@ class ItineraryFlowTests(FlowFixture):
         self.assertEqual(self.client.post(
             reverse("itineraries:delete", args=[trip.pk])).status_code, 404)
         self.assertTrue(Itinerary.objects.filter(pk=trip.pk).exists())
+
+    def test_itinerary_list_keeps_empty_and_populated_navigation(self):
+        response = self.client.get(reverse("itineraries:list"))
+        self.assertContains(response, "No itinerary yet")
+        self.assertContains(response, reverse("itineraries:create"))
+        trip = Itinerary.objects.create(user=self.user, city=self.city, title="My plan", day_number=2)
+        response = self.client.get(reverse("itineraries:list"))
+        self.assertContains(response, "My plan")
+        self.assertContains(response, "Day 2")
+        self.assertContains(response, "0 planned stops")
+        self.assertContains(response, reverse("itineraries:builder", args=[trip.pk]))
+        self.assertContains(response, reverse("places:journey_dashboard"))
+        self.assertContains(response, reverse("places:saved_places"))
 
     def test_my_itineraries_lists_only_my_trips(self):
         Itinerary.objects.create(user=self.user, city=self.city, title="Mine to keep")
