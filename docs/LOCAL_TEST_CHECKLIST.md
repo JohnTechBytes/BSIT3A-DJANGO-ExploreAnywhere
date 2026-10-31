@@ -147,7 +147,7 @@ python manage.py test
 Expected result:
 
 ```
-Ran 230 tests in ...s
+Ran 231 tests in ...s
 OK (skipped=15)
 ```
 

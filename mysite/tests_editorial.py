@@ -1,7 +1,7 @@
 """The remaining redesigned screens retain their forms and admin controls."""
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 
 from apps.cities.models import City
@@ -98,3 +98,20 @@ class EditorialScreenTests(TestCase):
         self.assertNotContains(response, 'User accounts')
         self.assertNotContains(response, reverse("admin:users_user_changelist"))
         self.assertNotContains(response, reverse("admin:visits_visitcheckin_changelist"))
+
+    def test_admin_navigation_retains_account_actions_and_csrf_logout(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("admin:index"))
+        self.assertContains(response, 'id="ea-account-menu"')
+        self.assertContains(response, reverse("admin:password_change"))
+        self.assertContains(response, reverse("admin:logout"))
+        self.assertContains(response, 'aria-controls="ea-admin-sidebar"')
+        self.assertContains(response, 'aria-expanded="false"')
+        self.assertContains(response, 'name="csrfmiddlewaretoken"')
+        csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.force_login(self.user)
+        csrf_client.get(reverse("admin:index"))
+        self.assertEqual(csrf_client.post(reverse("admin:logout")).status_code, 403)
+        token = csrf_client.cookies["csrftoken"].value
+        self.assertEqual(csrf_client.post(reverse("admin:logout"), {"csrfmiddlewaretoken": token}).status_code, 302)
+        self.assertNotIn("_auth_user_id", csrf_client.session)
